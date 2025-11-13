@@ -1,69 +1,83 @@
 services:
   mysql:
     image: mysql:8.4
-    container_name: mysql_srv
+    container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: opiniones
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./mysql/data:/var/lib/mysql
-    networks:
-      - services_net
     ports:
       - "3316:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - services_net
 
-  mongodb:
-    image: mongo:7
-    container_name: mongo_srv
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
     restart: always
-    volumes:
-      - ./mongo/init.js:/docker-entrypoint-initdb.d/init.js
-      - ./mongo/data:/data/db
-
     ports:
-      - "27017:27017"
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - services_net
 
   api:
-    build: ./api
+    build:
+      context: ./api
+      target: ${BUILD_TARGET:-production}
     container_name: api_srv
     restart: always
     depends_on:
-      - mysql
-      - mongodb
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_DATABASE: opiniones
-      MONGO_URI: mongodb://mongodb:27017/opiniones
+      mysql:
+        condition: service_healthy
+    env_file:
+      - .env
     ports:
       - "3000:3000"
-    volumes:      
-      - ./api:/usr/src/app  # Mounts the API source code
-      # - ./api/node_modules:/usr/src/app/node_modules
-      - /usr/src/app/node_modules  # Prevents overwriting node_modules
-
-    command: ["npm", "run", "dev"]
+    volumes:
+      - ./api:/usr/src/app
+      - /usr/src/app/node_modules
     networks:
       - services_net
+    profiles: ["dev", "prod"]
 
   web:
     image: php:8.3-apache
     container_name: web_srv
     restart: always
     depends_on:
-      - api
+      api:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    env_file:
+      - .env
     volumes:
       - ./web:/var/www/html
     ports:
       - "8180:80"
     networks:
       - services_net
+    command: bash -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf && apache2-foreground"
 
 networks:
   services_net:
     driver: bridge
+
+volumes:
+  mysql_data:
