@@ -1,705 +1,563 @@
 <!doctype html>
 <html lang="es" class="no-js">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UTMentor</title>
-  <link rel="preload" href="../css/principal.css" as="style">
-  <link rel="stylesheet" href="../css/principal.css">
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UTMentor</title>
+    <link rel="preload" href="../css/principal.css" as="style">
+    <link rel="stylesheet" href="../css/principal.css">
+  </head>
 
-<body>
-  <header class="nav-wrap">
-    <nav class="nav" aria-label="Principal">
-      <a href="principal.html" class="brand" aria-label="Ir al inicio">
-        <img class="brand-logo brand-logo-default" src="../imagenes/logo.png" alt="UTMentor logo" />
-        <img class="brand-logo brand-logo-hero" src="../imagenes/logo-hero.png" alt="UTMentor logo blanco" />
-      </a>
+  <body>
+    <header class="nav-wrap">
+      <nav class="nav" aria-label="Principal">
+        <a href="principal.html" class="brand" aria-label="Ir al inicio">
+          <img class="brand-logo brand-logo-default" src="../imagenes/logo.png"
+            alt="UTMentor logo" />
+          <img class="brand-logo brand-logo-hero"
+            src="../imagenes/logo-hero.png" alt="UTMentor logo blanco" />
+        </a>
 
-      <button class="burger" title="Abrir menú" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-panel">
-        <span class="burger-box" aria-hidden="true">
-          <span class="burger-line"></span>
-        </span>
-        <span class="burger-label">Menú</span>
-      </button>
+        <button class="burger" title="Abrir menú" aria-label="Abrir menú"
+          aria-expanded="false" aria-controls="mobile-panel">
+          <span class="burger-box" aria-hidden="true">
+            <span class="burger-line"></span>
+          </span>
+          <span class="burger-label">Menú</span>
+        </button>
 
-      <div id="mobile-panel" class="panel" role="group" aria-label="Acciones">
-        <div class="links">
-          <a class="link" href="explorar.html">Explorar</a>
-          <a class="link" href="iniciarSesion.html">Iniciar sesión</a>
-          <a class="link cta" href="registro.html">Registrarse</a>
-        </div>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <!-- HERO -->
-    <section class="hero" aria-label="Reserva asesorías universitarias">
-      <div class="hero__inner">
-        <h1 class="hero__title">Reserva asesorías universitarias en minutos</h1>
-        <p class="hero__subtitle">
-          Encuentra asesoras y asesores. Agenda con disponibilidad real y califica cada sesión.
-        </p>
-        <a class="hero__cta" href="explorar.html">Explorar</a>
-      </div>
-      <div class="hero__wave" aria-hidden="true"></div>
-    </section>
-
-    <!-- ABOUT -->
-    <section class="about" aria-labelledby="about-title">
-      <div class="about__inner">
-        <h2 id="about-title" class="about__headline">
-          UTMentor es una aplicación web que expone funcionalidades
-          de búsqueda, publicación y reserva de asesorías.
-        </h2>
-      </div>
-    </section>
-
-    <section class="benefits" aria-labelledby="benefits-title">
-      <div class="benefits__inner">
-
-        <div class="benefits__cards">
-          <!-- Card Estudiantes -->
-          <article class="benefits-card">
-            <div class="benefits-card__media">
-              <img
-                src="../imagenes/student.jpg"
-                alt="Estudiante buscando asesoría académica"
-                class="benefits-card__img"
-              />
-            </div>
-
-            <h3 class="benefits-card__title">
-              Beneficios para asesorados
-            </h3>
-
-            <ul class="benefits-card__list">
-              <li class="benefits-card__item">
-                Búsqueda por tema, disponibilidad y carrera universitaria.
-              </li>
-              <li class="benefits-card__item">
-                Disponibilidad real y confirmación en un lapso de 24 horas vía correo electrónico.
-              </li>
-              <li class="benefits-card__item">
-                Calificaciones transparentes para elegir mejor.
-              </li>
-            </ul>
-
-            <a href="registro.html?role=estudiante" class="benefits-card__cta">
-              Registrarme como asesorado
-            </a>
-          </article>
-
-          <!-- Card Asesores -->
-          <article class="benefits-card">
-            <div class="benefits-card__media">
-              <img
-                src="../imagenes/adviser.jpg"
-                alt="Asesor preparando una sesión frente a un pizarrón"
-                class="benefits-card__img"
-              />
-            </div>
-
-            <h3 class="benefits-card__title">
-              Beneficios para asesores
-            </h3>
-
-            <ul class="benefits-card__list">
-              <li class="benefits-card__item">
-                Agenda inteligente.
-              </li>
-              <li class="benefits-card__item">
-                Reputación basada en calificaciones.
-              </li>
-            </ul>
-
-            <a href="registro.html?role=asesor" class="benefits-card__cta">
-              Registrarme como asesor
-            </a>
-          </article>
-        </div>
-
-        <div class="benefits__both">
-          <a href="registro.html?role=ambos" class="benefits-both__cta">
-            Registrarme como ambos
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="flow" aria-labelledby="flow-title">
-      <div class="flow__inner">
-        <h2 id="flow-title" class="flow__heading">
-          ¿Cómo funciona UTMentor?
-        </h2>
-
-        <!-- Línea estudiantes -->
-        <div class="flow-track">
-          <h3 class="flow-track__role">Estudiantes</h3>
-
-          <ol class="flow-track__steps flow-track__steps--students">
-            <li class="flow-track-step">
-              <span class="flow-track-step__badge">1</span>
-              <div class="flow-track-step__body">
-                <div class="flow-track-step__title">Busca a tu asesor/a</div>
-                <div class="flow-track-step__desc">
-                  Filtra por tema, disponibilidad y carrera.
-                </div>
-              </div>
-            </li>
-
-            <li class="flow-track-step">
-              <span class="flow-track-step__badge">2</span>
-              <div class="flow-track-step__body">
-                <div class="flow-track-step__title">Elige asesor/a y horario</div>
-                <div class="flow-track-step__desc">
-                  Revisa disponibilidad real antes de solicitar.
-                </div>
-              </div>
-            </li>
-
-            <li class="flow-track-step">
-              <span class="flow-track-step__badge">3</span>
-              <div class="flow-track-step__body">
-                <div class="flow-track-step__title">
-                  Solicita la asesoría
-                </div>
-                <div class="flow-track-step__desc">
-                  Espera a que el asesor se comunique contigo. Confirmación en &lt;24&nbsp;h por correo.
-                </div>
-              </div>
-            </li>
-
-            <li class="flow-track-step">
-              <span class="flow-track-step__badge">4</span>
-              <div class="flow-track-step__body">
-                <div class="flow-track-step__title">Toma la sesión y califica</div>
-                <div class="flow-track-step__desc">
-                  Tu calificación ayuda a otros estudiantes.
-                </div>
-              </div>
-            </li>
-          </ol>
-        </div>
-
-        <!-- Línea asesores -->
-        <div class="flow-track">
-          <h3 class="flow-track__role">Asesores</h3>
-
-          <ol class="flow-track__steps flow-track__steps--advisers">
-            <li class="flow-track-step">
-              <span class="flow-track-step__badge">1</span>
-              <div class="flow-track-step__body">
-                <div class="flow-track-step__title">Publica disponibilidad</div>
-                <div class="flow-track-step__desc">
-                  Define horarios y materias que puedes impartir.
-                </div>
-              </div>
-            </li>
-
-            <li class="flow-track-step">
-              <span class="flow-track-step__badge">2</span>
-              <div class="flow-track-step__body">
-                <div class="flow-track-step__title">Contacta a tus asesorados</div>
-                <div class="flow-track-step__desc">
-                  Confirma la sesión con cada estudiante interesado.
-                </div>
-              </div>
-            </li>
-
-            <li class="flow-track-step">
-              <span class="flow-track-step__badge">3</span>
-              <div class="flow-track-step__body">
-                <div class="flow-track-step__title">Cobra y crece tu reputación</div>
-                <div class="flow-track-step__desc">
-                  Mejores calificaciones ⇒ más solicitudes.
-                </div>
-              </div>
-            </li>
-          </ol>
-        </div>
-      </div>
-    </section>
-
-    <section class="trust" aria-labelledby="trust-title">
-      <div class="trust__inner">
-        <h2 id="trust-title" class="trust__heading">
-          Resultados y confianza
-        </h2>
-
-        <!-- Métricas -->
-        <div class="trust-metrics">
-          <div class="trust-metric">
-            <div class="trust-metric__value">
-              +300
-            </div>
-            <div class="trust-metric__label">
-              asesores impartiendo temas cada semana.
-            </div>
-          </div>
-
-          <div class="trust-metric">
-            <div class="trust-metric__value">
-              +900
-            </div>
-            <div class="trust-metric__label">
-              calificaciones de asesores con 5 estrellas.
-            </div>
-          </div>
-
-          <div class="trust-metric">
-            <div class="trust-metric__value">
-              +1000
-            </div>
-            <div class="trust-metric__label">
-              temas impartidos.
-            </div>
-          </div>
-
-          <div class="trust-metric">
-            <div class="trust-metric__value">
-              4.5/5
-            </div>
-            <div class="trust-metric__label">
-              en satisfacción de los usuarios.
-            </div>
+        <div id="mobile-panel" class="panel" role="group" aria-label="Acciones">
+          <div class="links">
+            <a class="link" href="explorar.html">Explorar</a>
+            <a class="link" href="iniciarSesion.html">Iniciar sesión</a>
+            <a class="link cta" href="registro.html">Registrarse</a>
           </div>
         </div>
-      </div>
+      </nav>
+    </header>
 
-      <!-- Testimonios -->
-      <section class="reviews" aria-labelledby="reviews-title">
-        <!-- Ola superior -->
-        <div class="reviews__wave-top" aria-hidden="true"></div>
+    <main>
+      <!-- HERO -->
+      <section class="hero" aria-label="Reserva asesorías universitarias">
+        <div class="hero__inner">
+          <h1 class="hero__title">Reserva asesorías universitarias en
+            minutos</h1>
+          <p class="hero__subtitle">
+            Encuentra asesoras y asesores. Agenda con disponibilidad real y
+            califica cada sesión.
+          </p>
+          <a class="hero__cta" href="explorar.html">Explorar</a>
+        </div>
+        <div class="hero__wave" aria-hidden="true"></div>
+      </section>
 
-        <div class="reviews__inner">
-          <div class="reviews__cols">
-            <!-- Columna izquierda: avatar grande + flechas -->
-            <div class="reviews-left">
-              <button
-                class="reviews-arrow reviews-arrow--prev"
-                aria-label="Anterior"
-                data-action="prev"
-              >
-                ‹
-              </button>
+      <!-- ABOUT -->
+      <section class="about" aria-labelledby="about-title">
+        <div class="about__inner">
+          <h2 id="about-title" class="about__headline">
+            UTMentor es una aplicación web que expone funcionalidades
+            de búsqueda, publicación y reserva de asesorías.
+          </h2>
+        </div>
+      </section>
 
-              <div class="reviews-mainAvatar">
+      <section class="benefits" aria-labelledby="benefits-title">
+        <div class="benefits__inner">
+
+          <div class="benefits__cards">
+            <!-- Card Estudiantes -->
+            <article class="benefits-card">
+              <div class="benefits-card__media">
                 <img
-                  src="../imagenes/testimony1.jpg"
-                  alt="Foto de usuario destacado"
-                  id="review-main-avatar"
-                />
+                  src="../imagenes/student.jpg"
+                  alt="Estudiante buscando asesoría académica"
+                  class="benefits-card__img" />
               </div>
 
-              <button
-                class="reviews-arrow reviews-arrow--next"
-                aria-label="Siguiente"
-                data-action="next"
-              >
-                ›
-              </button>
-            </div>
-
-            <!-- Columna derecha: texto -->
-            <div class="reviews-right">
-              <h3 id="reviews-title" class="reviews__heading">
-                Voces de la comunidad
+              <h3 class="benefits-card__title">
+                Beneficios para asesorados
               </h3>
 
-              <p class="reviews__quote" id="review-quote">
-                “Agendé cálculo en minutos y pasé mi extraordinario.
-                La asesoría fue directa, clara y sin vueltas.”
-              </p>
-
-              <p class="reviews__author" id="review-author">
-                — Andrea M., Ingeniería Industrial
-              </p>
-
-              <!-- Avatares secundarios -->
-              <ul class="reviews-avatars" aria-label="Otros usuarios" id="review-avatars">
-                <!-- Se rellenan/actualizan desde JS.
-                    Marcup inicial para accesibilidad / fallback: -->
-                <li class="reviews-avatars__item reviews-avatars__item--active" data-index="0">
-                  <img src="../imagenes/testimony1.jpg" alt="Andrea M." />
+              <ul class="benefits-card__list">
+                <li class="benefits-card__item">
+                  Búsqueda por tema, disponibilidad y carrera universitaria.
                 </li>
-                <li class="reviews-avatars__item" data-index="1">
-                  <img src="../imagenes/testimony2.jpg" alt="Luis R." />
+                <li class="benefits-card__item">
+                  Disponibilidad real y confirmación en un lapso de 24 horas vía
+                  correo electrónico.
                 </li>
-                <li class="reviews-avatars__item" data-index="2">
-                  <img src="../imagenes/testimony3.jpg" alt="Pablo S." />
-                </li>
-                <li class="reviews-avatars__item" data-index="3">
-                  <img src="../imagenes/testimony4.jpg" alt="Sofía G." />
-                </li>
-                <li class="reviews-avatars__item" data-index="4">
-                  <img src="../imagenes/testimony5.jpg" alt="Marco A." />
+                <li class="benefits-card__item">
+                  Calificaciones transparentes para elegir mejor.
                 </li>
               </ul>
 
+              <a href="registro.html?role=estudiante"
+                class="benefits-card__cta">
+                Registrarme como asesorado
+              </a>
+            </article>
+
+            <!-- Card Asesores -->
+            <article class="benefits-card">
+              <div class="benefits-card__media">
+                <img
+                  src="../imagenes/adviser.jpg"
+                  alt="Asesor preparando una sesión frente a un pizarrón"
+                  class="benefits-card__img" />
+              </div>
+
+              <h3 class="benefits-card__title">
+                Beneficios para asesores
+              </h3>
+
+              <ul class="benefits-card__list">
+                <li class="benefits-card__item">
+                  Agenda inteligente.
+                </li>
+                <li class="benefits-card__item">
+                  Reputación basada en calificaciones.
+                </li>
+              </ul>
+
+              <a href="registro.html?role=asesor" class="benefits-card__cta">
+                Registrarme como asesor
+              </a>
+            </article>
+          </div>
+
+          <div class="benefits__both">
+            <a href="registro.html?role=ambos" class="benefits-both__cta">
+              Registrarme como ambos
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="flow" aria-labelledby="flow-title">
+        <div class="flow__inner">
+          <h2 id="flow-title" class="flow__heading">
+            ¿Cómo funciona UTMentor?
+          </h2>
+
+          <!-- Línea estudiantes -->
+          <div class="flow-track">
+            <h3 class="flow-track__role">Estudiantes</h3>
+
+            <ol class="flow-track__steps flow-track__steps--students">
+              <li class="flow-track-step">
+                <span class="flow-track-step__badge">1</span>
+                <div class="flow-track-step__body">
+                  <div class="flow-track-step__title">Busca a tu asesor/a</div>
+                  <div class="flow-track-step__desc">
+                    Filtra por tema, disponibilidad y carrera.
+                  </div>
+                </div>
+              </li>
+
+              <li class="flow-track-step">
+                <span class="flow-track-step__badge">2</span>
+                <div class="flow-track-step__body">
+                  <div class="flow-track-step__title">Elige asesor/a y
+                    horario</div>
+                  <div class="flow-track-step__desc">
+                    Revisa disponibilidad real antes de solicitar.
+                  </div>
+                </div>
+              </li>
+
+              <li class="flow-track-step">
+                <span class="flow-track-step__badge">3</span>
+                <div class="flow-track-step__body">
+                  <div class="flow-track-step__title">
+                    Solicita la asesoría
+                  </div>
+                  <div class="flow-track-step__desc">
+                    Espera a que el asesor se comunique contigo. Confirmación en
+                    &lt;24&nbsp;h por correo.
+                  </div>
+                </div>
+              </li>
+
+              <li class="flow-track-step">
+                <span class="flow-track-step__badge">4</span>
+                <div class="flow-track-step__body">
+                  <div class="flow-track-step__title">Toma la sesión y
+                    califica</div>
+                  <div class="flow-track-step__desc">
+                    Tu calificación ayuda a otros estudiantes.
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <!-- Línea asesores -->
+          <div class="flow-track">
+            <h3 class="flow-track__role">Asesores</h3>
+
+            <ol class="flow-track__steps flow-track__steps--advisers">
+              <li class="flow-track-step">
+                <span class="flow-track-step__badge">1</span>
+                <div class="flow-track-step__body">
+                  <div class="flow-track-step__title">Publica
+                    disponibilidad</div>
+                  <div class="flow-track-step__desc">
+                    Define horarios y materias que puedes impartir.
+                  </div>
+                </div>
+              </li>
+
+              <li class="flow-track-step">
+                <span class="flow-track-step__badge">2</span>
+                <div class="flow-track-step__body">
+                  <div class="flow-track-step__title">Contacta a tus
+                    asesorados</div>
+                  <div class="flow-track-step__desc">
+                    Confirma la sesión con cada estudiante interesado.
+                  </div>
+                </div>
+              </li>
+
+              <li class="flow-track-step">
+                <span class="flow-track-step__badge">3</span>
+                <div class="flow-track-step__body">
+                  <div class="flow-track-step__title">Cobra y crece tu
+                    reputación</div>
+                  <div class="flow-track-step__desc">
+                    Mejores calificaciones ⇒ más solicitudes.
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust" aria-labelledby="trust-title">
+        <div class="trust__inner">
+          <h2 id="trust-title" class="trust__heading">
+            Resultados y confianza
+          </h2>
+
+          <!-- Métricas -->
+          <div class="trust-metrics">
+            <div class="trust-metric">
+              <div class="trust-metric__value">
+                +300
+              </div>
+              <div class="trust-metric__label">
+                asesores impartiendo temas cada semana.
+              </div>
+            </div>
+
+            <div class="trust-metric">
+              <div class="trust-metric__value">
+                +900
+              </div>
+              <div class="trust-metric__label">
+                calificaciones de asesores con 5 estrellas.
+              </div>
+            </div>
+
+            <div class="trust-metric">
+              <div class="trust-metric__value">
+                +1000
+              </div>
+              <div class="trust-metric__label">
+                temas impartidos.
+              </div>
+            </div>
+
+            <div class="trust-metric">
+              <div class="trust-metric__value">
+                4.5/5
+              </div>
+              <div class="trust-metric__label">
+                en satisfacción de los usuarios.
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Ola inferior -->
-        <div class="reviews__wave-bottom" aria-hidden="true"></div>
-      </section>
-    </section>
+        <!-- Testimonios -->
+        <section class="reviews" aria-labelledby="reviews-title">
+          <!-- Ola superior -->
+          <div class="reviews__wave-top" aria-hidden="true"></div>
 
-    <section class="explore" aria-labelledby="explore-title">
-      <div class="explore__inner">
-        <header class="explore__head">
-          <h2 id="explore-title">Descubre</h2>
-          <p>Materias y asesores que hoy están moviendo la comunidad.</p>
-        </header>
+          <div class="reviews__inner">
+            <div class="reviews__cols">
+              <!-- Columna izquierda: avatar grande + flechas -->
+              <div class="reviews-left">
+                <button
+                  class="reviews-arrow reviews-arrow--prev"
+                  aria-label="Anterior"
+                  data-action="prev">
+                  ‹
+                </button>
 
-        <!-- --------- MATERIAS POPULARES --------- -->
-        <section class="subjects" aria-labelledby="subjects-title">
-          <div class="subjects__head">
-            <h3 id="subjects-title">Temas populares</h3>
-            <a class="subjects__more" href="explorar.html">Ver todas →</a>
-          </div>
+                <div class="reviews-mainAvatar">
+                  <img
+                    src="../imagenes/testimony1.jpg"
+                    alt="Foto de usuario destacado"
+                    id="review-main-avatar" />
+                </div>
 
-          <ul class="subjects__grid">
-            <!-- Item -->
-            <li class="subject">
-              <div class="subject__body">
-                <h4>Espacio vectorial: conceptos fundamentales</h4>
-                <span class="subject__meta">78 asesores</span>
+                <button
+                  class="reviews-arrow reviews-arrow--next"
+                  aria-label="Siguiente"
+                  data-action="next">
+                  ›
+                </button>
               </div>
-              <span class="subject__chev" aria-hidden="true">›</span>
-            </li>
 
-            <li class="subject">
-              <div class="subject__body">
-                <h4>Enlace químico, moléculas y compuestos</h4>
-                <span class="subject__meta">52 asesores</span>
+              <!-- Columna derecha: texto -->
+              <div class="reviews-right">
+                <h3 id="reviews-title" class="reviews__heading">
+                  Voces de la comunidad
+                </h3>
+
+                <p class="reviews__quote" id="review-quote">
+                  “Agendé cálculo en minutos y pasé mi extraordinario.
+                  La asesoría fue directa, clara y sin vueltas.”
+                </p>
+
+                <p class="reviews__author" id="review-author">
+                  — Andrea M., Ingeniería Industrial
+                </p>
+
+                <!-- Avatares secundarios -->
+                <ul class="reviews-avatars" aria-label="Otros usuarios"
+                  id="review-avatars">
+                  <!-- Se rellenan/actualizan desde JS.
+                    Marcup inicial para accesibilidad / fallback: -->
+                  <li
+                    class="reviews-avatars__item reviews-avatars__item--active"
+                    data-index="0">
+                    <img src="../imagenes/testimony1.jpg" alt="Andrea M." />
+                  </li>
+                  <li class="reviews-avatars__item" data-index="1">
+                    <img src="../imagenes/testimony2.jpg" alt="Luis R." />
+                  </li>
+                  <li class="reviews-avatars__item" data-index="2">
+                    <img src="../imagenes/testimony3.jpg" alt="Pablo S." />
+                  </li>
+                  <li class="reviews-avatars__item" data-index="3">
+                    <img src="../imagenes/testimony4.jpg" alt="Sofía G." />
+                  </li>
+                  <li class="reviews-avatars__item" data-index="4">
+                    <img src="../imagenes/testimony5.jpg" alt="Marco A." />
+                  </li>
+                </ul>
+
               </div>
-              <span class="subject__chev" aria-hidden="true">›</span>
-            </li>
-
-            <li class="subject">
-              <div class="subject__body">
-                <h4>Características avanzadas de HTML5</h4>
-                <span class="subject__meta">91 asesores</span>
-              </div>
-              <span class="subject__chev" aria-hidden="true">›</span>
-            </li>
-
-            <li class="subject">
-              <div class="subject__body">
-                <h4>Matrices, sistemas de ecuaciones lineales y determinantes</h4>
-                <span class="subject__meta">64 asesores</span>
-              </div>
-              <span class="subject__chev" aria-hidden="true">›</span>
-            </li>
-
-            <li class="subject">
-              <div class="subject__body">
-                <h4>Teoría de grafos</h4>
-                <span class="subject__meta">41 asesores</span>
-              </div>
-              <span class="subject__chev" aria-hidden="true">›</span>
-            </li>
-
-            <li class="subject">
-              <div class="subject__body">
-                <h4>Teorías contemporáneas sistémicas</h4>
-                <span class="subject__meta">23 asesores</span>
-              </div>
-              <span class="subject__chev" aria-hidden="true">›</span>
-            </li>
-          </ul>
-        </section>
-
-        <!-- --------- ASESORES POPULARES --------- -->
-        <section class="featured" aria-labelledby="featured-title">
-          <div class="featured__head">
-            <h3 id="featured-title">Asesores populares</h3>
-            <div class="featured__actions">
-              <button class="featured-arrow" aria-label="Anterior" data-dir="prev">‹</button>
-              <button class="featured-arrow" aria-label="Siguiente" data-dir="next">›</button>
             </div>
           </div>
 
-          <div class="featured__trackWrap">
-            <ul class="featured__track" id="featured-track">
-              <!-- Card 1 -->
-              <li class="advisorCard">
-                <div class="advisorCard__rowTop">
-                  <div class="advisorCard__profile">
-                    <div class="advisorCard__avatar">
-                      <img src="../imagenes/adviser1.jpg" alt="María O." />
-                    </div>
-                    <div class="advisorCard__info">
-                      <div class="advisorCard__name">Mario O.</div>
-                      <div class="advisorCard__career">Ing. Civil · 9º semestre</div>
-                      <div class="advisorCard__sessions">
-                        <span class="advisorCard__iconSessions" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            <path d="M4 9h16M9 4v2M15 4v2" stroke="currentColor" stroke-width="1.5"/>
-                          </svg>
-                        </span>
-                        100+ sesiones
-                      </div>
-                    </div>
-                  </div>
-                  <div class="advisorCard__ratingBlock">
-                    <div class="advisorCard__stars" aria-label="5 de 5">
-                      <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
-                      <span class="advisorCard__scoreText">5/5</span>
-                    </div>
-                    <div class="advisorCard__availability">Hoy · Mañana · Vie</div>
-                  </div>
+          <!-- Ola inferior -->
+          <div class="reviews__wave-bottom" aria-hidden="true"></div>
+        </section>
+      </section>
+
+      <section class="explore" aria-labelledby="explore-title">
+        <div class="explore__inner">
+          <header class="explore__head">
+            <h2 id="explore-title">Descubre</h2>
+            <p>Materias y asesores que hoy están moviendo la comunidad.</p>
+          </header>
+
+          <!-- --------- MATERIAS POPULARES --------- -->
+          <section class="subjects" aria-labelledby="subjects-title">
+            <div class="subjects__head">
+              <h3 id="subjects-title">Temas populares</h3>
+              <a class="subjects__more" href="explorar.html">Ver todas →</a>
+            </div>
+
+            <ul class="subjects__grid">
+              <!-- Item -->
+              <li class="subject">
+                <div class="subject__body">
+                  <h4>Espacio vectorial: conceptos fundamentales</h4>
+                  <span class="subject__meta">78 asesores</span>
                 </div>
-                <div class="advisorCard__rowBottom">
-                  <a class="advisorCard__cta" href="perfil-asesor.html">Ver perfil</a>
-                </div>
+                <span class="subject__chev" aria-hidden="true">›</span>
               </li>
 
-              <!-- Card 2 -->
-              <li class="advisorCard">
-                <div class="advisorCard__rowTop">
-                  <div class="advisorCard__profile">
-                    <div class="advisorCard__avatar">
-                      <img src="../imagenes/adviser2.jpg" alt="Luis J." />
-                    </div>
-                    <div class="advisorCard__info">
-                      <div class="advisorCard__name">Mailén J.</div>
-                      <div class="advisorCard__career">Ing. en Alimentos · 7º semestre</div>
-                      <div class="advisorCard__sessions">
-                        <span class="advisorCard__iconSessions" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            <path d="M4 9h16M9 4v2M15 4v2" stroke="currentColor" stroke-width="1.5"/>
-                          </svg>
-                        </span>
-                        50+ sesiones
-                      </div>
-                    </div>
-                  </div>
-                  <div class="advisorCard__ratingBlock">
-                    <div class="advisorCard__stars" aria-label="5 de 5">
-                      <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
-                      <span class="advisorCard__scoreText">5/5</span>
-                    </div>
-                    <div class="advisorCard__availability">Vie · Sáb · Dom</div>
-                  </div>
+              <li class="subject">
+                <div class="subject__body">
+                  <h4>Enlace químico, moléculas y compuestos</h4>
+                  <span class="subject__meta">52 asesores</span>
                 </div>
-                <div class="advisorCard__rowBottom">
-                  <a class="advisorCard__cta" href="perfil-asesor.html">Ver perfil</a>
-                </div>
+                <span class="subject__chev" aria-hidden="true">›</span>
               </li>
 
-              <!-- Card 3 -->
-              <li class="advisorCard">
-                <div class="advisorCard__rowTop">
-                  <div class="advisorCard__profile">
-                    <div class="advisorCard__avatar">
-                      <img src="../imagenes/adviser3.jpg" alt="Nico S." />
-                    </div>
-                    <div class="advisorCard__info">
-                      <div class="advisorCard__name">Nico S.</div>
-                      <div class="advisorCard__career">Ing. Industrial · 5º semestre</div>
-                      <div class="advisorCard__sessions">
-                        <span class="advisorCard__iconSessions" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            <path d="M4 9h16M9 4v2M15 4v2" stroke="currentColor" stroke-width="1.5"/>
-                          </svg>
-                        </span>
-                        10+ sesiones
-                      </div>
-                    </div>
-                  </div>
-                  <div class="advisorCard__ratingBlock">
-                    <div class="advisorCard__stars" aria-label="4 de 5">
-                      <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star star--off">★</span>
-                      <span class="advisorCard__scoreText">4/5</span>
-                    </div>
-                    <div class="advisorCard__availability">Hoy · Mañana</div>
-                  </div>
+              <li class="subject">
+                <div class="subject__body">
+                  <h4>Características avanzadas de HTML5</h4>
+                  <span class="subject__meta">91 asesores</span>
                 </div>
-                <div class="advisorCard__rowBottom">
-                  <a class="advisorCard__cta" href="perfil-asesor.html">Ver perfil</a>
-                </div>
+                <span class="subject__chev" aria-hidden="true">›</span>
               </li>
 
-              <!-- Card 4 -->
-              <li class="advisorCard">
-                <div class="advisorCard__rowTop">
-                  <div class="advisorCard__profile">
-                    <div class="advisorCard__avatar">
-                      <img src="../imagenes/adviser4.jpg" alt="Ana R." />
-                    </div>
-                    <div class="advisorCard__info">
-                      <div class="advisorCard__name">Ana R.</div>
-                      <div class="advisorCard__career">Ing. en Diseño · 5º semestre</div>
-                      <div class="advisorCard__sessions">
-                        <span class="advisorCard__iconSessions" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            <path d="M4 9h16M9 4v2M15 4v2" stroke="currentColor" stroke-width="1.5"/>
-                          </svg>
-                        </span>
-                        80+ sesiones
-                      </div>
-                    </div>
-                  </div>
-                  <div class="advisorCard__ratingBlock">
-                    <div class="advisorCard__stars" aria-label="5 de 5">
-                      <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
-                      <span class="advisorCard__scoreText">5/5</span>
-                    </div>
-                    <div class="advisorCard__availability">Lun · Mar · Jue</div>
-                  </div>
+              <li class="subject">
+                <div class="subject__body">
+                  <h4>Matrices, sistemas de ecuaciones lineales y
+                    determinantes</h4>
+                  <span class="subject__meta">64 asesores</span>
                 </div>
-                <div class="advisorCard__rowBottom">
-                  <a class="advisorCard__cta" href="perfil-asesor.html">Ver perfil</a>
-                </div>
+                <span class="subject__chev" aria-hidden="true">›</span>
               </li>
 
-              <!-- Card 5 -->
-              <li class="advisorCard">
-                <div class="advisorCard__rowTop">
-                  <div class="advisorCard__profile">
-                    <div class="advisorCard__avatar">
-                      <img src="../imagenes/adviser5.jpg" alt="Leo T." />
-                    </div>
-                    <div class="advisorCard__info">
-                      <div class="advisorCard__name">Leo T.</div>
-                      <div class="advisorCard__career">Ing. en Electrónica · 5º semestre</div>
-                      <div class="advisorCard__sessions">
-                        <span class="advisorCard__iconSessions" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" width="16" height="16">
-                            <path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            <path d="M4 9h16M9 4v2M15 4v2" stroke="currentColor" stroke-width="1.5"/>
-                          </svg>
-                        </span>
-                        60+ sesiones
-                      </div>
-                    </div>
-                  </div>
-                  <div class="advisorCard__ratingBlock">
-                    <div class="advisorCard__stars" aria-label="5 de 5">
-                      <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
-                      <span class="advisorCard__scoreText">5/5</span>
-                    </div>
-                    <div class="advisorCard__availability">Hoy · Viernes</div>
-                  </div>
+              <li class="subject">
+                <div class="subject__body">
+                  <h4>Teoría de grafos</h4>
+                  <span class="subject__meta">41 asesores</span>
                 </div>
-                <div class="advisorCard__rowBottom">
-                  <a class="advisorCard__cta" href="perfil-asesor.html">Ver perfil</a>
+                <span class="subject__chev" aria-hidden="true">›</span>
+              </li>
+
+              <li class="subject">
+                <div class="subject__body">
+                  <h4>Teorías contemporáneas sistémicas</h4>
+                  <span class="subject__meta">23 asesores</span>
                 </div>
+                <span class="subject__chev" aria-hidden="true">›</span>
               </li>
             </ul>
-          </div>
-        </section>
-      </div>
-    </section>
-    
-    <section id="faq" class="faq" aria-labelledby="faq-title">
-      <div class="faq__inner">
-        <header class="faq__head">
-          <h2 id="faq-title" class="faq__title">
-            Preguntas frecuentes
-          </h2>
-          <p class="faq__lead">
-            Resolvemos las dudas más comunes sobre UTMentor: reservas, validación de asesores y privacidad.
-          </p>
-        </header>
+          </section>
 
-        <div class="faq__grid">
-          <!-- 1 -->
-          <details class="faq__item" open>
-            <summary class="faq__q">
-              ¿Cómo validan a las y los asesores?
-              <span class="faq__chev" aria-hidden="true"></span>
-            </summary>
-            <div class="faq__a">
-              Verificamos identidad y afiliación académica y revisamos la información del perfil. La
-              reputación se basa en calificaciones y comentarios públicos después de cada sesión.
+          <!-- --------- ASESORES POPULARES --------- -->
+          <section class="featured" aria-labelledby="featured-title">
+            <div class="featured__head">
+              <h3 id="featured-title">Asesores populares</h3>
+              <div class="featured__actions">
+                <button class="featured-arrow" aria-label="Anterior"
+                  data-dir="prev">‹</button>
+                <button class="featured-arrow" aria-label="Siguiente"
+                  data-dir="next">›</button>
+              </div>
             </div>
-          </details>
 
-          <!-- 2 -->
-          <details class="faq__item">
-            <summary class="faq__q">
-              ¿Cuándo se confirma una asesoría?
-              <span class="faq__chev" aria-hidden="true"></span>
-            </summary>
-            <div class="faq__a">
-              La disponibilidad es en tiempo real y la confirmación llega por correo en un máximo de 24&nbsp;horas.
-              Recibirás actualizaciones si el asesor propone reprogramar.
+            <div class="featured__trackWrap">
+              <ul class="featured__track" id="featured-track">
+                <!-- Las cards de asesores se cargarán dinámicamente desde la API -->
+                <li style="padding: 2rem; text-align: center; width: 100%;">
+                  Cargando asesores...
+                </li>
+              </ul>
             </div>
-          </details>
-
-          <!-- 3 -->
-          <details class="faq__item">
-            <summary class="faq__q">
-              ¿Puedo explorar sin crear una cuenta?
-              <span class="faq__chev" aria-hidden="true"></span>
-            </summary>
-            <div class="faq__a">
-              Sí. Puedes explorar materias y perfiles libremente. Para reservar, calificar o chatear con un asesor
-              necesitas iniciar sesión.
-            </div>
-          </details>
-
-          <!-- 4 -->
-          <details class="faq__item">
-            <summary class="faq__q">
-              ¿Puedo reprogramar o cancelar una sesión?
-              <span class="faq__chev" aria-hidden="true"></span>
-            </summary>
-            <div class="faq__a">
-              Desde tu panel puedes solicitar reprogramación o cancelación. Las condiciones (tiempos y posibles cargos)
-              se muestran siempre antes de confirmar el cambio.
-            </div>
-          </details>
-
-          <!-- 5 -->
-          <details class="faq__item">
-            <summary class="faq__q">
-              ¿Las sesiones pueden ser por videollamada?
-              <span class="faq__chev" aria-hidden="true"></span>
-            </summary>
-            <div class="faq__a">
-              Sí. Además de sesiones presenciales, puedes recibir asesorías por videollamada cuando ambas partes lo acuerden.
-            </div>
-          </details>
-
-          <!-- 6 -->
-          <details class="faq__item">
-            <summary class="faq__q">
-              ¿Cómo se calcula la reputación de cada asesor?
-              <span class="faq__chev" aria-hidden="true"></span>
-            </summary>
-            <div class="faq__a">
-              Mostramos promedio de estrellas, número de sesiones completadas y reseñas recientes para que
-              elijas con transparencia.
-            </div>
-          </details>
+          </section>
         </div>
+      </section>
+
+      <section id="faq" class="faq" aria-labelledby="faq-title">
+        <div class="faq__inner">
+          <header class="faq__head">
+            <h2 id="faq-title" class="faq__title">
+              Preguntas frecuentes
+            </h2>
+            <p class="faq__lead">
+              Resolvemos las dudas más comunes sobre UTMentor: reservas,
+              validación de asesores y privacidad.
+            </p>
+          </header>
+
+          <div class="faq__grid">
+            <!-- 1 -->
+            <details class="faq__item" open>
+              <summary class="faq__q">
+                ¿Cómo validan a las y los asesores?
+                <span class="faq__chev" aria-hidden="true"></span>
+              </summary>
+              <div class="faq__a">
+                Verificamos identidad y afiliación académica y revisamos la
+                información del perfil. La
+                reputación se basa en calificaciones y comentarios públicos
+                después de cada sesión.
+              </div>
+            </details>
+
+            <!-- 2 -->
+            <details class="faq__item">
+              <summary class="faq__q">
+                ¿Cuándo se confirma una asesoría?
+                <span class="faq__chev" aria-hidden="true"></span>
+              </summary>
+              <div class="faq__a">
+                La disponibilidad es en tiempo real y la confirmación llega por
+                correo en un máximo de 24&nbsp;horas.
+                Recibirás actualizaciones si el asesor propone reprogramar.
+              </div>
+            </details>
+
+            <!-- 3 -->
+            <details class="faq__item">
+              <summary class="faq__q">
+                ¿Puedo explorar sin crear una cuenta?
+                <span class="faq__chev" aria-hidden="true"></span>
+              </summary>
+              <div class="faq__a">
+                Sí. Puedes explorar materias y perfiles libremente. Para
+                reservar, calificar o chatear con un asesor
+                necesitas iniciar sesión.
+              </div>
+            </details>
+
+            <!-- 4 -->
+            <details class="faq__item">
+              <summary class="faq__q">
+                ¿Puedo reprogramar o cancelar una sesión?
+                <span class="faq__chev" aria-hidden="true"></span>
+              </summary>
+              <div class="faq__a">
+                Desde tu panel puedes solicitar reprogramación o cancelación.
+                Las condiciones (tiempos y posibles cargos)
+                se muestran siempre antes de confirmar el cambio.
+              </div>
+            </details>
+
+            <!-- 5 -->
+            <details class="faq__item">
+              <summary class="faq__q">
+                ¿Las sesiones pueden ser por videollamada?
+                <span class="faq__chev" aria-hidden="true"></span>
+              </summary>
+              <div class="faq__a">
+                Sí. Además de sesiones presenciales, puedes recibir asesorías
+                por videollamada cuando ambas partes lo acuerden.
+              </div>
+            </details>
+
+            <!-- 6 -->
+            <details class="faq__item">
+              <summary class="faq__q">
+                ¿Cómo se calcula la reputación de cada asesor?
+                <span class="faq__chev" aria-hidden="true"></span>
+              </summary>
+              <div class="faq__a">
+                Mostramos promedio de estrellas, número de sesiones completadas
+                y reseñas recientes para que
+                elijas con transparencia.
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">
+          © 2025 UTMentor. Todos los derechos reservados.
+        </p>
+
+        <nav class="site-footer__links" aria-label="Legal">
+          <a href="politicasYPrivacidad.html"
+            class="site-footer__link">Politicas y privacidad</a>
+        </nav>
       </div>
-    </section>
-  </main>
+    </footer>
 
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <p class="site-footer__copy">
-        © 2025 UTMentor. Todos los derechos reservados.
-      </p>
-
-      <nav class="site-footer__links" aria-label="Legal">
-        <a href="politicasYPrivacidad.html" class="site-footer__link">Politicas y privacidad</a>
-      </nav>
-    </div>
-  </footer>
-
-  <script src="../js/principal.js" defer></script>
-</body>
+    <script type="module" src="../js/principal.js"></script>
+  </body>
 
 </html>
