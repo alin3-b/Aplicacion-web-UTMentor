@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iniciar sesión · UTMentor</title>
+
+  <!-- Hoja de estilos específica de Login -->
+  <link rel="preload" href="../css/iniciarSesion.css" as="style">
+  <link rel="stylesheet" href="../css/iniciarSesion.css">
+</head>
+
+<body class="auth-body">
+  <!-- NAV FIJO -->
+  <header class="nav-wrap" role="banner">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo.png" alt="UTMentor" />
+      </a>
+
+      <button class="burger"
+        title="Abrir menú"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="mobile-panel">
+        <span class="burger-box" aria-hidden="true">
+          <span class="burger-line"></span>
+        </span>
+        <span class="burger-label">Menú</span>
+      </button>
+
+      <div id="mobile-panel" class="panel" role="group" aria-label="Acciones">
+        <div class="links">
+          <a class="link" href="iniciarSesion.html">Iniciar sesión</a>
+          <a class="link cta" href="registro.html">Registrarse</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main class="auth-main" role="main">
+    <section class="auth-shell" aria-labelledby="auth-title">
+      <div class="auth-card" role="form">
+        <header class="auth-head">
+          <p class="auth-eyebrow">Hola de nuevo</p>
+          <h1 id="auth-title" class="auth-title">¡Es genial tenerte con nosotros!</h1>
+          <p class="auth-sub">
+            ¿Aún no tienes una cuenta?
+            <a class="auth-link" href="registro.html">Regístrate</a>
+          </p>
+        </header>
+
+        <form class="auth-form" action="#" method="post" novalidate>
+          <!-- email -->
+          <label class="auth-field" for="email">
+            <span class="auth-label sr-only">Correo electrónico</span>
+            <input
+              id="email"
+              class="auth-input"
+              type="email"
+              name="email"
+              placeholder="Correo electrónico"
+              autocomplete="email"
+              inputmode="email"
+              required
+            />
+          </label>
+
+          <!-- password -->
+          <label class="auth-field auth-field-password" for="password">
+            <span class="auth-label sr-only">Contraseña</span>
+            <input
+              id="password"
+              class="auth-input"
+              type="password"
+              name="password"
+              placeholder="Contraseña"
+              autocomplete="current-password"
+              required
+            />
+            <button
+              type="button"
+              class="auth-pw-toggle"
+              data-pw-toggle="password"
+              aria-label="Mostrar contraseña"
+              aria-pressed="false">
+              <span class="auth-pw-icon" aria-hidden="true"></span>
+            </button>
+          </label>
+
+          <button type="submit" class="auth-submit">
+            Iniciar sesión
+          </button>
+
+          <p class="auth-meta">
+            ¿Has olvidado tu contraseña?
+            <a class="auth-meta-link" href="recuperarContrasena.html">
+              Recupera tu contraseña
+            </a>
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Modal de selección de rol (solo si el usuario tiene ambos) -->
+    <div id="roleModal" class="role-modal" aria-hidden="true" role="dialog" aria-labelledby="roleTitle" aria-modal="true">
+      <div class="role-modal__backdrop" data-role-dismiss></div>
+      <div class="role-modal__card" role="document">
+        <h2 id="roleTitle" class="role-modal__title">Elige cómo deseas iniciar</h2>
+        <p class="role-modal__sub">Tu cuenta tiene ambos roles disponibles.</p>
+
+        <div class="role-modal__actions">
+          <a href="panelAsesor.html" class="btn">Entrar como asesor</a>
+          <a href="panelAsesorado.html" class="btn outline">Entrar como asesorado</a>
+        </div>
+
+        <button type="button" class="role-modal__close" aria-label="Cerrar" data-role-dismiss>✕</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+      <nav class="site-footer__links" aria-label="Legal">
+        <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- JS específico de Login -->
+  <script src="../js/iniciarSesion.js" defer></script>
+</body>
+</html>

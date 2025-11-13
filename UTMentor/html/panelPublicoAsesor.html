@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Asesor · Perfil público · UTMentor</title>
+
+  <link rel="preload" href="../css/panelPublicoAsesor.css" as="style">
+  <link rel="stylesheet" href="../css/panelPublicoAsesor.css">
+</head>
+<body>
+
+  <!-- NAV compacto (opcional) -->
+  <header class="nav-wrap">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo.png" alt="UTMentor logo">
+      </a>
+      <div class="panel">
+        <a class="link" href="explorar.html">Explorar</a>
+        <a class="link" href="iniciarSesion.html">Iniciar sesión</a>
+        <a class="link cta" href="registro.html">Registrarse</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="profile">
+      <div class="profile__header">
+        <img class="profile__avatar" src="../imagenes/adviser3.jpg" alt="Foto del asesor">
+        <div class="profile__meta">
+          <h1 class="profile__name">Asad Velasco Sanchez.</h1>
+          <p class="profile__career">Ingeniería en Mecatrónica · 5°/1-B</p>
+          <a class="profile__mail" href="mailto:asadves@gmail.com">asadves@gmail.com</a>
+
+          <div id="profileTopics" class="profile__topics">
+            <h3 class="eyebrow">Temas a enseñar</h3>
+            <ul>
+              <li>gramática</li>
+              <li>speaking</li>
+              <li>passive voice</li>
+            </ul>
+          </div>
+
+          <button id="btnReservar" class="btn primary">Reservar asesoría</button>
+        </div>
+      </div>
+
+      <div class="profile__grid">
+        <!-- Calificaciones -->
+        <aside class="rating-card">
+          <div class="rating-card__head">
+            <h3 class="eyebrow">Calificaciones</h3>
+            <span class="badge">5</span>
+            <span class="muted">50+ clases</span>
+          </div>
+          <div class="rating-card__stars" aria-label="4.0 de 5">
+            <span class="rating">4.0</span>
+            <div class="stars" aria-hidden="true">★★★★☆</div>
+          </div>
+
+          <div class="reviews">
+            <article class="review">
+              <div class="review__avatar">👤</div>
+              <div class="review__body">
+                <h4>Julio Cesar A.</h4>
+                <p>Excelente, explica con ejemplos y paciencia.</p>
+              </div>
+            </article>
+            <article class="review">
+              <div class="review__avatar">👤</div>
+              <div class="review__body">
+                <h4>Francisco Vázquez P.</h4>
+                <p>Muy claro y ordenado, lo recomiendo.</p>
+              </div>
+            </article>
+          </div>
+        </aside>
+
+        <!-- Agenda pública (semana) -->
+        <section class="agenda">
+          <div class="agenda__head">
+            <h3 class="eyebrow">Disponibilidad</h3>
+            <div class="agenda__nav">
+              <button class="icon-btn" id="prevWeek" aria-label="Semana anterior">‹</button>
+              <div class="agenda__range" id="weekLabel">17–23 oct 2025</div>
+              <button class="icon-btn" id="nextWeek" aria-label="Siguiente semana">›</button>
+            </div>
+          </div>
+
+          <div class="agenda__grid" id="agendaGrid" aria-live="polite">
+            <!-- Se llena por JS. Cada columna = día. Cada .session-item = slot -->
+          </div>
+
+          <div class="agenda__help muted">
+            Selecciona un horario para continuar con tu reserva.
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal reservar -->
+  <div id="bookModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card" role="document">
+      <button class="modal__close" data-close aria-label="Cerrar">✕</button>
+
+      <h2 class="modal__title">Reservar asesoría</h2>
+      <p class="modal__subtitle" id="slotSummary">Selecciona un horario</p>
+
+      <form class="modal__form" id="bookForm" novalidate>
+        <label class="f-field">
+          <span class="f-label">Tema</span>
+          <select class="f-input" id="sessionTema" name="tema" required>
+            <!-- Se carga desde #profileTopics vía JS -->
+          </select>
+        </label>
+
+        <div class="grid-2">
+          <label class="f-field">
+            <span class="f-label">Tipo</span>
+            <select class="f-input" id="sessionTipo" name="tipo">
+              <option>1:1</option>
+              <option>Grupo</option>
+            </select>
+          </label>
+
+          <label id="maxPeopleDiv" class="f-field" style="display:none;">
+            <span class="f-label">Capacidad (grupo)</span>
+            <input class="f-input" type="number" min="2" max="10" value="5" name="capacidad">
+          </label>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn outline" type="button" data-close>Cancelar</button>
+          <button class="btn primary" type="submit">Confirmar reserva</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+      <nav class="site-footer__links" aria-label="Legal">
+        <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="../js/panelPublicoAsesor.js" defer></script>
+</body>
+</html>
