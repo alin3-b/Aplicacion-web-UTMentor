@@ -1,0 +1,227 @@
+.weekly-calendar {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    /* <-- nuevo margen inferior */
+    padding: var(--padding-card);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 240, 255, 0.95));
+    backdrop-filter: blur(14px);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 16px var(--shadow);
+    border: 1px solid rgba(91, 104, 255, 0.15);
+    position: relative;
+    overflow: visible;
+    transition: transform 0.4s ease;
+}
+
+
+.weekly-calendar:hover {
+    transform: translateY(-3px);
+}
+
+.weekly-calendar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 10%, rgba(91, 104, 255, 0.1), transparent 60%);
+    z-index: -1;
+    opacity: 0.8;
+}
+
+.calendar-title {
+    font-size: clamp(1.5rem, 1.3rem + 1vw, 1.8rem);
+    font-weight: 700;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    text-align: center;
+    margin: 0 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--text);
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    background-clip: text;
+    color: transparent;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+}
+
+.day {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(91, 104, 255, 0.03));
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    min-height: 80px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+}
+
+
+.day:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px var(--shadow-hover);
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: #fff;
+}
+
+.day:hover .day-name,
+.day:hover .day-date,
+.day:hover .session-count {
+    color: #fff;
+}
+
+.day.active {
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: #fff;
+    box-shadow: 0 4px 12px var(--shadow-hover);
+}
+
+.day.active .day-name,
+.day.active .day-date,
+.day.active .session-count {
+    color: #fff;
+}
+
+.day::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.3), transparent 70%);
+    opacity: 0;
+    border-radius: var(--radius-md);
+    transition: opacity 0.4s ease;
+}
+
+.day:hover::after,
+.day.active::after {
+    opacity: 0.2;
+}
+
+.day-name {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 500;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    transition: color 0.4s ease;
+}
+
+.day-date {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: rgba(100, 100, 100, 0.7);
+    transition: color 0.4s ease;
+}
+
+.session-count {
+    display: block;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    background: rgba(34, 197, 94, 0.7);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 400;
+    border-radius: var(--radius-full);
+    transition: transform 0.4s ease, background 0.4s ease, color 0.4s ease;
+}
+
+.day:hover .session-count,
+.day.active .session-count {
+    transform: scale(1.2);
+    background: #fff;
+    color: var(--brand);
+}
+
+.session-details {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.96) 0%,
+            rgba(248, 252, 255, 0.92) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(91, 104, 255, 0.18);
+    padding: 1rem;
+    border: 1px solid rgba(91, 104, 255, 0.22);
+}
+
+
+/* === ÍTEMS DE SESIÓN (MÁS CLAROS Y ELEGANTES) === */
+.session-details li {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text);
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid rgba(91, 104, 255, 0.12);
+    transition: all 0.24s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    margin: 0.25rem 0.25rem 0.25rem 0.25rem;
+}
+
+.session-details li::before {
+    content: "→";
+    color: var(--brand);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.session-details li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.session-details li:hover {
+    background: linear-gradient(90deg, rgba(91, 104, 255, 0.08), rgba(25, 192, 255, 0.06));
+    padding-left: 1.1rem;
+    transform: translateX(2px);
+}
+
+/* === RESPONSIVE: Pantallas pequeñas === */
+@media (max-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: 1fr; /* Una sola columna */
+        gap: 0.75rem;
+    }
+
+    .day {
+        padding: 1rem;
+        min-height: 60px;
+    }
+
+    .calendar-title {
+        font-size: clamp(1.3rem, 1rem + 2vw, 1.6rem);
+    }
+
+    #btnAgregarAsesoria {
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 0.6rem;
+        margin-bottom: 10px;
+    }
+
+    .weekly-calendar {
+        padding: 1rem;
+        margin: 1rem;
+    }
+    .calendar-header {
+        display: flex;
+        flex-direction: column; /* Coloca elementos en columna */
+        align-items: center;    /* Centra horizontalmente */
+    }
+    
+}

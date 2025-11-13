@@ -1,0 +1,16 @@
+.session-item {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.session-item:hover {
+    background: #f0f0f0;
+}
+
+.session-item.selected {
+    background: #e3f2fd;
+    border-left: 4px solid #1976d2;
+    font-weight: 500;
+}

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panel del Asesorado | UTMentor</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+    <link rel="stylesheet" href="../css/panelAsesor.css">
+    <link rel="stylesheet" href="../css/panelAsesorado.css">
+    <link rel="stylesheet" href="../css/calendario.css">
+    <link rel="stylesheet" href="../css/crearAsesoria.css">
+</head>
+
+<body>
+    <header class="nav-wrap">
+        <nav class="nav">
+            <a href="principal.html" class="brand">
+                <img src="../imagenes/logo.png" alt="UTMentor logo">
+            </a>
+
+            <div class="panel">
+                <div class="links">
+                    <a class="link" href="explorar.html">Explorar</a>
+                    <a class="link" href="politicasYPrivacidad.html">Privacidad</a>
+                    <a class="link active" href="perfil.html">Perfil</a>
+                </div>
+
+                <div class="usuario">
+                    <img src="../imagenes/user.jpg" alt="Usuario" class="avatar" id="btnUsuario">
+                    <div class="dropdown" id="menuUsuario">
+                        <a href="#">Editar perfil</a>
+                        <a href="#">Cambiar / Agregar rol</a>
+                        <a href="#">Cerrar sesión</a>
+                        <a href="#" class="danger">Eliminar cuenta</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="panel-container">
+        <h1 class="panel-title">Panel del Asesorado</h1>
+
+        <!-- Tarjeta del perfil -->
+        <section class="profile-card">
+            <div class="profile-photo">
+                <img id="profileImage" src="../imagenes/user.jpg" alt="Foto del usuario">
+            </div>
+
+            <div class="profile-info">
+                <div class="basic-info">
+                    <h2 id="profileName" class="profile-name">Ana Martínez López</h2>
+                    <p><span class="icon"><img src="../imagenes/graduacion.png" alt="Carrera"></span>
+                        <strong>Carrera:</strong> <span id="profileCareer">Ingeniería en Software</span>
+                    </p>
+                    <p><span class="icon"><img src="../imagenes/calendar_18779676.png" alt="Semestre"></span>
+                        <strong>Semestre:</strong> <span id="profileSemester">6º</span>
+                    </p>
+                    <p><span class="icon"><img src="../imagenes/sobre.png" alt="Correo"></span>
+                        <strong>Correo:</strong> <span id="profileEmail">ana.martinez@utmentor.edu.mx</span>
+                    </p>
+                </div>
+
+                <button id="btnEdit" class="btn-edit">Editar perfil</button>
+            </div>
+        </section>
+
+        <!-- Calendario Semanal -->
+        <section class="weekly-calendar">
+            <div class="calendar-header">
+                <h2 class="calendar-title">
+                    <span class="icon"><img src="../imagenes/calendar_18779676.png" alt="Calendario"></span>
+                    Mis Asesorías
+                </h2>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="day" data-sessions="2">
+                    <span class="day-name">Lunes</span>
+                    <span class="day-date">27 Oct</span>
+                    <span class="session-count">2</span>
+                    <ul class="session-details">
+                        <li class="session-item" >
+                            Programación, 9:00-10:00 AM
+                        </li>
+                        <li class="session-item">
+                            Bases de Datos, 2:00-3:00 PM
+                        </li>
+                    </ul>
+                </div>
+                <div class="day"><span class="day-name">Martes</span><span class="day-date">28 Oct</span></div>
+                <div class="day" data-sessions="1">
+                    <span class="day-name">Miércoles</span><span class="day-date">29 Oct</span>
+                    <span class="session-count">1</span>
+                    <ul class="session-details">
+                        <li>Algoritmos, 10:00-11:00 AM</li>
+                    </ul>
+                </div>
+                <div class="day"><span class="day-name">Jueves</span><span class="day-date">30 Oct</span></div>
+                <div class="day"><span class="day-name">Viernes</span><span class="day-date">31 Oct</span></div>
+                <div class="day"><span class="day-name">Sábado</span><span class="day-date">1 Nov</span></div>
+                <div class="day"><span class="day-name">Domingo</span><span class="day-date">2 Nov</span></div>
+            </div>
+        </section>
+
+        <!-- Modal de edición de perfil -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h2>Editar Perfil</h2>
+                <div class="modal-body">
+                    <div class="profile-edit-grid">
+                        <div class="photo-column">
+                            <div class="photo-wrapper">
+                                <img id="previewImage" src="../imagenes/user.jpg" alt="Vista previa">
+                                <button id="changePhoto">Cambiar foto</button>
+                                <input type="file" id="photoInput" accept="image/*" style="display:none">
+                            </div>
+                        </div>
+                        <div class="form-column">
+                            <div class="form-grid">
+                                <div>
+                                    <label for="editName">Nombre completo</label>
+                                    <input type="text" id="editName" placeholder="Ana Martínez López">
+                                </div>
+                                <div>
+                                    <label for="editCareer">Carrera</label>
+                                    <input type="text" id="editCareer" placeholder="Ingeniería en Software">
+                                </div>
+                                <div>
+                                    <label for="editSemester">Semestre</label>
+                                    <input type="text" id="editSemester" placeholder="6º">
+                                </div>
+                                <div>
+                                    <label for="editEmail">Correo electrónico</label>
+                                    <input type="email" id="editEmail" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveChanges">Guardar cambios</button>
+                    <button id="cancelChanges" class="cancel-btn">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/script.js" defer></script>
+    <script src="../js/editar.js" defer></script>
+    <script src="../js/editarA.js" defer></script>
+    
+</body>
+
+</html>

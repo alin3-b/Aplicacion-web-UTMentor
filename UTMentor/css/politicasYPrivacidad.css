@@ -1,0 +1,142 @@
+:root {
+  --brand: #5b68ff;
+  --brand-2: #19c0ff;
+  --text: #0f172a;
+  --muted: #475569;
+  --bg: #f9fafc;
+  --card-bg: #fff;
+  --radius: 1rem;
+  --shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.nav-wrap {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  z-index: 100;
+}
+
+.nav {
+  max-width: 1100px;
+  margin: auto;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  text-decoration: none;
+}
+
+.brand img {
+  height: 40px;
+}
+.brand span {
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  color: transparent;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* Contenido principal */
+.container {
+  max-width: 1000px;
+  margin: 120px auto 80px;
+  padding: 0 1rem;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  color: transparent;
+}
+.hero p {
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Tarjetas */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(91,104,255,0.2);
+}
+
+.card h2 {
+  color: var(--brand);
+  margin-bottom: .5rem;
+}
+
+.card p {
+  color: var(--muted);
+}
+
+/* Sección de contenido */
+.contenido {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  animation: fadeIn .3s ease;
+}
+
+.contenido h2 {
+  color: var(--brand);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid rgba(0,0,0,0.1);
+  background: #fff;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+.site-footer__link {
+  color: var(--brand);
+  text-decoration: none;
+  margin: 0 .5rem;
+}
+.site-footer__link:hover {
+  text-decoration: underline;
+}

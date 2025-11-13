@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="es" class="no-js">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UTMentor Explorar</title>
+  <link rel="preload" href="../css/explorar.css" as="style">
+  <link rel="stylesheet" href="../css/explorar.css">
+</head>
+
+<body>
+  <header class="nav-wrap">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo.png" alt="UTMentor logo" />
+      </a>
+
+      <button class="burger" title="Abrir menú" aria-label="Abrir menú" aria-expanded="false"
+        aria-controls="mobile-panel">
+        <span class="burger-box" aria-hidden="true">
+          <span class="burger-line"></span>
+        </span>
+        <span class="burger-label">Menú</span>
+      </button>
+
+      <div id="mobile-panel" class="panel" role="group" aria-label="Acciones">
+        <div class="links">
+          <a class="link" href="iniciarSesion.html">Iniciar sesión</a>
+          <a class="link cta" href="registro.html">Registrarse</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <h1 id="explorar-heading" class="visually-hidden">Explorar asesores</h1>
+
+    <section class="explorar-layout">
+      <!-- FILTROS LATERALES -->
+      <aside class="filtros-card" aria-labelledby="filtros-heading">
+        <h2 id="filtros-heading" class="filtros-titulo">Filtros</h2>
+
+        <!-- Tema -->
+        <div class="filtro-bloque">
+          <label for="filtro-tema" class="filtro-label">Tema</label>
+          <input id="filtro-tema" class="filtro-input" type="text"
+            placeholder="Ej. Métodos de integración" autocomplete="off" />
+
+        <!-- Nombre del asesor -->
+        <div class="filtro-bloque">
+          <label for="filtro-asesor" class="filtro-label">Nombre del asesor/a</label>
+          <input id="filtro-asesor" class="filtro-input" type="text" placeholder="Ej. María Olguín, Luis Javier..."
+            autocomplete="off" />
+        </div>
+
+        <!-- Carrera -->
+        <div class="filtro-bloque">
+          <label for="filtro-carrera" class="filtro-label">Carrera</label>
+          <div class="select-wrap">
+            <select id="filtro-carrera" class="filtro-select">
+              <option value="">Cualquiera</option>
+              <option>Ingeniería Civil</option>
+              <option>Ingeniería en Alimentos</option>
+              <option>Ingeniería en Computación</option>
+              <option>Ingeniería en Diseño</option>
+              <option>Ingeniería en Electrónica</option>
+              <option>Ingeniería en Física Aplicada</option>
+              <option>Ingeniería Industrial</option>
+              <option>Ingeniería en Mecánica Automotriz</option>
+              <option>Ingeniería en Mecatrónica</option>
+              <option>Ingeniería Química en Procesos Sostenibles</option>
+              <option>Licenciatura en Ciencias Empresariales</option>
+              <option>Licenciatura en Matemáticas Aplicadas</option>
+              <option>Licenciatura en Estudios Mexicanos modalidad virtual</option>
+            </select>
+            <span class="select-arrow" aria-hidden="true">▼</span>
+          </div>
+        </div>
+
+        <!-- Disponibilidad -->
+        <div class="filtro-bloque">
+          <span class="filtro-label">Disponibilidad</span>
+
+          <div class="filtro-inline">
+            <div class="filtro-sub">
+              <label for="filtro-dia" class="sub-label">Día</label>
+              <div class="select-wrap">
+                <select id="filtro-dia" class="filtro-select">
+                  <option value="">Cualquiera</option>
+                  <option>Lunes</option>
+                  <option>Martes</option>
+                  <option>Miércoles</option>
+                  <option>Jueves</option>
+                  <option>Viernes</option>
+                  <option>Sábado</option>
+                  <option>Domingo</option>
+                </select>
+                <span class="select-arrow" aria-hidden="true">▼</span>
+              </div>
+            </div>
+
+            <div class="filtro-sub">
+              <label class="sub-label" for="filtro-hora-desde">Desde</label>
+              <input id="filtro-hora-desde" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" />
+            </div>
+
+            <div class="filtro-sub">
+              <label class="sub-label" for="filtro-hora-hasta">Hasta</label>
+              <input id="filtro-hora-hasta" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" />
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-buscar" id="btn-buscar" type="button">
+          <span class="btn-buscar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="icon-search">
+              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+              <line x1="16.5" y1="16.5" x2="21" y2="21"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="btn-buscar__label">Buscar asesores</span>
+        </button>
+      </aside>
+
+      <!-- RESULTADOS -->
+      <section class="resultados-area" aria-labelledby="resultados-heading">
+        <div class="resultados-header">
+          <h2 id="resultados-heading" class="resultados-titulo">Asesores disponibles</h2>
+
+          <div class="ordenar-wrap">
+            <label class="ordenar-label" for="ordenar">Ordenar por:</label>
+            <div class="select-wrap ordenar-select">
+              <select id="ordenar" class="filtro-select filtro-select--sm">
+                <option>Relevancia</option>
+                <option>Más sesiones completadas</option>
+                <option>Mejor calificación</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">▼</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner info -->
+        <div class="alerta-resultados" role="status">
+          <span class="alerta-icon" aria-hidden="true">ⓘ</span>
+          <span class="alerta-texto">
+            No hay resultados con tu disponibilidad actual,
+            sin embargo encontramos para ti algunos asesores disponibles en esta semana.
+          </span>
+        </div>
+
+        <!-- Lista de asesores -->
+        <ul class="cards-lista" id="lista-asesores">
+          <!-- Card 1 -->
+          <li class="asesor-card">
+            <div class="asesor-card-main">
+              <img class="asesor-avatar" src="../imagenes/adviser1.jpg" alt="Foto de Mario Ortega Gutiérrez" />
+
+              <div class="asesor-info">
+                <div class="asesor-headerline">
+                  <span class="asesor-nombre">Mario Ortega Gutiérrez</span>
+                </div>
+
+                <div class="asesor-detalle">
+                  <span class="asesor-carrera">Ingeniería civil</span>
+                  <span class="asesor-bullet">·</span>
+                  <span class="asesor-semestre">Noveno Semestre</span>
+                </div>
+
+                <div class="asesor-stats">
+                  <span class="asesor-sesiones">102 sesiones completadas</span>
+                </div>
+              </div>
+
+              <div class="asesor-extra">
+                <div class="asesor-rating">
+                  <div class="stars" aria-label="5 de 5">
+                    ★★★★★
+                  </div>
+                  <div class="asesor-submeta">
+                    <span>5 / 5</span>
+                  </div>
+                  <div class="asesor-availability">
+                    <span>Hoy · Mañana · Vie</span>
+                  </div>
+                </div>
+
+                <button class="btn-perfil">Ver perfil</button>
+              </div>
+            </div>
+          </li>
+
+          <!-- Card 2 -->
+          <li class="asesor-card">
+            <div class="asesor-card-main">
+              <img class="asesor-avatar" src="../imagenes/adviser2.jpg" alt="Foto de Mailén Jasso Salvador" />
+
+              <div class="asesor-info">
+                <div class="asesor-headerline">
+                  <span class="asesor-nombre">Mailén Jasso Salvador</span>
+                </div>
+
+                <div class="asesor-detalle">
+                  <span class="asesor-carrera">Ingeniería en alimentos</span>
+                  <span class="asesor-bullet">·</span>
+                  <span class="asesor-semestre">Séptimo Semestre</span>
+                </div>
+
+                <div class="asesor-stats">
+                  <span class="asesor-sesiones">59 sesiones completadas</span>
+                </div>
+              </div>
+
+              <div class="asesor-extra">
+                <div class="asesor-rating">
+                  <div class="stars" aria-label="5 de 5">
+                    ★★★★★
+                  </div>
+                  <div class="asesor-submeta">
+                    <span>5 / 5</span>
+                  </div>
+                  <div class="asesor-availability">
+                    <span>Vie · Sáb · Dom</span>
+                  </div>
+                </div>
+
+                <button class="btn-perfil">Ver perfil</button>
+              </div>
+            </div>
+          </li>
+
+          <!-- Card 3 -->
+          <li class="asesor-card">
+            <div class="asesor-card-main">
+              <img class="asesor-avatar" src="../imagenes/adviser3.jpg" alt="Foto de Nico Sánchez Huerta" />
+
+              <div class="asesor-info">
+                <div class="asesor-headerline">
+                  <span class="asesor-nombre">Nico Sánchez Huerta</span>
+                </div>
+
+                <div class="asesor-detalle">
+                  <span class="asesor-carrera">Ingeniería Industrial</span>
+                  <span class="asesor-bullet">·</span>
+                  <span class="asesor-semestre">Quinto Semestre</span>
+                </div>
+
+                <div class="asesor-stats">
+                  <span class="asesor-sesiones">16 sesiones completadas</span>
+                </div>
+              </div>
+
+              <div class="asesor-extra">
+                <div class="asesor-rating">
+                  <div class="stars" aria-label="4 de 5">
+                    ★★★★☆
+                  </div>
+                  <div class="asesor-submeta">
+                    <span>4 / 5</span>
+                  </div>
+                  <div class="asesor-availability">
+                    <span>Hoy · Mañana</span>
+                  </div>
+                </div>
+
+                <button class="btn-perfil">Ver perfil</button>
+              </div>
+            </div>
+          </li>
+
+          <!-- Card 4 -->
+          <li class="asesor-card">
+            <div class="asesor-card-main">
+              <img class="asesor-avatar" src="../imagenes/adviser4.jpg" alt="Foto de Ana Romero Vargas" />
+
+              <div class="asesor-info">
+                <div class="asesor-headerline">
+                  <span class="asesor-nombre">Ana Romero Vargas</span>
+                </div>
+
+                <div class="asesor-detalle">
+                  <span class="asesor-carrera">Ingeniería en Diseño</span>
+                  <span class="asesor-bullet">·</span>
+                  <span class="asesor-semestre">Quinto Semestre</span>
+                </div>
+
+                <div class="asesor-stats">
+                  <span class="asesor-sesiones">83 sesiones completadas</span>
+                </div>
+              </div>
+
+              <div class="asesor-extra">
+                <div class="asesor-rating">
+                  <div class="stars" aria-label="4 de 5">
+                    ★★★★★
+                  </div>
+                  <div class="asesor-submeta">
+                    <span>5 / 5</span>
+                  </div>
+                  <div class="asesor-availability">
+                    <span>Lun · Mar · Jue</span>
+                  </div>
+                </div>
+
+                <button class="btn-perfil">Ver perfil</button>
+              </div>
+            </div>
+          </li>
+
+          <!-- Card 3 -->
+          <li class="asesor-card">
+            <div class="asesor-card-main">
+              <img class="asesor-avatar" src="../imagenes/adviser3.jpg" alt="Foto de Teo Trujillo" />
+
+              <div class="asesor-info">
+                <div class="asesor-headerline">
+                  <span class="asesor-nombre">Teo Trujillo</span>
+                </div>
+
+                <div class="asesor-detalle">
+                  <span class="asesor-carrera">Ingeniería en Electrónica</span>
+                  <span class="asesor-bullet">·</span>
+                  <span class="asesor-semestre">Quinto Semestre</span>
+                </div>
+
+                <div class="asesor-stats">
+                  <span class="asesor-sesiones">65 sesiones completadas</span>
+                </div>
+              </div>
+
+              <div class="asesor-extra">
+                <div class="asesor-rating">
+                  <div class="stars" aria-label="4 de 5">
+                    ★★★★★
+                  </div>
+                  <div class="asesor-submeta">
+                    <span>5 / 5</span>
+                  </div>
+                  <div class="asesor-availability">
+                    <span>Hoy · Viernes</span>
+                  </div>
+                </div>
+
+                <button class="btn-perfil">Ver perfil</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">
+        © 2025 UTMentor. Todos los derechos reservados.
+      </p>
+      <nav class="site-footer__links" aria-label="Legal">
+        <a href="politicasYPrivacidad.html" class="site-footer__link">Politicas y privacidad</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="../js/explorar.js" defer></script>
+</body>
+
+</html>

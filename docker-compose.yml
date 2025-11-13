@@ -57,7 +57,7 @@ services:
     profiles: ["dev", "prod"]
 
   web:
-    image: php:8.3-apache
+    image: nginx:alpine
     container_name: web_srv
     restart: always
     depends_on:
@@ -68,12 +68,12 @@ services:
     env_file:
       - .env
     volumes:
-      - ./web:/var/www/html
+      - ./UTMentor:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8180:80"
     networks:
       - services_net
-    command: bash -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf && apache2-foreground"
 
 networks:
   services_net:
