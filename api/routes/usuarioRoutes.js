@@ -5,7 +5,6 @@ import {
   crearUsuario,
   listarAsesores,
   obtenerInfoAsesor,
-  generarAsesoresDummy,
 } from "../controllers/usuarioController.js";
 
 const router = express.Router();
@@ -20,10 +19,7 @@ router.post("/", crearUsuario);
 router.get("/asesores", listarAsesores);
 
 // === OBTENER INFO COMPLETA DE ASESOR ===
-router.get("/asesor/:id", obtenerInfoAsesor);
-
-// === GENERAR ASESORES DUMMY ===
-router.post("/asesores/dummy", generarAsesoresDummy);
+router.get("/asesores/:id", obtenerInfoAsesor);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");
