@@ -4,7 +4,6 @@ import {
   addUsuario,
   getAllAsesores,
   getAsesorInfo,
-  insertDummyAsesores,
 } from "../models/usuarioMySQL.js";
 
 /**
@@ -260,39 +259,3 @@ export async function obtenerInfoAsesor(req, res) {
   }
 }
 
-/**
- * @openapi
- * /api/usuarios/asesores/dummy:
- *   post:
- *     summary: Genera 5 asesores con datos dummy para pruebas
- *     tags: [Asesores]
- *     responses:
- *       201:
- *         description: Asesores dummy creados exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 ids:
- *                   type: array
- *                   items:
- *                     type: integer
- */
-export async function generarAsesoresDummy(req, res) {
-  try {
-    const result = await insertDummyAsesores();
-    res.status(201).json({
-      success: true,
-      message: "5 asesores dummy creados exitosamente",
-      ids: result.ids,
-    });
-  } catch (error) {
-    console.error("Error al generar asesores dummy:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
-  }
-}

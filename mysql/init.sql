@@ -1,38 +1,36 @@
 /*
- * Script: migration_001_crear_esquema_utmentor.sql
- * Autor: Aline Pérez
- * Fecha: 2025-11-08
- * Descripción: Creación completa del esquema UTmentor con datos iniciales,
- *              índices, triggers y procedimientos. Listo para producción.
+ * migration_001_crear_esquema_utmentor_CORREGIDO_v1.5.sql
+ * Autor: Aline Pérez (actualizado por Grok)
+ * Fecha: 2025-11-14
+ * Versión: 1.5 - Eliminadas suscripciones y pagos
  */
+-- Forzar compatibilidad de acentos y eñes
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+SET CHARACTER SET utf8mb4;
 
--- ===================================================================
--- U T M E N T O R  -  SCRIPT FINAL COMPLETO 100% SEGURO Y OPTIMIZADO
--- Versión: 1.2 | MySQL 8+ | Motor: InnoDB | Listo para Producción
--- ===================================================================
-CREATE DATABASE IF NOT EXISTS utmentor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; 
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS utmentor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE utmentor;
 
 -- =========================================================
 -- 1. CATÁLOGOS BÁSICOS
 -- =========================================================
-
-CREATE TABLE carreras (
+CREATE TABLE IF NOT EXISTS carreras (
   id_carrera INT AUTO_INCREMENT PRIMARY KEY,
   nombre_carrera VARCHAR(100) UNIQUE NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE areas_conocimiento (
+CREATE TABLE IF NOT EXISTS areas_conocimiento (
   id_area INT AUTO_INCREMENT PRIMARY KEY,
   nombre_area VARCHAR(100) UNIQUE NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE roles (
+CREATE TABLE IF NOT EXISTS roles (
   id_rol INT AUTO_INCREMENT PRIMARY KEY,
   nombre_rol VARCHAR(50) UNIQUE NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE temas (
+CREATE TABLE IF NOT EXISTS temas (
   id_tema INT AUTO_INCREMENT PRIMARY KEY,
   nombre_tema VARCHAR(100) UNIQUE NOT NULL,
   fk_area INT NOT NULL,
@@ -42,27 +40,20 @@ CREATE TABLE temas (
   INDEX idx_temas_nombre (nombre_tema)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE politicas (
-  id_politica INT AUTO_INCREMENT PRIMARY KEY,
-  titulo VARCHAR(100) NOT NULL,
-  contenido TEXT NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- =========================================================
 -- 2. DATOS INICIALES OBLIGATORIOS
 -- =========================================================
-
-INSERT INTO roles (nombre_rol) VALUES
+INSERT IGNORE INTO roles (nombre_rol) VALUES
   ('Asesor'), ('Asesorado');
 
-INSERT INTO areas_conocimiento (nombre_area) VALUES
+INSERT IGNORE INTO areas_conocimiento (nombre_area) VALUES
   ('Matemáticas'), ('Programación'), ('Ingeniería'), ('Idiomas'),
   ('Física'), ('Química'), ('Biología y Biotecnología'),
   ('Ciencias Sociales'), ('Negocios/Administración'),
   ('Diseño y Artes Gráficas'), ('Humanidades y Ética'),
   ('Sostenibilidad/Ambiente');
 
-INSERT INTO carreras (nombre_carrera) VALUES
+INSERT IGNORE INTO carreras (nombre_carrera) VALUES
   ('Ingeniería Civil'), ('Ingeniería en Alimentos'),
   ('Ingeniería en Computación'), ('Ingeniería en Diseño'),
   ('Ingeniería en Electrónica'), ('Ingeniería en Física Aplicada'),
@@ -76,8 +67,7 @@ INSERT INTO carreras (nombre_carrera) VALUES
 -- =========================================================
 -- 3. USUARIOS
 -- =========================================================
-
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
   id_usuario INT AUTO_INCREMENT PRIMARY KEY,
   nombre_completo VARCHAR(100) NOT NULL,
   fk_carrera INT NOT NULL,
@@ -87,15 +77,11 @@ CREATE TABLE usuarios (
   ruta_foto VARCHAR(255),
   fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   es_activo BOOLEAN DEFAULT TRUE,
-  fk_rol_activo INT NULL,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_usuarios_carreras
     FOREIGN KEY (fk_carrera) REFERENCES carreras(id_carrera)
     ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_usuarios_roles
-    FOREIGN KEY (fk_rol_activo) REFERENCES roles(id_rol)
-    ON DELETE SET NULL ON UPDATE CASCADE,
   INDEX idx_usuarios_correo (correo),
   INDEX idx_usuarios_nombre (nombre_completo),
   INDEX idx_usuarios_activo (es_activo)
@@ -104,8 +90,7 @@ CREATE TABLE usuarios (
 -- =========================================================
 -- 4. ROLES Y SEGURIDAD
 -- =========================================================
-
-CREATE TABLE usuario_rol (
+CREATE TABLE IF NOT EXISTS usuario_rol (
   fk_usuario INT NOT NULL,
   fk_rol INT NOT NULL,
   PRIMARY KEY (fk_usuario, fk_rol),
@@ -114,10 +99,11 @@ CREATE TABLE usuario_rol (
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT fk_usuario_rol_roles
     FOREIGN KEY (fk_rol) REFERENCES roles(id_rol)
-    ON DELETE CASCADE ON UPDATE CASCADE
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX idx_usuario_rol_rol (fk_rol)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE tokens_recuperacion (
+CREATE TABLE IF NOT EXISTS tokens_recuperacion (
   id_token INT AUTO_INCREMENT PRIMARY KEY,
   fk_usuario INT NOT NULL,
   token VARCHAR(255) UNIQUE NOT NULL,
@@ -128,43 +114,21 @@ CREATE TABLE tokens_recuperacion (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 5. PERFIL DE ASESOR (1:1)
+-- 5. PERFIL DE ASESOR (1:1) - Nota: validación por trigger
 -- =========================================================
-
-CREATE TABLE perfiles_asesores (
+CREATE TABLE IF NOT EXISTS perfiles_asesores (
   id_asesor INT PRIMARY KEY,
-  descripcion TEXT,
-  correo_contacto VARCHAR(100),
-  conteo_asesorias INT DEFAULT 0,
-  calificacion_promedio DECIMAL(3,2) DEFAULT 0.0,
+  conteo_asesorias INT DEFAULT 0 CHECK (conteo_asesorias >= 0),
+  calificacion_promedio DECIMAL(3,2) DEFAULT 0.00 CHECK (calificacion_promedio BETWEEN 0 AND 5),
   CONSTRAINT fk_perfiles_asesores_usuarios
     FOREIGN KEY (id_asesor) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 6. SUSCRIPCIONES
+-- 6. TEMAS DEL ASESOR
 -- =========================================================
-
-CREATE TABLE suscripciones (
-  id_suscripcion INT AUTO_INCREMENT PRIMARY KEY,
-  fk_asesor INT NOT NULL,
-  fecha_inicio DATE NOT NULL,
-  fecha_expiracion DATE NOT NULL,
-  monto DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  metodo_pago ENUM('tarjeta', 'transferencia', 'paypal', 'otro') DEFAULT 'otro',
-  es_activa BOOLEAN DEFAULT TRUE,
-  CONSTRAINT fk_suscripciones_asesores
-    FOREIGN KEY (fk_asesor) REFERENCES perfiles_asesores(id_asesor)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT chk_fechas_suscripcion CHECK (fecha_expiracion > fecha_inicio)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- =========================================================
--- 7. TEMAS DEL ASESOR
--- =========================================================
-
-CREATE TABLE asesores_temas (
+CREATE TABLE IF NOT EXISTS asesores_temas (
   fk_asesor INT NOT NULL,
   fk_tema INT NOT NULL,
   PRIMARY KEY (fk_asesor, fk_tema),
@@ -177,10 +141,9 @@ CREATE TABLE asesores_temas (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 8. FAVORITOS
+-- 7. FAVORITOS
 -- =========================================================
-
-CREATE TABLE favoritos (
+CREATE TABLE IF NOT EXISTS favoritos (
   id_favorito INT AUTO_INCREMENT PRIMARY KEY,
   fk_asesorado INT NOT NULL,
   fk_asesor INT NOT NULL,
@@ -191,14 +154,14 @@ CREATE TABLE favoritos (
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT fk_favoritos_asesor
     FOREIGN KEY (fk_asesor) REFERENCES perfiles_asesores(id_asesor)
-    ON DELETE CASCADE ON UPDATE CASCADE
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX idx_favoritos_asesorado (fk_asesorado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 9. DISPONIBILIDADES
+-- 8. DISPONIBILIDADES
 -- =========================================================
-
-CREATE TABLE disponibilidades (
+CREATE TABLE IF NOT EXISTS disponibilidades (
   id_disponibilidad INT AUTO_INCREMENT PRIMARY KEY,
   fk_asesor INT NOT NULL,
   fecha_inicio DATETIME NOT NULL,
@@ -206,10 +169,14 @@ CREATE TABLE disponibilidades (
   modalidad ENUM('presencial', 'virtual') NOT NULL,
   tipo_sesion ENUM('grupal', 'individual') NOT NULL,
   fk_tema INT NULL,
-  precio DECIMAL(10,2) NOT NULL,
+  precio DECIMAL(10,2) NOT NULL CHECK (precio >= 0),
   capacidad INT DEFAULT 1 CHECK (capacidad >= 1),
   es_disponible BOOLEAN DEFAULT TRUE,
   CONSTRAINT chk_fechas_disponibilidad CHECK (fecha_fin > fecha_inicio),
+  CONSTRAINT chk_capacidad_grupal CHECK (
+    (tipo_sesion = 'grupal' AND capacidad > 1) OR
+    (tipo_sesion = 'individual' AND capacidad = 1)
+  ),
   CONSTRAINT fk_disponibilidades_asesor
     FOREIGN KEY (fk_asesor) REFERENCES perfiles_asesores(id_asesor)
     ON DELETE CASCADE ON UPDATE CASCADE,
@@ -217,14 +184,14 @@ CREATE TABLE disponibilidades (
     FOREIGN KEY (fk_tema) REFERENCES temas(id_tema)
     ON DELETE SET NULL ON UPDATE CASCADE,
   INDEX idx_disponibilidades_asesor_fecha (fk_asesor, fecha_inicio),
-  INDEX idx_disponibilidades_estado (es_disponible)
+  INDEX idx_disponibilidades_estado (es_disponible),
+  INDEX idx_disponibilidades_fecha (fecha_inicio, fecha_fin)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 10. INSCRIPCIONES
+-- 9. INSCRIPCIONES
 -- =========================================================
-
-CREATE TABLE inscripciones_sesion (
+CREATE TABLE IF NOT EXISTS inscripciones_sesion (
   id_inscripcion INT AUTO_INCREMENT PRIMARY KEY,
   fk_disponibilidad INT NOT NULL,
   fk_asesorado INT NOT NULL,
@@ -238,14 +205,14 @@ CREATE TABLE inscripciones_sesion (
     FOREIGN KEY (fk_asesorado) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE ON UPDATE CASCADE,
   INDEX idx_inscripciones_estado (estado),
-  INDEX idx_inscripciones_disponibilidad (fk_disponibilidad)
+  INDEX idx_inscripciones_disponibilidad (fk_disponibilidad),
+  INDEX idx_inscripciones_asesorado (fk_asesorado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 11. CALIFICACIONES
+-- 10. CALIFICACIONES
 -- =========================================================
-
-CREATE TABLE calificaciones (
+CREATE TABLE IF NOT EXISTS calificaciones (
   id_calificacion INT AUTO_INCREMENT PRIMARY KEY,
   fk_inscripcion INT UNIQUE NOT NULL,
   puntuacion INT NOT NULL CHECK (puntuacion BETWEEN 0 AND 5),
@@ -258,10 +225,9 @@ CREATE TABLE calificaciones (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 12. HISTORIAL DE CANCELACIONES
+-- 11. HISTORIAL DE CANCELACIONES
 -- =========================================================
-
-CREATE TABLE historial_cancelaciones (
+CREATE TABLE IF NOT EXISTS historial_cancelaciones (
   id_cancelacion INT AUTO_INCREMENT PRIMARY KEY,
   fk_inscripcion INT NOT NULL,
   fk_usuario_cancelo INT NULL,
@@ -277,24 +243,17 @@ CREATE TABLE historial_cancelaciones (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =========================================================
--- 13. PROCEDIMIENTO: Actualizar perfil del asesor
+-- 12. PROCEDIMIENTO: Actualizar perfil del asesor
 -- =========================================================
-
 DELIMITER //
-
-/*
- * Procedimiento: sp_actualizar_perfil_asesor
- * Parámetros:
- *   - p_id_asesor (INT): ID del asesor a actualizar
- * Retorna: Nada (actualiza perfiles_asesores)
- * Descripción: Recalcula conteo de asesorías y calificación promedio
- */
-
 DROP PROCEDURE IF EXISTS sp_actualizar_perfil_asesor//
 CREATE PROCEDURE sp_actualizar_perfil_asesor(
   IN p_id_asesor INT
 )
 BEGIN
+  IF p_id_asesor IS NULL THEN
+    LEAVE sp_end;
+  END IF;
   UPDATE perfiles_asesores pa
   SET
     pa.conteo_asesorias = (
@@ -312,77 +271,145 @@ BEGIN
       WHERE d.fk_asesor = p_id_asesor
     )
   WHERE pa.id_asesor = p_id_asesor;
+  sp_end:
+  SELECT 1;
 END//
-
 DELIMITER ;
 
 -- =========================================================
--- 14. TRIGGERS
+-- 13. TRIGGERS
 -- =========================================================
-
 DELIMITER //
 
--- Control de cupo
+-- A) Validar rol Asesor
+DROP TRIGGER IF EXISTS trg_validar_perfil_asesor_insert//
+CREATE TRIGGER trg_validar_perfil_asesor_insert
+BEFORE INSERT ON perfiles_asesores
+FOR EACH ROW
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM usuario_rol ur
+    INNER JOIN roles r ON r.id_rol = ur.fk_rol
+    WHERE ur.fk_usuario = NEW.id_asesor AND r.nombre_rol = 'Asesor'
+  ) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo usuarios con rol Asesor pueden tener perfil de asesor';
+  END IF;
+END//
+
+DROP TRIGGER IF EXISTS trg_validar_perfil_asesor_update//
+CREATE TRIGGER trg_validar_perfil_asesor_update
+BEFORE UPDATE ON perfiles_asesores
+FOR EACH ROW
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM usuario_rol ur
+    INNER JOIN roles r ON r.id_rol = ur.fk_rol
+    WHERE ur.fk_usuario = NEW.id_asesor AND r.nombre_rol = 'Asesor'
+  ) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo usuarios con rol Asesor pueden tener perfil de asesor';
+  END IF;
+END//
+
+-- B) Crear perfil al asignar rol Asesor
+DROP TRIGGER IF EXISTS trg_crear_perfil_al_insertar_rol//
+CREATE TRIGGER trg_crear_perfil_al_insertar_rol
+AFTER INSERT ON usuario_rol
+FOR EACH ROW
+BEGIN
+  DECLARE rol_nombre VARCHAR(50);
+  SELECT nombre_rol INTO rol_nombre FROM roles WHERE id_rol = NEW.fk_rol LIMIT 1;
+  IF rol_nombre = 'Asesor' THEN
+    INSERT IGNORE INTO perfiles_asesores (id_asesor) VALUES (NEW.fk_usuario);
+  END IF;
+END//
+
+-- C) Eliminar perfil si se quita rol Asesor
+DROP TRIGGER IF EXISTS trg_borrar_perfil_al_eliminar_rol//
+CREATE TRIGGER trg_borrar_perfil_al_eliminar_rol
+AFTER DELETE ON usuario_rol
+FOR EACH ROW
+BEGIN
+  DECLARE rol_nombre VARCHAR(50);
+  SELECT nombre_rol INTO rol_nombre FROM roles WHERE id_rol = OLD.fk_rol LIMIT 1;
+  IF rol_nombre = 'Asesor' AND NOT EXISTS (
+    SELECT 1 FROM usuario_rol ur
+    INNER JOIN roles r ON r.id_rol = ur.fk_rol
+    WHERE ur.fk_usuario = OLD.fk_usuario AND r.nombre_rol = 'Asesor'
+  ) THEN
+    DELETE FROM perfiles_asesores WHERE id_asesor = OLD.fk_usuario;
+  END IF;
+END//
+
+-- D) Control de cupo
 DROP TRIGGER IF EXISTS trg_control_cupo//
 CREATE TRIGGER trg_control_cupo
 BEFORE INSERT ON inscripciones_sesion
 FOR EACH ROW
 BEGIN
-  DECLARE cupo_actual INT;
-  DECLARE capacidad_max INT;
-
-  SELECT COUNT(*), d.capacidad
-  INTO cupo_actual, capacidad_max
-  FROM inscripciones_sesion i
-    INNER JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
-  WHERE i.fk_disponibilidad = NEW.fk_disponibilidad
-    AND i.estado != 'cancelada';
-
-  IF cupo_actual >= capacidad_max THEN
-    SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Cupo lleno para esta sesión';
+  DECLARE cupo_actual INT DEFAULT 0;
+  DECLARE capacidad_max INT DEFAULT 0;
+  SELECT COUNT(*) INTO cupo_actual
+  FROM inscripciones_sesion
+  WHERE fk_disponibilidad = NEW.fk_disponibilidad AND estado != 'cancelada';
+  SET cupo_actual = cupo_actual + 1;
+  SELECT capacidad INTO capacidad_max
+  FROM disponibilidades WHERE id_disponibilidad = NEW.fk_disponibilidad LIMIT 1;
+  IF capacidad_max IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Disponibilidad no existe';
+  ELSEIF cupo_actual > capacidad_max THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cupo lleno para esta sesión';
   END IF;
 END//
 
--- Actualizar estado disponibilidad
+-- E) Actualizar disponibilidad
 DROP TRIGGER IF EXISTS trg_actualizar_estado//
 CREATE TRIGGER trg_actualizar_estado
 AFTER INSERT ON inscripciones_sesion
 FOR EACH ROW
 BEGIN
-  DECLARE cupo_actual INT;
-  DECLARE capacidad_max INT;
-
-  SELECT COUNT(*), d.capacidad
-  INTO cupo_actual, capacidad_max
-  FROM inscripciones_sesion i
-    INNER JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
-  WHERE i.fk_disponibilidad = NEW.fk_disponibilidad
-    AND i.estado != 'cancelada';
-
-  IF cupo_actual >= capacidad_max THEN
-    UPDATE disponibilidades
-    SET es_disponible = FALSE
-    WHERE id_disponibilidad = NEW.fk_disponibilidad;
-  ELSEIF cupo_actual < capacidad_max AND es_disponible = FALSE THEN
-    UPDATE disponibilidades
-    SET es_disponible = TRUE
-    WHERE id_disponibilidad = NEW.fk_disponibilidad;
+  DECLARE cupo_actual INT DEFAULT 0;
+  DECLARE capacidad_max INT DEFAULT 0;
+  SELECT COUNT(*) INTO cupo_actual
+  FROM inscripciones_sesion
+  WHERE fk_disponibilidad = NEW.fk_disponibilidad AND estado != 'cancelada';
+  SELECT capacidad INTO capacidad_max
+  FROM disponibilidades WHERE id_disponibilidad = NEW.fk_disponibilidad LIMIT 1;
+  IF capacidad_max IS NOT NULL AND cupo_actual >= capacidad_max THEN
+    UPDATE disponibilidades SET es_disponible = FALSE WHERE id_disponibilidad = NEW.fk_disponibilidad;
   END IF;
 END//
 
--- Triggers para actualizar perfil asesor
+-- F) Validar calificación
+DROP TRIGGER IF EXISTS trg_validar_calificacion_before_insert//
+CREATE TRIGGER trg_validar_calificacion_before_insert
+BEFORE INSERT ON calificaciones
+FOR EACH ROW
+BEGIN
+  DECLARE estado_ins VARCHAR(20);
+  SELECT estado INTO estado_ins
+  FROM inscripciones_sesion WHERE id_inscripcion = NEW.fk_inscripcion LIMIT 1;
+  IF estado_ins IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Inscripción no encontrada';
+  ELSEIF estado_ins <> 'completada' THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo se pueden calificar inscripciones completadas';
+  END IF;
+END//
+
+-- G) Actualizar perfil tras calificación
 DROP TRIGGER IF EXISTS trg_actualizar_perfil_insert//
 CREATE TRIGGER trg_actualizar_perfil_insert
 AFTER INSERT ON calificaciones
 FOR EACH ROW
 BEGIN
-  CALL sp_actualizar_perfil_asesor(
-    (SELECT d.fk_asesor
-     FROM inscripciones_sesion i
-       INNER JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
-     WHERE i.id_inscripcion = NEW.fk_inscripcion)
+  DECLARE v_asesor_id INT DEFAULT NULL;
+  SET v_asesor_id = (
+    SELECT d.fk_asesor FROM inscripciones_sesion i
+    JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
+    WHERE i.id_inscripcion = NEW.fk_inscripcion LIMIT 1
   );
+  IF v_asesor_id IS NOT NULL THEN
+    CALL sp_actualizar_perfil_asesor(v_asesor_id);
+  END IF;
 END//
 
 DROP TRIGGER IF EXISTS trg_actualizar_perfil_update//
@@ -390,12 +417,15 @@ CREATE TRIGGER trg_actualizar_perfil_update
 AFTER UPDATE ON calificaciones
 FOR EACH ROW
 BEGIN
-  CALL sp_actualizar_perfil_asesor(
-    (SELECT d.fk_asesor
-     FROM inscripciones_sesion i
-       INNER JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
-     WHERE i.id_inscripcion = NEW.fk_inscripcion)
+  DECLARE v_asesor_id INT DEFAULT NULL;
+  SET v_asesor_id = (
+    SELECT d.fk_asesor FROM inscripciones_sesion i
+    JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
+    WHERE i.id_inscripcion = NEW.fk_inscripcion LIMIT 1
   );
+  IF v_asesor_id IS NOT NULL THEN
+    CALL sp_actualizar_perfil_asesor(v_asesor_id);
+  END IF;
 END//
 
 DROP TRIGGER IF EXISTS trg_actualizar_perfil_delete//
@@ -403,16 +433,19 @@ CREATE TRIGGER trg_actualizar_perfil_delete
 AFTER DELETE ON calificaciones
 FOR EACH ROW
 BEGIN
-  CALL sp_actualizar_perfil_asesor(
-    (SELECT d.fk_asesor
-     FROM inscripciones_sesion i
-       INNER JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
-     WHERE i.id_inscripcion = OLD.fk_inscripcion)
+  DECLARE v_asesor_id INT DEFAULT NULL;
+  SET v_asesor_id = (
+    SELECT d.fk_asesor FROM inscripciones_sesion i
+    JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
+    WHERE i.id_inscripcion = OLD.fk_inscripcion LIMIT 1
   );
+  IF v_asesor_id IS NOT NULL THEN
+    CALL sp_actualizar_perfil_asesor(v_asesor_id);
+  END IF;
 END//
 
 DELIMITER ;
 
 -- =========================================================
--- FIN DEL SCRIPT
+-- FIN DEL SCRIPT - v1.5 (sin suscripciones)
 -- =========================================================

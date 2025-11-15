@@ -1,6 +1,10 @@
-// Fallback: si este script corre, quitamos no-js
+//UTMentor/js/principal.js
+// Importar servicio de asesores
+import { obtenerAsesores } from "./services/asesorService.js";
+
 document.documentElement.classList.remove("no-js");
 
+// Fallback: si este script corre, quitamos no-js
 // Toggle del menú móvil + actualización de etiqueta/aria
 (function () {
   const burger = document.querySelector(".burger");
@@ -171,9 +175,6 @@ renderTestimonial(currentTestimonial);
 
 // ---------------- ASESORES POPULARES (desde API) ----------------
 
-// Importar servicio de asesores
-import { obtenerAsesores } from "./services/asesorService.js";
-
 // Imágenes dummy para reutilizar (ya que no hay fotos en BD)
 const advisorImages = [
   "../imagenes/adviser1.jpg",
@@ -252,7 +253,7 @@ function crearAsesorCard(asesor, index) {
   const disponibilidad = formatDisponibilidad(asesor.disponibilidades);
   const carreraCorta = asesor.nombre_carrera
     ? asesor.nombre_carrera
-        .replace("Ingeniería", "Ing.")
+        .replace("Ingenieri­a", "Ing.")
         .replace("Licenciatura", "Lic.")
     : "Universidad";
 
