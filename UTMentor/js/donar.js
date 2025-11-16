@@ -2,7 +2,7 @@
 document.documentElement.classList.remove('no-js');
 
 /* ===========================
-   NAV MÓVIL (burger)
+  NAV MÓVIL (burger)
 =========================== */
 (function navMobile() {
   const burger = document.querySelector('.burger');
@@ -47,7 +47,7 @@ const buttons = document.querySelectorAll(".don-amount");
 const input = document.getElementById("don-custom");
 
 buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        input.value = btn.dataset.value;
-    });
+  btn.addEventListener("click", () => {
+    input.value = btn.dataset.value;
+  });
 });

@@ -1,94 +1,118 @@
-<!doctype html>
-<html lang="es" class="no-js">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Donar · UTMentor</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donar</title>
 
-  <link rel="stylesheet" href="../css/donar.css">
+  <!-- Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    #mensaje {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      font-weight: bold;
+    }
+
+    #mensaje.ok {
+      background: #d4ffd4;
+      color: #0f7b0f;
+      border: 1px solid #4dbe4d;
+    }
+
+    #mensaje.error {
+      background: #ffd4d4;
+      color: #7b0f0f;
+      border: 1px solid #be4d4d;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="container">
+    <h2>Donar a la App</h2>
 
-  <!-- NAV -->
-  <header class="nav-wrap" role="banner">
-    <nav class="nav" aria-label="Principal">
+    <label for="amount">Cantidad a donar (MXN):</label>
+    <input type="number" id="amount" value="50" min="10"
+      style="width: 100%; padding: 10px; margin-bottom: 20px;" />
 
-      <a href="principal.html" class="brand" aria-label="Ir al inicio">
-        <img src="../imagenes/logo.png" alt="UTMentor">
-      </a>
+    <!-- Contenedor para el Payment Element -->
+    <div id="payment-element"></div>
 
-      <button class="burger"
-        aria-label="Abrir menú"
-        aria-expanded="false"
-        aria-controls="mobile-panel">
-        <span class="burger-box">
-          <span class="burger-line"></span>
-        </span>
-        <span class="burger-label">Menú</span>
-      </button>
+    <button id="submit"
+      style="width:100%; margin-top:20px; padding:12px; background:#6772e5; color:white; border:none; border-radius:5px;">
+      Donar
+    </button>
 
-      <div id="mobile-panel" class="panel" role="group" aria-label="Acciones">
-        <div class="links">
-          <a class="link" href="iniciarSesion.html">Iniciar sesión</a>
-          <a class="link cta" href="registro.html">Registrarse</a>
-        </div>
-      </div>
-
-    </nav>
-  </header>
-
-  <div class="circles-layer">
-    <div class="circle-bg"></div>
+    <!-- Mensaje dinámico en la misma página -->
+    <div id="mensaje"></div>
   </div>
-  
 
-  <!-- CONTENIDO -->
-  <main class="don-main">
-    <section class="don-panel">
+  <script>
+    const stripe = Stripe("pk_test_51STq7ZF3d8y3BiJnJqaXNEFHJc4WQs8WzjXmCd4ENlblsFGVHRPVjRjp6gBFxw3P5KS593DjoxScDh169C0WIxUh00ryapalUb"); // REEMPLAZA
 
-      <h1 class="don-title">Apoya a la comunidad UTMentor</h1>
-      <p class="don-sub">
-        Gracias por formar parte de esta plataforma 
-        Tu aportación nos ayuda a mantener el proyecto, mejorar funciones
-        y seguir ofreciendo recursos a estudiantes y asesores.
-      </p>
+    let elements;
+    let clientSecretActual = null;
 
-      <!-- Montos sugeridos -->
-      <div class="don-options">
-        <button class="don-amount" data-value="50">$50 MXN</button>
-        <button class="don-amount" data-value="100">$100 MXN</button>
-        <button class="don-amount" data-value="200">$200 MXN</button>
-      </div>
+    async function generarIntentoPago() {
+      const amount = Number(document.getElementById("amount").value);
 
-      <!-- Monto libre -->
-      <div class="don-input-group">
-        <label for="don-custom" class="don-label">Otro monto</label>
-        <input id="don-custom" type="number" min="10" placeholder="Ingresa un monto…" />
-      </div>
+      const res = await fetch("http://localhost:3000/api/pagos/donar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount })
+      });
 
-      <button class="don-btn">Realizar donación</button>
+      const data = await res.json();
+      clientSecretActual = data.clientSecret;
 
-      <p class="don-small">Tu contribución hace una gran diferencia. 💙</p>
+      elements = stripe.elements({ clientSecret: clientSecretActual });
+      const paymentElement = elements.create("payment");
+      paymentElement.mount("#payment-element");
+    }
 
-    </section>
-  </main>
+    generarIntentoPago(); // Se crea al entrar a la página
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+    document.getElementById("submit").addEventListener("click", async () => {
+      const mensaje = document.getElementById("mensaje");
+      mensaje.style.display = "none";
 
-      <nav class="site-footer__links">
-        <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
-        <a href="donaciones.html" class="site-footer__link">Donar a la comunidad UTMentor</a>
-      </nav>
-    </div>
-  </footer>
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.href // NO redirige porque manejamos la respuesta abajo
+        },
+        redirect: "if_required"
+      });
 
-  <script src="https://js.stripe.com/v3/"></script>
-
-  <script src="../js/donar.js"></script>
-
+      if (error) {
+        mensaje.innerText = "❌ Error en el pago: " + error.message;
+        mensaje.className = "error";
+        mensaje.style.display = "block";
+      } else {
+        mensaje.innerText = "✅ ¡Gracias por tu donación! Pago completado.";
+        mensaje.className = "ok";
+        mensaje.style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
