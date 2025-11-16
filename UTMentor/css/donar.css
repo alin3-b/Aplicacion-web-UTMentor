@@ -58,9 +58,15 @@ img{max-width: 100%; display: block;}
   position:fixed;
   top:0; left:0; right:0;
   z-index:1000;
-  background:rgba(255,255,255,.95);
-  backdrop-filter: blur(4px);
-  border-bottom:1px solid rgba(15,23,42,.06);
+  background: rgba(255, 255, 255, 0.3); /* menos opaco */
+  backdrop-filter: blur(12px);
+  border-bottom:1px solid rgba(15, 23, 42, 0.06);
+  transition: background 0.3s ease;
+}
+
+/* Opcional: al hacer scroll que se vuelva un poco más sólido */
+body.scrolled .nav-wrap {
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .nav{
@@ -147,22 +153,7 @@ img{max-width: 100%; display: block;}
   box-shadow: 0 0 0 4px var(--ring);
 }
 
-/* CTA "Registrarse" */
-.cta{
-  color:#fff;
-  background: linear-gradient(90deg,var(--brand),var(--brand-2));
-  box-shadow: 0 6px 18px rgba(106,92,255,.28);
-}
-.cta:hover{
-  transform: translateY(-1px) scale(1.01);
-  box-shadow: 0 8px 22px rgba(106,92,255,.34);
-}
-.cta::after{ display:none; }
-.cta:focus-visible{
-  box-shadow:
-    0 0 0 4px var(--ring),
-    0 6px 18px rgba(106,92,255,.28);
-}
+
 
 /* Hamburguesa */
 .burger{
@@ -281,188 +272,6 @@ img{max-width: 100%; display: block;}
   .no-js .burger { display:none !important; }
 }
 
-/* ----------- CONTENEDOR PRINCIPAL ----------- */
-
-.don-main{
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0rem 1rem 1.7rem;
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-}
-
-.don-panel{
-  width: 100%;
-  max-width: 520px;
-  background: var(--panel-bg);
-  border: 1px solid var(--card-bd);
-  border-radius: var(--radius-lg);
-  padding: 3rem 2rem;
-  box-shadow: var(--card-shadow);
-}
-
-/* ----------- TITULOS ----------- */
-
-.don-title{
-  font-size: 2rem;
-  font-weight: 800;
-  background: linear-gradient(90deg,var(--brand),var(--brand-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin: 0 0 .7rem;
-}
-
-.don-sub{
-  color: var(--muted);
-  margin: 0 0 2.2rem;
-  font-size: 1rem;
-  line-height: 1.45;
-}
-
-/* ----------- MONTOS SUGERIDOS ----------- */
-
-.don-options{
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.don-amount{
-  flex: 1 1 110px;
-  padding: .9rem 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.1);
-  background: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-.don-amount:hover{
-  background: var(--hover);
-  transform: translateY(-2px);
-}
-
-/* ----------- MONTO LIBRE ----------- */
-
-.don-input-group{
-  margin-bottom: 2rem;
-}
-
-.don-label{
-  font-size: .95rem;
-  display: block;
-  margin-bottom: .4rem;
-  color: var(--muted);
-}
-
-.don-input-group input{
-  width: 100%;
-  padding: .9rem 1rem;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.12);
-  font-size: 1rem;
-}
-
-/* ----------- BOTÓN ----------- */
-
-.don-btn{
-  width: 100%;
-  padding: .95rem;
-  border-radius: var(--radius-full);
-  background: linear-gradient(90deg,var(--brand),var(--brand-2));
-  color: #fff;
-  border: none;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 22px rgba(91,104,255,.28);
-  transition: .2s ease;
-}
-
-.don-btn:hover{
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 10px 26px rgba(91,104,255,.34);
-}
-
-/* ----------- NOTA ----------- */
-
-.don-small{
-  text-align: center;
-  color: var(--muted);
-  font-size: .9rem;
-  margin-top:1.2rem;
-}
-
-/* ----------- RESPONSIVE ----------- */
-
-@media(max-width:600px){
-  .don-panel{
-    padding: 2rem 1.4rem;
-  }
-}
-
-.site-footer{
-  border-top:1px solid rgba(15,23,42,.08); /* línea sutil arriba */
-  background:#fff;
-  padding:2rem 1rem;
-  color:var(--text);
-  font-size:.9rem;
-  line-height:1.4;
-}
-
-.site-footer__inner{
-  max-width: var(--hero-max-w);
-  margin:0 auto;
-  display:flex;
-  flex-wrap:wrap;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:1rem 2rem;
-}
-
-.site-footer__copy{
-  margin:0;
-  color:var(--muted);
-  font-weight:400;
-  font-size:.9rem;
-}
-
-.site-footer__links{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:1.25rem;
-}
-
-.site-footer__link{
-  text-decoration:none;
-  color:var(--text);
-  font-weight:500;
-  font-size:.9rem;
-  line-height:1.4;
-  transition:color .15s ease;
-}
-
-.site-footer__link:hover,
-.site-footer__link:focus{
-  color:var(--brand); /* usa morado/azul de marca */
-  outline:none;
-}
-
-@media (max-width:600px){
-  .site-footer__inner{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-  .site-footer__links{
-    padding-top:.5rem;
-  }
-}
-
 /* --------- FONDO CON 3 CÍRCULOS GRANDES MULTICOLOR --------- */
 body {
   position: relative;
@@ -549,4 +358,45 @@ body::after {
     bottom: -60px;
     left: 20%;
   }
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+  background: #f5f5f5;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+#mensaje {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 6px;
+  display: none;
+  font-weight: bold;
+}
+
+#mensaje.ok {
+  background: #d4ffd4;
+  color: #0f7b0f;
+  border: 1px solid #4dbe4d;
+}
+
+#mensaje.error {
+  background: #ffd4d4;
+  color: #7b0f0f;
+  border: 1px solid #be4d4d;
+}
+
+#loader {
+  text-align: center;
+  margin-bottom: 10px;
+  display: none;
 }

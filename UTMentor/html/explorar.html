@@ -40,12 +40,36 @@
       <!-- FILTROS LATERALES -->
       <aside class="filtros-card" aria-labelledby="filtros-heading">
         <h2 id="filtros-heading" class="filtros-titulo">Filtros</h2>
+        <p class="filtros-hint" id="filtrosOpc">
+          Todos los campos son <strong>opcionales</strong>. Usa uno o varios para afinar los resultados.
+        </p>
+
 
         <!-- Tema -->
         <div class="filtro-bloque">
           <label for="filtro-tema" class="filtro-label">Tema</label>
           <input id="filtro-tema" class="filtro-input" type="text"
             placeholder="Ej. Métodos de integración" autocomplete="off" />
+        </div>
+
+        <!-- Área de conocimiento (NUEVO) -->
+        <div class="filtro-bloque">
+          <label for="filtro-area" class="filtro-label">Área de conocimiento</label>
+          <div class="select-wrap">
+            <select id="filtro-area" class="filtro-select">
+              <option value="">Cualquiera</option>
+              <option>Matemáticas</option>
+              <option>Física</option>
+              <option>Química</option>
+              <option>Computación</option>
+              <option>Diseño</option>
+              <option>Negocios</option>
+              <option>Idiomas</option>
+              <option>Otra</option>
+            </select>
+            <span class="select-arrow" aria-hidden="true">▼</span>
+          </div>
+        </div>
 
         <!-- Nombre del asesor -->
         <div class="filtro-bloque">
@@ -86,15 +110,10 @@
             <div class="filtro-sub">
               <label for="filtro-dia" class="sub-label">Día</label>
               <div class="select-wrap">
-                <select id="filtro-dia" class="filtro-select">
+                <select id="filtro-dia" class="filtro-select" aria-describedby="hint-dia">
                   <option value="">Cualquiera</option>
-                  <option>Lunes</option>
-                  <option>Martes</option>
-                  <option>Miércoles</option>
-                  <option>Jueves</option>
-                  <option>Viernes</option>
-                  <option>Sábado</option>
-                  <option>Domingo</option>
+                  <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+                  <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
                 </select>
                 <span class="select-arrow" aria-hidden="true">▼</span>
               </div>
@@ -102,19 +121,21 @@
 
             <div class="filtro-sub">
               <label class="sub-label" for="filtro-hora-desde">Desde</label>
-              <input id="filtro-hora-desde" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" />
+              <input id="filtro-hora-desde" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" aria-describedby="hint-desde">
+              <small id="hint-desde" class="filtro-hint">Ej.: 09:00 a. m.</small>
             </div>
 
             <div class="filtro-sub">
               <label class="sub-label" for="filtro-hora-hasta">Hasta</label>
-              <input id="filtro-hora-hasta" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" />
+              <input id="filtro-hora-hasta" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" aria-describedby="hint-hasta">
+              <small id="hint-hasta" class="filtro-hint">Ej.: 01:30 p. m. </small>
             </div>
           </div>
         </div>
 
         <button class="btn-buscar" id="btn-buscar" type="button">
           <span class="btn-buscar__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" class="icon-search">
+            <svg viewBox="0 0 24 24" class="icon-search" width="20" height="20">
               <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
               <line x1="16.5" y1="16.5" x2="21" y2="21"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -128,18 +149,6 @@
       <section class="resultados-area" aria-labelledby="resultados-heading">
         <div class="resultados-header">
           <h2 id="resultados-heading" class="resultados-titulo">Asesores disponibles</h2>
-
-          <div class="ordenar-wrap">
-            <label class="ordenar-label" for="ordenar">Ordenar por:</label>
-            <div class="select-wrap ordenar-select">
-              <select id="ordenar" class="filtro-select filtro-select--sm">
-                <option>Relevancia</option>
-                <option>Más sesiones completadas</option>
-                <option>Mejor calificación</option>
-              </select>
-              <span class="select-arrow" aria-hidden="true">▼</span>
-            </div>
-          </div>
         </div>
 
         <!-- Banner info -->
@@ -176,9 +185,7 @@
 
               <div class="asesor-extra">
                 <div class="asesor-rating">
-                  <div class="stars" aria-label="5 de 5">
-                    ★★★★★
-                  </div>
+                  <div class="stars" aria-label="5 de 5">★★★★★</div>
                   <div class="asesor-submeta">
                     <span>5 / 5</span>
                   </div>
@@ -215,9 +222,7 @@
 
               <div class="asesor-extra">
                 <div class="asesor-rating">
-                  <div class="stars" aria-label="5 de 5">
-                    ★★★★★
-                  </div>
+                  <div class="stars" aria-label="5 de 5">★★★★★</div>
                   <div class="asesor-submeta">
                     <span>5 / 5</span>
                   </div>
@@ -254,9 +259,7 @@
 
               <div class="asesor-extra">
                 <div class="asesor-rating">
-                  <div class="stars" aria-label="4 de 5">
-                    ★★★★☆
-                  </div>
+                  <div class="stars" aria-label="4 de 5">★★★★☆</div>
                   <div class="asesor-submeta">
                     <span>4 / 5</span>
                   </div>
@@ -293,9 +296,7 @@
 
               <div class="asesor-extra">
                 <div class="asesor-rating">
-                  <div class="stars" aria-label="4 de 5">
-                    ★★★★★
-                  </div>
+                  <div class="stars" aria-label="5 de 5">★★★★★</div>
                   <div class="asesor-submeta">
                     <span>5 / 5</span>
                   </div>
@@ -309,7 +310,7 @@
             </div>
           </li>
 
-          <!-- Card 3 -->
+          <!-- Card 5 -->
           <li class="asesor-card">
             <div class="asesor-card-main">
               <img class="asesor-avatar" src="../imagenes/adviser3.jpg" alt="Foto de Teo Trujillo" />
@@ -332,9 +333,7 @@
 
               <div class="asesor-extra">
                 <div class="asesor-rating">
-                  <div class="stars" aria-label="4 de 5">
-                    ★★★★★
-                  </div>
+                  <div class="stars" aria-label="5 de 5">★★★★★</div>
                   <div class="asesor-submeta">
                     <span>5 / 5</span>
                   </div>
@@ -348,6 +347,26 @@
             </div>
           </li>
         </ul>
+
+        <!-- Paginación (NUEVA) -->
+        <div class="resultados-footer">
+          <nav class="paginacion" aria-label="Paginación de resultados">
+            <button class="page-btn prev" type="button" aria-label="Página anterior" data-page="prev" disabled>
+              ‹
+            </button>
+            <ul class="page-list" role="list">
+              <li><button class="page-number is-active" type="button" data-page="1" aria-current="page">1</button></li>
+              <li><button class="page-number" type="button" data-page="2">2</button></li>
+              <li><button class="page-number" type="button" data-page="3">3</button></li>
+              <li><span class="page-ellipsis" aria-hidden="true">…</span></li>
+              <li><button class="page-number" type="button" data-page="10">10</button></li>
+            </ul>
+            <button class="page-btn next" type="button" aria-label="Página siguiente" data-page="next">
+              ›
+            </button>
+          </nav>
+        </div>
+        <!-- /Paginación -->
       </section>
     </section>
   </main>
@@ -365,5 +384,4 @@
 
   <script src="../js/explorar.js" defer></script>
 </body>
-
 </html>

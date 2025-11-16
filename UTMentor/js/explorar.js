@@ -70,3 +70,61 @@ document.documentElement.classList.remove('no-js');
     });
   }
 })();
+
+// ----- NUEVO: soporte para filtro de Área + paginación -----
+(function(){
+  // Filtro: Área de conocimiento
+  const $area = document.getElementById('filtro-area');
+  if ($area){
+    // Cuando cambie el área, re-aplicamos filtros con tu lógica actual
+    $area.addEventListener('change', () => {
+      if (typeof window.applyFilters === 'function') {
+        window.applyFilters();
+      } else {
+        // fallback: intenta disparar tu botón de buscar si existe
+        document.getElementById('btn-buscar')?.click();
+      }
+    });
+  }
+
+  // Paginación
+  const $paginacion = document.querySelector('.paginacion');
+  if ($paginacion){
+    const $btnPrev = $paginacion.querySelector('.page-btn.prev');
+    const $btnNext = $paginacion.querySelector('.page-btn.next');
+    const $pageList = $paginacion.querySelector('.page-list');
+
+    // Función para cambiar de página integrándose con tu render actual
+    const goto = (n) => {
+      const cur  = (typeof window.currentPage !== 'undefined') ? window.currentPage : 1;
+      const max  = (typeof window.totalPages  !== 'undefined') ? window.totalPages  : 1;
+      const next = Math.min(Math.max(1, n), max);
+
+      if (typeof window.setPage === 'function'){
+        window.setPage(next);
+      } else if (typeof window.render === 'function'){
+        window.currentPage = next;
+        window.render();
+      } else {
+        // Si no hay render global, no hacemos nada para no romper tu código
+      }
+    };
+
+    $btnPrev?.addEventListener('click', () => {
+      const cur = (typeof window.currentPage !== 'undefined') ? window.currentPage : 1;
+      goto(cur - 1);
+    });
+
+    $btnNext?.addEventListener('click', () => {
+      const cur = (typeof window.currentPage !== 'undefined') ? window.currentPage : 1;
+      goto(cur + 1);
+    });
+
+    $pageList?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.page-number');
+      if (!btn) return;
+      const n = Number(btn.dataset.page);
+      if (Number.isFinite(n)) goto(n);
+    });
+  }
+})();
