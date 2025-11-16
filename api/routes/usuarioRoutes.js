@@ -6,6 +6,7 @@ import {
   listarAsesores,
   obtenerInfoAsesor,
   listarTemasPopulares,
+  obtenerMetricas
 } from "../controllers/usuarioController.js";
 
 const router = express.Router();
@@ -23,6 +24,9 @@ router.get("/asesores", listarAsesores);
 router.get("/asesores/:id", obtenerInfoAsesor);
 
 router.get("/temas/populares", listarTemasPopulares);
+
+router.get("/metricas", obtenerMetricas);
+
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");

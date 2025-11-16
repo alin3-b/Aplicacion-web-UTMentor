@@ -2,6 +2,7 @@
 // Importar servicio de asesores
 import { obtenerAsesores } from "./services/asesorService.js";
 import { obtenerTemasPopulares } from "./services/topicService.js";
+import { obtenerMetricas } from "./services/metricasService.js";
 
 
 document.documentElement.classList.remove("no-js");
@@ -385,10 +386,40 @@ async function cargarTemasPopulares() {
   }
 }
 
+async function cargarMetricas() {
+  const metricas = await obtenerMetricas();
+  if (!metricas) return;
+
+  const container = document.querySelector(".trust-metrics");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="trust-metric">
+      <div class="trust-metric__value">+${metricas.asesoresActivos}</div>
+      <div class="trust-metric__label">asesores impartiendo temas cada semana.</div>
+    </div>
+
+    <div class="trust-metric">
+      <div class="trust-metric__value">+${metricas.calificaciones5}</div>
+      <div class="trust-metric__label">calificaciones de asesores con 5 estrellas.</div>
+    </div>
+
+    <div class="trust-metric">
+      <div class="trust-metric__value">+${metricas.temasImpartidos}</div>
+      <div class="trust-metric__label">temas impartidos.</div>
+    </div>
+
+    <div class="trust-metric">
+      <div class="trust-metric__value">${metricas.satisfaccionPromedio}/5</div>
+      <div class="trust-metric__label">en satisfacción de los usuarios.</div>
+    </div>
+  `;
+}
 // Inicializar al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
   cargarAsesoresPopulares();  // Ya existente
   cargarTemasPopulares();
+  cargarMetricas();
 });
 
 // FAQ: permitir sólo una tarjeta abierta a la vez
