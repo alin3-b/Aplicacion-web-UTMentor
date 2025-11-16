@@ -328,7 +328,7 @@ body {
   display: flex;
   justify-content: flex-start;
 
-  padding-top: 9rem; /* separa del nav */
+  padding-top: 2rem; /* separa del nav */
   padding-left: 4rem;
   padding-right: 4rem;
   padding-bottom: 4rem;
