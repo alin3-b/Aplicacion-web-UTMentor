@@ -5,6 +5,7 @@ import {
   getAllAsesores,
   getAsesorInfo,
   getTemasPopulares,
+  getMetricas
 } from "../models/usuarioMySQL.js";
 
 /**
@@ -294,3 +295,13 @@ export async function crearUsuario(req, res) {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
+export const obtenerMetricas = async (req, res) => {
+  try {
+    const metricas = await getMetricas();
+    res.json(metricas);
+  } catch (error) {
+    console.error("Error al obtener métricas:", error);
+    res.status(500).json({ error: "Error al obtener métricas" });
+  }
+};

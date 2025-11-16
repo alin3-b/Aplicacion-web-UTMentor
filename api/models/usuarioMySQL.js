@@ -166,4 +166,31 @@ export async function addUsuario({
   );
   return { id_usuario: result.insertId, nombre_completo, correo };
 }
+export async function getMetricas() {
+  const [[asesoresActivos]] = await mysqlPool.query(`
+    SELECT COUNT(DISTINCT u.id_usuario) AS total
+    FROM usuarios u
+    INNER JOIN usuario_rol ur ON u.id_usuario = ur.fk_usuario
+    INNER JOIN roles r ON ur.fk_rol = r.id_rol
+    WHERE r.nombre_rol = 'Asesor' AND u.es_activo = TRUE
+  `);
 
+  const [[calificaciones5]] = await mysqlPool.query(`
+    SELECT COUNT(*) AS total FROM calificaciones WHERE puntuacion = 5
+  `);
+
+  const [[temasImpartidos]] = await mysqlPool.query(`
+    SELECT COUNT(*) AS total FROM disponibilidades
+  `);
+
+  const [[satisfaccion]] = await mysqlPool.query(`
+    SELECT ROUND(AVG(puntuacion), 1) AS promedio FROM calificaciones
+  `);
+
+  return {
+    asesoresActivos: asesoresActivos.total,
+    calificaciones5: calificaciones5.total,
+    temasImpartidos: temasImpartidos.total,
+    satisfaccionPromedio: satisfaccion.promedio,
+  };
+}
