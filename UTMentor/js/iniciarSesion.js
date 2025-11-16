@@ -42,104 +42,265 @@ document.documentElement.classList.remove('no-js');
   });
 })();
 
-/* ===========================
-   TOGGLE CONTRASEÑA (ojito)
-=========================== */
-(function passwordToggle() {
-  const field = document.querySelector('.auth-field-password .auth-input');
-  const btn = document.querySelector('.auth-pw-toggle');
+/* ============================
+   MOSTRAR / OCULTAR CONTRASEÑA
+===============================*/
+const togglePw = document.querySelector(".toggle-pw");
+const passwordInput = document.getElementById("password");
 
-  if (!field || !btn) return;
+togglePw.addEventListener("click", () => {
+  const isPassword = passwordInput.type === "password";
+  passwordInput.type = isPassword ? "text" : "password";
+});
 
-  let visible = false;
-  const update = () => {
-    field.type = visible ? 'text' : 'password';
-    btn.setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña');
-    // Para estilos del ícono (si los usas en CSS)
-    btn.classList.toggle('is-visible', visible);
-  };
 
-  btn.addEventListener('click', () => {
-    visible = !visible;
-    update();
+/* ============================
+   MOSTRAR MODAL DE ROLES
+===============================*/
+
+// Simula si un usuario tiene ambos roles
+// En tu backend esto vendrá desde la base de datos
+const usuarioTieneAmbosRoles = true;
+
+const btnLogin = document.querySelector(".btn-login");
+const modal = document.getElementById("roleModal");
+
+btnLogin.addEventListener("click", (e) => {
+  e.preventDefault(); // evita enviar el form
+
+  if (usuarioTieneAmbosRoles) {
+    abrirModalDeRoles();
+  } else {
+    // Redirección normal (ejemplo)
+    window.location.href = "panelAsesorado.html";
+  }
+});
+
+
+function abrirModalDeRoles() {
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+/* ============================
+   CERRAR MODAL
+===============================*/
+document.querySelectorAll("[data-role-dismiss]").forEach(el => {
+  el.addEventListener("click", () => {
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+  });
+});
+
+// iniciarSesion.js
+
+(function () {
+  // --------- Selectores con fallback ---------
+  const form =
+    document.getElementById("loginForm") ||
+    document.querySelector(".login-form");
+
+  if (!form) return; // No hay formulario en la página
+
+  const emailInput =
+    document.getElementById("email") ||
+    form.querySelector('input[type="email"]');
+
+  const passwordInput =
+    document.getElementById("password") ||
+    form.querySelector('input[type="password"]');
+
+  const togglePwBtn =
+    form.querySelector(".toggle-pw") || null;
+
+  const emailGroup = emailInput?.closest(".input-group");
+  const passGroup = passwordInput?.closest(".input-group");
+
+  const emailError =
+    document.getElementById("emailError") ||
+    emailGroup?.querySelector(".input-error");
+
+  const passwordError =
+    document.getElementById("passwordError") ||
+    passGroup?.querySelector(".input-error");
+
+  const authError =
+    document.getElementById("authError") ||
+    // si no existe, lo creamos debajo del botón de submit
+    (() => {
+      const el = document.createElement("p");
+      el.className = "auth-error";
+      const submitBtn = form.querySelector('[type="submit"], .btn-login');
+      if (submitBtn?.parentNode) {
+        submitBtn.parentNode.insertBefore(el, submitBtn.nextSibling);
+      } else {
+        form.appendChild(el);
+      }
+      return el;
+    })();
+
+  const submitBtn =
+    form.querySelector('[type="submit"], .btn-login');
+
+  // --------- Utilidades ---------
+  const EMAIL_RE =
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+  function setFieldError(groupEl, errorEl, message) {
+    if (!groupEl || !errorEl) return;
+    errorEl.textContent = message || "";
+    if (message) {
+      groupEl.classList.add("is-invalid");
+      errorEl.style.display = "block";
+      const input = groupEl.querySelector("input");
+      if (input) input.setAttribute("aria-invalid", "true");
+    } else {
+      groupEl.classList.remove("is-invalid");
+      errorEl.style.display = "none";
+      const input = groupEl.querySelector("input");
+      if (input) input.removeAttribute("aria-invalid");
+    }
+  }
+
+  function showAuthError(message) {
+    if (!authError) return;
+    authError.textContent = message || "";
+    if (message) {
+      authError.classList.add("is-visible");
+      authError.setAttribute("role", "alert");
+      authError.setAttribute("aria-live", "polite");
+    } else {
+      authError.classList.remove("is-visible");
+      authError.removeAttribute("role");
+      authError.removeAttribute("aria-live");
+    }
+  }
+
+  function disableSubmit(state) {
+    if (!submitBtn) return;
+    submitBtn.disabled = !!state;
+    if (state) {
+      submitBtn.dataset._label = submitBtn.textContent.trim();
+      submitBtn.textContent = "Entrando…";
+    } else if (submitBtn.dataset._label) {
+      submitBtn.textContent = submitBtn.dataset._label;
+      delete submitBtn.dataset._label;
+    }
+  }
+
+  // --------- Validadores ---------
+  function validateEmail() {
+    if (!emailInput) return true;
+    const value = (emailInput.value || "").trim().toLowerCase();
+    emailInput.value = value;
+
+    if (!value) {
+      setFieldError(emailGroup, emailError, "Ingresa tu correo.");
+      return false;
+    }
+    if (!EMAIL_RE.test(value)) {
+      setFieldError(emailGroup, emailError, "Ingresa un correo válido.");
+      return false;
+    }
+    setFieldError(emailGroup, emailError, "");
+    return true;
+  }
+
+  function validatePassword() {
+    if (!passwordInput) return true;
+    const value = (passwordInput.value || "").trim();
+
+    if (!value) {
+      setFieldError(passGroup, passwordError, "Ingresa tu contraseña.");
+      return false;
+    }
+    if (value.length < 6) {
+      setFieldError(passGroup, passwordError, "La contraseña debe tener al menos 6 caracteres.");
+      return false;
+    }
+    setFieldError(passGroup, passwordError, "");
+    return true;
+  }
+
+  // --------- Eventos de interacción ---------
+  // En vivo (mientras teclean)
+  emailInput?.addEventListener("input", () => {
+    showAuthError("");
+    if (emailGroup?.classList.contains("is-invalid")) validateEmail();
   });
 
-  update(); // estado inicial consistente
-})();
+  passwordInput?.addEventListener("input", () => {
+    showAuthError("");
+    if (passGroup?.classList.contains("is-invalid")) validatePassword();
+  });
 
-/* ===========================
-   MODAL ROLES (maqueta)
-=========================== */
-(function roleModal() {
-  const form = document.querySelector('.auth-form');
-  const modal = document.getElementById('roleModal');
-  if (!form || !modal) return;
+  // Validación al salir del campo
+  emailInput?.addEventListener("blur", validateEmail);
+  passwordInput?.addEventListener("blur", validatePassword);
 
-  const backdrop = modal.querySelector('.role-modal__backdrop');
-  const closeBtn = modal.querySelector('.role-modal__close');
+  // Toggle “ver contraseña”
+  togglePwBtn?.addEventListener("click", () => {
+    if (!passwordInput) return;
+    const isText = passwordInput.type === "text";
+    passwordInput.type = isText ? "password" : "text";
+    togglePwBtn.setAttribute("aria-pressed", String(!isText));
+  });
 
-  // Focusables dentro del modal
-  const focusableSelectors =
-    'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
-
-  let lastActiveElement = null;
-
-  const lockScroll = (lock) => {
-    document.body.style.overflow = lock ? 'hidden' : '';
-  };
-
-  const openModal = () => {
-    lastActiveElement = document.activeElement;
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden', 'false');
-    lockScroll(true);
-
-    // Mueve foco al primer foco disponible dentro
-    const firstFocusable = modal.querySelector(focusableSelectors);
-    if (firstFocusable) firstFocusable.focus();
-  };
-
-  const closeModal = () => {
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden', 'true');
-    lockScroll(false);
-    if (lastActiveElement) lastActiveElement.focus();
-  };
-
-  // Maqueta: abre el modal al enviar (aquí colocarás tu lógica real)
-  form.addEventListener('submit', (e) => {
+  // --------- Envío del formulario ---------
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    openModal();
-  });
+    showAuthError("");
 
-  // Cierres
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  if (backdrop) backdrop.addEventListener('click', closeModal);
+    const okEmail = validateEmail();
+    const okPass = validatePassword();
 
-  document.addEventListener('keydown', (e) => {
-    if (modal.classList.contains('is-open') && e.key === 'Escape') {
-      closeModal();
+    if (!okEmail || !okPass) {
+      // Llevamos el foco al primer error
+      const firstInvalid =
+        form.querySelector(".input-group.is-invalid input");
+      firstInvalid?.focus();
+      return;
+    }
+
+    // Bloqueamos submit mientras “autenticamos”
+    disableSubmit(true);
+
+    try {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      // TODO: Reemplazar por tu llamada real al backend.
+      const isAuthOk = await fakeAuth(email, password);
+
+      if (!isAuthOk) {
+        // Error de autenticación
+        setFieldError(passGroup, passwordError, "");
+        setFieldError(emailGroup, emailError, "");
+        showAuthError("Usuario o contraseña incorrectos.");
+        passwordInput.focus();
+        return;
+      }
+
+      // Éxito: redirige o continúa flujo
+      window.location.href = "panelAsesorado.html"; // ajusta la URL a tu flujo real
+    } catch (err) {
+      console.error(err);
+      showAuthError("Ocurrió un problema al iniciar sesión. Inténtalo de nuevo.");
+    } finally {
+      disableSubmit(false);
     }
   });
 
-  // Focus trap muy básico
-  modal.addEventListener('keydown', (e) => {
-    if (e.key !== 'Tab' || !modal.classList.contains('is-open')) return;
-    const focusables = Array.from(modal.querySelectorAll(focusableSelectors))
-      .filter(el => el.offsetParent !== null);
-    if (!focusables.length) return;
-
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  });
+  // --------- Simulación de autenticación (reemplazar) ---------
+  function fakeAuth(email, password) {
+    return new Promise((resolve) => {
+      // Simulamos latencia
+      setTimeout(() => {
+        // Demo: credenciales válidas
+        const OK_USER = "demo@utmentor.com";
+        const OK_PASS = "Demo123!";
+        resolve(email === OK_USER && password === OK_PASS);
+      }, 800);
+    });
+  }
 })();
-
-

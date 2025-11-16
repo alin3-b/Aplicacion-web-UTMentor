@@ -39,3 +39,4 @@ export async function obtenerAsesorPorId(id) {
     throw error;
   }
 }
+

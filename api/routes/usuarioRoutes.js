@@ -5,6 +5,7 @@ import {
   crearUsuario,
   listarAsesores,
   obtenerInfoAsesor,
+  listarTemasPopulares,
 } from "../controllers/usuarioController.js";
 
 const router = express.Router();
@@ -20,6 +21,8 @@ router.get("/asesores", listarAsesores);
 
 // === OBTENER INFO COMPLETA DE ASESOR ===
 router.get("/asesores/:id", obtenerInfoAsesor);
+
+router.get("/temas/populares", listarTemasPopulares);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");

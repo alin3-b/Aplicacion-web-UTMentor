@@ -20,23 +20,6 @@ export async function getUsuarios() {
   return rows;
 }
 
-export async function addUsuario({
-  nombre_completo,
-  correo,
-  semestre,
-  fk_carrera,
-  password_hash,
-}) {
-  const [result] = await mysqlPool.query(
-    `INSERT INTO usuarios 
-    (nombre_completo, correo, semestre, fk_carrera, password_hash, es_activo)
-    VALUES (?, ?, ?, ?, ?, TRUE)`,
-    [nombre_completo, correo, semestre, fk_carrera, password_hash]
-  );
-  return { id_usuario: result.insertId, nombre_completo, correo };
-}
-
-// ✅ CORREGIDO: sin descripcion ni correo_contacto
 export async function getAllAsesores() {
   const [rows] = await mysqlPool.query(`
     SELECT 
@@ -91,7 +74,6 @@ export async function getAllAsesores() {
   return asesoresConDisponibilidades;
 }
 
-// ✅ CORREGIDO: sin descripcion ni correo_contacto
 export async function getAsesorInfo(id_asesor) {
   const [rows] = await mysqlPool.query(
     `
@@ -147,3 +129,41 @@ export async function getAsesorInfo(id_asesor) {
     disponibilidades,
   };
 }
+
+export async function getTemasPopulares() {
+  const [rows] = await mysqlPool.query(`
+    SELECT 
+      t.id_tema,
+      t.nombre_tema,
+      COUNT(DISTINCT at.fk_asesor) AS numero_asesores,
+      COUNT(DISTINCT i.id_inscripcion) AS numero_reservas
+    FROM temas t
+    LEFT JOIN asesores_temas at ON t.id_tema = at.fk_tema
+    LEFT JOIN disponibilidades d ON t.id_tema = d.fk_tema
+    LEFT JOIN inscripciones_sesion i 
+          ON d.id_disponibilidad = i.fk_disponibilidad 
+          AND i.estado != 'cancelada'
+    GROUP BY t.id_tema
+    ORDER BY numero_reservas DESC, numero_asesores DESC
+    LIMIT 6
+  `);
+
+  return rows;
+}
+
+export async function addUsuario({
+  nombre_completo,
+  correo,
+  semestre,
+  fk_carrera,
+  password_hash,
+}) {
+  const [result] = await mysqlPool.query(
+    `INSERT INTO usuarios 
+    (nombre_completo, correo, semestre, fk_carrera, password_hash, es_activo)
+    VALUES (?, ?, ?, ?, ?, TRUE)`,
+    [nombre_completo, correo, semestre, fk_carrera, password_hash]
+  );
+  return { id_usuario: result.insertId, nombre_completo, correo };
+}
+
