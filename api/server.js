@@ -2,15 +2,20 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import Stripe from "stripe";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 import { mysqlPool, testMySQLConnection } from "./config/db.js";
+
+// IMPORTAR RUTAS NUEVAS DE PAGO  👇
 import usuarioRoutes from "./routes/usuarioRoutes.js";
+import paymentsRoutes from "./routes/paymentsRoutes.js";
 
 dotenv.config();
 
 const app = express();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // === MIDDLEWARES ===
 app.use(cors());
@@ -48,6 +53,9 @@ app.get("/health", async (req, res) => {
 
 // === RUTAS API ===
 app.use("/api/usuarios", usuarioRoutes);
+
+// RUTAS DE PAGO (DONACIONES)  👇
+app.use("/api/pagos", paymentsRoutes);
 
 // === SWAGGER ===
 const swaggerOptions = {

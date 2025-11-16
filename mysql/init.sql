@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS tokens_recuperacion (
 CREATE TABLE IF NOT EXISTS perfiles_asesores (
   id_asesor INT PRIMARY KEY,
   conteo_asesorias INT DEFAULT 0 CHECK (conteo_asesorias >= 0),
-  calificacion_promedio DECIMAL(3,2) DEFAULT 0.00 CHECK (calificacion_promedio BETWEEN 0 AND 5),
+  calificacion_promedio DECIMAL(2,1) DEFAULT 0.0 CHECK (calificacion_promedio BETWEEN 0 AND 5)
   CONSTRAINT fk_perfiles_asesores_usuarios
     FOREIGN KEY (id_asesor) REFERENCES usuarios(id_usuario)
     ON DELETE CASCADE ON UPDATE CASCADE

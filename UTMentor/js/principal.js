@@ -1,10 +1,11 @@
 //UTMentor/js/principal.js
 // Importar servicio de asesores
 import { obtenerAsesores } from "./services/asesorService.js";
+import { obtenerTemasPopulares } from "./services/topicService.js";
+
 
 document.documentElement.classList.remove("no-js");
 
-// Fallback: si este script corre, quitamos no-js
 // Toggle del menú móvil + actualización de etiqueta/aria
 (function () {
   const burger = document.querySelector(".burger");
@@ -184,33 +185,23 @@ const advisorImages = [
   "../imagenes/adviser5.jpg",
 ];
 
-// Función para formatear disponibilidad
 function formatDisponibilidad(disponibilidades) {
   if (!disponibilidades || disponibilidades.length === 0) {
     return "Sin disponibilidad";
   }
 
+  const nombresDias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
   const dias = new Set();
-  const hoy = new Date();
-  const manana = new Date(hoy);
-  manana.setDate(manana.getDate() + 1);
 
   disponibilidades.forEach((disp) => {
     const fecha = new Date(disp.fecha_inicio);
-    const diffDays = Math.floor((fecha - hoy) / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
-      dias.add("Hoy");
-    } else if (diffDays === 1) {
-      dias.add("Mañana");
-    } else if (diffDays <= 7) {
-      const nombresDias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-      dias.add(nombresDias[fecha.getDay()]);
-    }
+    dias.add(nombresDias[fecha.getDay()]);
   });
 
+  // Mostrar máximo 3 días
   return Array.from(dias).slice(0, 3).join(" · ") || "Próximamente";
 }
+
 
 // Función para generar estrellas
 function generarEstrellas(calificacion) {
@@ -281,7 +272,7 @@ function crearAsesorCard(asesor, index) {
         <div class="advisorCard__ratingBlock">
           <div class="advisorCard__stars" aria-label="${rating} de 5">
             ${generarEstrellas(rating)}
-            <span class="advisorCard__scoreText">${rating.toFixed(1)}/5</span>
+            <span class="advisorCard__scoreText">${Number.isInteger(rating) ? rating : rating.toFixed(1)}/5</span>
           </div>
           <div class="advisorCard__availability">${disponibilidad}</div>
         </div>
@@ -295,7 +286,6 @@ function crearAsesorCard(asesor, index) {
   `;
 }
 
-// Cargar asesores desde la API usando el servicio
 async function cargarAsesoresPopulares() {
   const track = document.getElementById("featured-track");
   if (!track) return;
@@ -310,8 +300,16 @@ async function cargarAsesoresPopulares() {
       return;
     }
 
-    // Tomar solo los primeros 5 asesores (los mejor calificados)
-    const asesoresTop = asesores.slice(0, 5);
+    // Ordenar primero por calificación y luego por número de sesiones (descendente)
+    const asesoresOrdenados = asesores.sort((a, b) => {
+      if (b.puntuacion_promedio !== a.puntuacion_promedio) {
+        return b.puntuacion_promedio - a.puntuacion_promedio;
+      }
+      return b.numero_sesiones - a.numero_sesiones;
+    });
+
+    // Tomar solo los primeros 5 asesores
+    const asesoresTop = asesoresOrdenados.slice(0, 5);
 
     // Generar las cards
     track.innerHTML = asesoresTop
@@ -326,6 +324,7 @@ async function cargarAsesoresPopulares() {
       '<li style="padding: 2rem; text-align: center; width: 100%;">Error al cargar asesores. Intenta recargar la página.</li>';
   }
 }
+
 
 // Función para inicializar el carrusel
 function inicializarCarruselAsesores() {
@@ -351,8 +350,46 @@ function inicializarCarruselAsesores() {
   });
 }
 
-// Cargar asesores al cargar la página
-document.addEventListener("DOMContentLoaded", cargarAsesoresPopulares);
+// ---------------- TEMAS POPULARES ----------------
+
+// Función para generar el HTML de un tema
+function crearTemaCard(tema) {
+  return `
+    <li class="subject">
+      <div class="subject__body">
+        <h4>${tema.nombre_tema}</h4>
+        <span class="subject__meta">${tema.numero_asesores} asesores</span>
+      </div>
+      <span class="subject__chev" aria-hidden="true">›</span>
+    </li>
+  `;
+}
+
+// Función para cargar temas populares desde la API
+async function cargarTemasPopulares() {
+  const grid = document.querySelector(".subjects__grid");
+  if (!grid) return;
+
+  try {
+    const temas = await obtenerTemasPopulares(); // Llama a tu service
+    if (!temas || temas.length === 0) {
+      grid.innerHTML = `<li style="padding: 2rem; text-align: center; width: 100%;">No hay temas disponibles</li>`;
+      return;
+    }
+
+    // Como vienen ordenados y siempre son 6, solo mapeamos
+    grid.innerHTML = temas.map(crearTemaCard).join("");
+  } catch (error) {
+    console.error("Error al cargar temas populares:", error);
+    grid.innerHTML = `<li style="padding: 2rem; text-align: center; width: 100%;">Error al cargar temas</li>`;
+  }
+}
+
+// Inicializar al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+  cargarAsesoresPopulares();  // Ya existente
+  cargarTemasPopulares();
+});
 
 // FAQ: permitir sólo una tarjeta abierta a la vez
 (function () {
