@@ -20,59 +20,127 @@ export async function getUsuarios() {
   return rows;
 }
 
-export async function getAllAsesores() {
-  const [rows] = await mysqlPool.query(`
+export async function getAllAsesores(filtros = {}) {
+  const { nombre, carrera, dia, desde, hasta, tema, area } = filtros;
+
+  const conditions = ["u.es_activo = TRUE"];
+  const params = [];
+
+  if (nombre) {
+    conditions.push("u.nombre_completo LIKE ? COLLATE utf8mb4_unicode_ci");
+    params.push(`%${nombre}%`);
+  }
+
+  if (carrera) {
+    conditions.push("c.nombre_carrera LIKE ? COLLATE utf8mb4_unicode_ci");
+    params.push(`%${carrera}%`);
+  }
+
+  if (tema) {
+    conditions.push("t.nombre_tema LIKE ? COLLATE utf8mb4_unicode_ci");
+    params.push(`%${tema}%`);
+  }
+
+  if (area) {
+    conditions.push("a.nombre_area LIKE ? COLLATE utf8mb4_unicode_ci");
+    params.push(`%${area}%`);
+  }
+
+  if (dia) {
+    const diasMap = { "Domingo":0,"Lunes":1,"Martes":2,"Miércoles":3,"Jueves":4,"Viernes":5,"Sábado":6 };
+    conditions.push("DAYOFWEEK(d.fecha_inicio) = ?");
+    params.push(diasMap[dia] + 1);
+  }
+  
+  if (desde && hasta) {
+    conditions.push("(TIME(d.fecha_fin) >= ? AND TIME(d.fecha_inicio) <= ?)");
+    params.push(desde, hasta);
+  } else if (desde) {
+    conditions.push("TIME(d.fecha_fin) >= ?");
+    params.push(desde);
+  } else if (hasta) {
+    conditions.push("TIME(d.fecha_inicio) <= ?");
+    params.push(hasta);
+  }
+  
+
+  const query = `
     SELECT 
       u.id_usuario,
       u.nombre_completo,
       c.nombre_carrera,
       COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones,
       COALESCE(pa.calificacion_promedio, 0.0) AS puntuacion_promedio,
-      u.correo AS correo_contacto
+      u.correo AS correo_contacto,
+      d.id_disponibilidad,
+      d.fecha_inicio,
+      d.fecha_fin,
+      d.modalidad,
+      d.tipo_sesion,
+      t.nombre_tema,
+      a.nombre_area,
+      d.precio,
+      d.capacidad,
+      d.es_disponible,
+      (
+        SELECT COUNT(*) 
+        FROM inscripciones_sesion i 
+        WHERE i.fk_disponibilidad = d.id_disponibilidad AND i.estado != 'cancelada'
+      ) AS inscritos
     FROM usuarios u
     INNER JOIN perfiles_asesores pa ON u.id_usuario = pa.id_asesor
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
-    WHERE u.es_activo = TRUE
-    ORDER BY pa.calificacion_promedio DESC, pa.conteo_asesorias DESC
-  `);
+    LEFT JOIN disponibilidades d ON d.fk_asesor = u.id_usuario
+    LEFT JOIN temas t ON d.fk_tema = t.id_tema
+    LEFT JOIN areas_conocimiento a ON t.fk_area = a.id_area
+    WHERE ${conditions.join(" AND ")}
+    ORDER BY pa.conteo_asesorias DESC, d.fecha_inicio ASC
+  `;
 
-  const asesoresConDisponibilidades = await Promise.all(
-    rows.map(async (asesor) => {
-      const [disponibilidades] = await mysqlPool.query(
-        `
-        SELECT 
-          d.id_disponibilidad,
-          d.fecha_inicio,
-          d.fecha_fin,
-          d.modalidad,
-          d.tipo_sesion,
-          t.nombre_tema,
-          a.nombre_area,
-          d.precio,
-          d.capacidad,
-          d.es_disponible,
-          IFNULL(COUNT(i.id_inscripcion), 0) AS inscritos
-        FROM disponibilidades d
-        LEFT JOIN temas t ON d.fk_tema = t.id_tema
-        LEFT JOIN areas_conocimiento a ON t.fk_area = a.id_area
-        LEFT JOIN inscripciones_sesion i ON d.id_disponibilidad = i.fk_disponibilidad 
-          AND i.estado != 'cancelada'
-        WHERE d.fk_asesor = ?
-        GROUP BY d.id_disponibilidad
-        ORDER BY d.fecha_inicio ASC
-      `,
-        [asesor.id_usuario]
-      );
+  const [rows] = await mysqlPool.query(query, params);
 
-      return {
-        ...asesor,
-        disponibilidades,
-      };
-    })
-  );
+  // Mapear asesores con sus disponibilidades
+  const asesoresMap = new Map();
+  rows.forEach((row) => {
+    const {
+      id_disponibilidad, fecha_inicio, fecha_fin, modalidad, tipo_sesion,
+      nombre_tema, nombre_area, precio, capacidad, es_disponible, inscritos,
+      id_usuario, nombre_completo, nombre_carrera, numero_sesiones, puntuacion_promedio, correo_contacto
+    } = row;
 
-  return asesoresConDisponibilidades;
+    if (!asesoresMap.has(id_usuario)) {
+      asesoresMap.set(id_usuario, {
+        id_usuario,
+        nombre_completo,
+        nombre_carrera,
+        numero_sesiones,
+        puntuacion_promedio,
+        correo_contacto,
+        disponibilidades: []
+      });
+    }
+
+    if (id_disponibilidad) {
+      asesoresMap.get(id_usuario).disponibilidades.push({
+        id_disponibilidad,
+        fecha_inicio,
+        fecha_fin,
+        modalidad,
+        tipo_sesion,
+        nombre_tema,
+        nombre_area,
+        precio,
+        capacidad,
+        es_disponible,
+        inscritos
+      });
+    }
+  });
+
+  return Array.from(asesoresMap.values());
 }
+
+
 
 export async function getAsesorInfo(id_asesor) {
   const [rows] = await mysqlPool.query(
