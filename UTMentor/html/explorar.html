@@ -59,13 +59,17 @@
             <select id="filtro-area" class="filtro-select">
               <option value="">Cualquiera</option>
               <option>Matemáticas</option>
+              <option>Programación</option>
+              <option>Ingeniería</option>
+              <option>Idiomas</option>
               <option>Física</option>
               <option>Química</option>
-              <option>Computación</option>
-              <option>Diseño</option>
-              <option>Negocios</option>
-              <option>Idiomas</option>
-              <option>Otra</option>
+              <option>Biología y Biotecnología</option>
+              <option>Ciencias Sociales</option>
+              <option>Negocios/Administración</option>
+              <option>Diseño y Artes Gráficas</option>
+              <option>Humanidades y Ética</option>
+              <option>Sostenibilidad/Ambiente</option>
             </select>
             <span class="select-arrow" aria-hidden="true">▼</span>
           </div>
@@ -122,13 +126,13 @@
             <div class="filtro-sub">
               <label class="sub-label" for="filtro-hora-desde">Desde</label>
               <input id="filtro-hora-desde" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" aria-describedby="hint-desde">
-              <small id="hint-desde" class="filtro-hint">Ej.: 09:00 a. m.</small>
+              <small id="hint-desde" class="filtro-hint">Ej.: 09:00 </small>
             </div>
 
             <div class="filtro-sub">
               <label class="sub-label" for="filtro-hora-hasta">Hasta</label>
               <input id="filtro-hora-hasta" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" aria-describedby="hint-hasta">
-              <small id="hint-hasta" class="filtro-hint">Ej.: 01:30 p. m. </small>
+              <small id="hint-hasta" class="filtro-hint">Ej.: 13:30  </small>
             </div>
           </div>
         </div>
@@ -143,6 +147,13 @@
           </span>
           <span class="btn-buscar__label">Buscar asesores</span>
         </button>
+
+        <button class="btn-limpiar" id="btn-limpiar" type="button" style="display:none;">
+          <span class="btn-limpiar__icon" aria-hidden="true">
+          </span>
+          <span class="btn-limpiar__label">Limpiar filtros</span>
+        </button>
+        
       </aside>
 
       <!-- RESULTADOS -->
@@ -159,6 +170,7 @@
             sin embargo encontramos para ti algunos asesores disponibles en esta semana.
           </span>
         </div>
+        
       
         <!-- Lista de asesores (vacía al cargar, será llenada por JS) -->
         <ul class="cards-lista" id="lista-asesores">

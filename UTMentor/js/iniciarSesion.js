@@ -304,3 +304,61 @@ document.querySelectorAll("[data-role-dismiss]").forEach(el => {
     });
   }
 })();
+
+(function () {
+      const openForgot = document.getElementById('openForgot');
+      const forgotModal = document.getElementById('forgotModal');
+      const forgotDismissEls = forgotModal.querySelectorAll('[data-forgot-dismiss]');
+      const forgotCancel = document.getElementById('forgotCancel');
+      const forgotForm = document.getElementById('forgotForm');
+      const forgotEmail = document.getElementById('forgotEmail');
+      const forgotEmailError = document.getElementById('forgotEmailError');
+      const forgotMsg = document.getElementById('forgotMsg');
+
+      const open = () => {
+        forgotModal.classList.add('is-open');
+        forgotModal.setAttribute('aria-hidden', 'false');
+        forgotEmail.focus();
+        forgotMsg.textContent = '';
+        forgotEmailError.textContent = '';
+        forgotEmail.value = '';
+      };
+      const close = () => {
+        forgotModal.classList.remove('is-open');
+        forgotModal.setAttribute('aria-hidden', 'true');
+      };
+
+      // Abrir
+      openForgot.addEventListener('click', (e) => {
+        e.preventDefault();
+        open();
+      });
+
+      // Cerrar
+      [...forgotDismissEls].forEach(el => el.addEventListener('click', close));
+      forgotCancel.addEventListener('click', close);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && forgotModal.classList.contains('is-open')) close();
+      });
+
+      // Envío del formulario de recuperación
+      forgotForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        forgotEmailError.textContent = '';
+
+        if (!forgotEmail.value.trim()) {
+          forgotEmailError.textContent = 'Ingresa tu correo.';
+          forgotEmail.focus();
+          return;
+        }
+        if (!forgotEmail.checkValidity()) {
+          forgotEmailError.textContent = 'Ingresa un correo válido.';
+          forgotEmail.focus();
+          return;
+        }
+
+        // Aquí harías la llamada a tu endpoint de recuperación.
+        // Simulamos éxito:
+        forgotMsg.textContent = 'Se ha enviado un enlace de recuperación a tu correo electrónico.';
+      });
+    })();

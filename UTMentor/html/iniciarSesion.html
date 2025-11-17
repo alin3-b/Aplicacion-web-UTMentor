@@ -33,7 +33,7 @@
           <a href="registrarse.html" class="forgot-link"><strong>Registrarse</strong></a>
         </p>
 
-        <!-- IMPORTANTE: estructura preparada para grid (icono / input / ojo) + 2ª fila para errores -->
+        <!-- Formulario -->
         <form id="loginForm" class="login-form" novalidate>
           <!-- Email -->
           <label class="input-group">
@@ -47,7 +47,6 @@
               aria-describedby="emailError"
               inputmode="email"
             />
-            <!-- segunda fila: error/hint -->
             <p class="input-error" id="emailError" role="alert" aria-live="polite"></p>
           </label>
 
@@ -65,24 +64,24 @@
             <button type="button" class="toggle-pw" aria-label="Mostrar/ocultar contraseña">
               <span class="pw-eye" aria-hidden="true"></span>
             </button>
-            <!-- segunda fila: error/hint -->
             <p class="input-error" id="passwordError" role="alert" aria-live="polite"></p>
           </label>
 
           <button type="submit" class="btn-login">Entrar</button>
 
-          <!-- Mensaje de error general de autenticación -->
+          <!-- Mensaje de error general -->
           <p class="auth-error" id="authError" role="alert" aria-live="assertive"></p>
 
           <p class="login-note">
             ¿Olvidaste tu contraseña?
-            <a href="#" class="forgot-link"><strong>Recuperar contraseña</strong></a>
+            <!-- Abrir modal de recuperación -->
+            <a href="#" id="openForgot" class="forgot-link"><strong>Recuperar contraseña</strong></a>
           </p>
         </form>
       </div>
     </main>
 
-    <!-- MODAL DE ROLES -->
+    <!-- MODAL DE ROLES (ya existente) -->
     <div id="roleModal" class="role-modal" aria-hidden="true" role="dialog" aria-labelledby="roleTitle" aria-modal="true">
       <div class="role-modal__backdrop" data-role-dismiss></div>
       <div class="role-modal__card" role="document">
@@ -93,6 +92,44 @@
           <a href="panelAsesorado.html" class="btn outline">Entrar como asesorado</a>
         </div>
         <button type="button" class="role-modal__close" aria-label="Cerrar" data-role-dismiss>✕</button>
+      </div>
+    </div>
+
+    <!-- MODAL DE RECUPERACIÓN DE CONTRASEÑA (nuevo) -->
+    <div id="forgotModal" class="role-modal" aria-hidden="true" role="dialog" aria-labelledby="forgotTitle" aria-modal="true">
+      <div class="role-modal__backdrop" data-forgot-dismiss></div>
+
+      <div class="role-modal__card" role="document">
+        <h2 id="forgotTitle" class="role-modal__title">Recupera tu contraseña</h2>
+        <p class="role-modal__sub">Ingresa el correo con el que te registraste.</p>
+
+        <!-- Campo de correo -->
+        <form id="forgotForm" class="auth-form" novalidate>
+          <label class="auth-field">
+            <input
+              id="forgotEmail"
+              name="forgotEmail"
+              class="auth-input"
+              type="email"
+              placeholder="tucorreo@ejemplo.com"
+              autocomplete="email"
+              required
+              aria-describedby="forgotEmailError"
+            />
+            <p class="input-error" id="forgotEmailError" role="alert" aria-live="polite"></p>
+          </label>
+
+          <!-- Mensaje de éxito -->
+          <p id="forgotMsg" class="auth-meta" aria-live="polite"></p>
+
+          <!-- Acciones -->
+          <div class="role-modal__actions">
+            <button type="button" class="btn outline" id="forgotCancel">Cancelar</button>
+            <button type="submit" class="btn" id="forgotSubmit">Recuperar contraseña</button>
+          </div>
+        </form>
+
+        <button type="button" class="role-modal__close" aria-label="Cerrar" data-forgot-dismiss>✕</button>
       </div>
     </div>
   </div>

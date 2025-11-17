@@ -87,13 +87,25 @@ export async function listarUsuarios(req, res) {
  */
 export async function listarAsesores(req, res) {
   try {
-    const asesores = await getAllAsesores();
+    const filtros = {
+      nombre: req.query.nombre,
+      carrera: req.query.carrera,
+      calificacionMin: req.query.calificacionMin, // si quieres filtrar por calificación
+      dia: req.query.dia,
+      desde: req.query.horaDesde,   // coincide con getAllAsesores
+      hasta: req.query.horaHasta,   // coincide con getAllAsesores
+      tema: req.query.tema,
+      area: req.query.area
+    };
+
+    const asesores = await getAllAsesores(filtros);
     res.json(asesores);
   } catch (error) {
     console.error("Error al obtener asesores:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
 
 /**
  * @openapi
