@@ -1,326 +1,205 @@
 <!doctype html>
 <html lang="es" class="no-js">
 
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Registro · UTMentor</title>
-        <link rel="preload" href="../css/registro.css" as="style">
-        <link rel="stylesheet" href="../css/registro.css">
-    </head>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro · UTMentor</title>
 
-    <body class="signup-body">
-        <header class="nav-wrap">
-            <nav class="nav" aria-label="Principal">
-                <a href="principal.html" class="brand"
-                    aria-label="Ir al inicio">
-                    <img src="../imagenes/logo.png" alt="UTMentor logo" />
-                </a>
+  <!-- Reutiliza los estilos base del login -->
+  <link rel="preload" href="../css/iniciarSesion.css" as="style">
+  <link rel="stylesheet" href="../css/iniciarSesion.css">
+  <!-- Estilos mínimos extra para registro -->
+  <link rel="stylesheet" href="../css/registro.css">
+</head>
 
-                <button class="burger" title="Abrir menú"
-                    aria-label="Abrir menú" aria-expanded="false"
-                    aria-controls="mobile-panel">
-                    <span class="burger-box" aria-hidden="true">
-                        <span class="burger-line"></span>
-                    </span>
-                    <span class="burger-label">Menú</span>
-                </button>
+<body class="auth-body">
+  <!-- NAV -->
+  <header class="nav-wrap" role="banner">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo-hero.png" alt="UTMentor" />
+      </a>
+    </nav>
+  </header>
 
-                <div id="mobile-panel" class="panel" role="group"
-                    aria-label="Acciones">
-                    <div class="links">
-                        <a class="link" href="iniciarSesion.html">Iniciar
-                            sesión</a>
-                        <a class="link cta" href="registro.html">Registrarse</a>
-                    </div>
-                </div>
-            </nav>
-        </header>
+  <!-- MAIN -->
+  <div class="auth-body">
+    <main class="login-main" role="main">
+      <!-- TARJETA -->
+      <div class="login-panel" role="region" aria-labelledby="signupTitle">
+        <h2 id="signupTitle" class="login-title">Crea tu cuenta</h2>
+        <p class="login-sub">Únete a nuestra comunidad de aprendizaje</p>
 
-        <main class="signup-main" role="main">
-            <section class="signup-shell">
-                <form class="signup-card" id="signupForm" novalidate>
-                    <header class="signup-head">
-                        <p class="signup-eyebrow">Bienvenido</p>
-                        <h1 class="signup-title">Crea tu cuenta</h1>
-                        <p class="signup-sub">Únete a nuestra comunidad de
-                            aprendizaje</p>
+        <p class="login-note">
+          ¿Ya tienes cuenta?
+          <a href="iniciarSesion.html" class="forgot-link"><strong>Inicia sesión</strong></a>
+        </p>
 
-                        <div class="role-tabs" role="tablist"
-                            aria-label="Selecciona tu rol">
-                            <button type="button" class="role-tab is-active"
-                                data-role="asesor" role="tab"
-                                aria-selected="true">
-                                <span>Asesor</span>
-                            </button>
-                            <button type="button" class="role-tab"
-                                data-role="asesorado" role="tab"
-                                aria-selected="false">
-                                <span>Asesorado</span>
-                            </button>
-                            <button type="button" class="role-tab"
-                                data-role="ambos" role="tab"
-                                aria-selected="false">
-                                <span>Ambos</span>
-                            </button>
-                        </div>
-                    </header>
+        <!-- FORM -->
+        <form id="signupForm" class="login-form" novalidate>
 
-                    <!-- Nombre -->
-                    <label class="f-field">
-                        <span class="sr-only">Nombre completo</span>
-                        <input class="f-input" type="text" name="nombre"
-                            placeholder="Ingresa tu nombre completo" required>
-                    </label>
+          <!-- Rol -->
+          <label class="input-group" id="roleGroup">
+            <select id="role" name="role" aria-describedby="roleError" required>
+              <option value="" hidden>Selecciona tu rol</option>
+              <option value="asesor">Asesor</option>
+              <option value="asesorado">Asesorado</option>
+              <option value="ambos">Ambos</option>
+            </select>
+            <p class="input-error" id="roleError" role="alert" aria-live="polite"></p>
+          </label>
 
-                    <!-- Carrera + Semestre -->
-                    <div class="grid-2">
-                        <label class="f-field">
-                            <span class="sr-only">Carrera</span>
-                            <select class="f-input" name="carrera" required>
-                                <option value hidden>Selecciona tu
-                                    carrera</option>
-                                <option>INGENIERÍA CIVIL</option>
-                                <option>INGENIERÍA EN ALIMENTOS</option>
-                                <option>INGENIERÍA EN COMPUTACIÓN</option>
-                                <option>INGENIERÍA EN DISEÑO</option>
-                                <option>INGENIERÍA EN ELECTRÓNICA</option>
-                                <option>INGENIERÍA EN FÍSICA APLICADA</option>
-                                <option>INGENIERÍA INDUSTRIAL</option>
-                                <option>INGENIERÍA EN MECÁNICA
-                                    AUTOMOTRIZ</option>
-                                <option>INGENIERÍA EN MECATRÓNICA</option>
-                                <option>INGENIERÍA QUÍMICA EN PROCESOS
-                                    SOSTENIBLES</option>
-                                <option>LICENCIATURA EN CIENCIAS
-                                    EMPRESARIALES</option>
-                                <option>LICENCIATURA EN MATEMÁTICAS
-                                    APLICADAS</option>
-                                <option>LICENCIATURA EN ESTUDIOS MEXICANOS
-                                    MODALIDAD VIRTUAL</option>
-                            </select>
-                        </label>
+          <!-- Nombre -->
+          <label class="input-group" id="nameGroup">
+            <input id="fullName" name="fullName" type="text" placeholder="Nombre completo" autocomplete="name" required
+              aria-describedby="nameError">
+            <p class="input-error" id="nameError" role="alert" aria-live="polite"></p>
+          </label>
 
-                        <label class="f-field">
-                            <span class="sr-only">Semestre</span>
-                            <select class="f-input" name="semestre" required>
-                                <option value hidden>Semestre</option>
-                                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-                                <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
-                            </select>
-                        </label>
-                    </div>
+          <!-- Semestre -->
+          <label class="input-group">
+            <select id="semester" name="semestre" required>
+              <option value="" hidden>Selecciona tu semestre</option>
+              <option value="1">1er. Semestre </option>
+              <option value="2">2do. Semestre</option>
+              <option value="3">3er. Semestre</option>
+              <option value="4">4o. Semestre</option>
+              <option value="5">5o. Semestre</option>
+              <option value="6">6o. Semestre</option>
+              <option value="7">7o. Semestre</option>
+              <option value="8">8o. Semestre</option>
+              <option value="9">9o. Semestre</option>
+              <option value="10">10o. Semestre</option>
+            </select>
+          </label>
 
-                    <!-- Correo -->
-                    <label class="f-field">
-                        <span class="sr-only">Correo electrónico</span>
-                        <input class="f-input" type="email" name="email"
-                            placeholder="Ingresa tu correo electrónico"
-                            autocomplete="email" required>
-                    </label>
+          <!-- Carrera -->
+          <label class="input-group">
+            <select id="career" name="fk_carrera" required>
+              <option value="" hidden>Selecciona tu carrera</option>
+              <option value="1">Ingeniería Civil</option>
+              <option value="2">Ingeniería en Alimentos</option>
+              <option value="3">Ingeniería en Computación</option>
+              <option value="4">Ingeniería en Diseño</option>
+              <option value="5">Ingeniería en Electrónica</option>
+              <option value="6">Ingeniería en Física Aplicada</option>
+              <option value="7">Ingeniería Industrial</option>
+              <option value="8">Ingeniería en Mecánica Automotriz</option>
+              <option value="9">Ingeniería en Mecatrónica</option>
+              <option value="10">Ingeniería Química en Procesos Sostenibles</option>
+              <option value="11">Licenciatura en Ciencias Empresariales</option>
+              <option value="12">Licenciatura en Matemáticas Aplicadas</option>
+              <option value="13">Licenciatura en Estudios Mexicanos modalidad virtual</option>
+            </select>
+          </label>
 
-                    <!-- Solo Asesor/Ambos -->
-                    <div class="only-tutor">
-                        <div class="grid-2">
-                            <label class="f-field">
-                                <span class="sr-only">Temas que puedes
-                                    impartir</span>
-                                <input class="f-input" id="topicInput"
-                                    type="text"
-                                    placeholder="Ingresa un tema y presiona Enter">
-                                <small class="f-hint">Ej.: Cálculo, Circuitos,
-                                    Programación</small>
-                                <div id="topicChips" class="chips"></div>
-                            </label>
+          <!-- Correo -->
+          <label class="input-group" id="emailGroup">
+            <input id="email" name="email" type="email" placeholder="Correo electrónico" autocomplete="email" required
+              aria-describedby="emailError" inputmode="email">
+            <p class="input-error" id="emailError" role="alert" aria-live="polite"></p>
+          </label>
 
-                            <label class="f-field">
-                                <span class="sr-only">Área del tema</span>
-                                <select class="f-input" name="area">
-                                    <option value hidden>Selecciona un
-                                        área</option>
-                                    <option>Matemáticas</option>
-                                    <option>Física</option>
-                                    <option>Química</option>
-                                    <option>Computación</option>
-                                    <option>Diseño</option>
-                                    <option>Negocios</option>
-                                    <option>Idiomas</option>
-                                    <option>Otra</option>
-                                </select>
-                            </label>
-                        </div>
-                    </div>
+          <!-- Contraseña -->
+          <label class="input-group password-group" id="passGroup">
+            <input id="password" name="password" type="password" placeholder="Contraseña" autocomplete="new-password"
+              required aria-describedby="passwordError">
+            <button type="button" class="toggle-pw" aria-label="Mostrar/ocultar contraseña">
+              <span class="pw-eye" aria-hidden="true"></span>
+            </button>
+            <p class="input-error" id="passwordError" role="alert" aria-live="polite"></p>
+          </label>
 
-                    <!-- Passwords -->
-                    <label class="f-field f-field-pw">
-                        <input class="f-input" type="password" name="password"
-                            placeholder="Crea una contraseña"
-                            autocomplete="new-password" required>
-                        <button class="pw-toggle" type="button"
-                            aria-label="Mostrar contraseña">
-                            <span class="pw-icon"></span>
-                        </button>
-                    </label>
+          <!-- Confirmación -->
+          <label class="input-group password-group" id="confirmGroup">
+            <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirmar contraseña"
+              autocomplete="new-password" required aria-describedby="confirmError">
+            <button type="button" class="toggle-pw" data-target="confirmPassword"
+              aria-label="Mostrar/ocultar contraseña">
+              <span class="pw-eye" aria-hidden="true"></span>
+            </button>
+            <p class="input-error" id="confirmError" role="alert" aria-live="polite"></p>
+          </label>
 
-                    <label class="f-field f-field-pw">
-                        <input class="f-input" type="password" name="password"
-                            placeholder="Confirma tu contraseña"
-                            autocomplete="new-password" required>
-                        <button class="pw-toggle" type="button"
-                            aria-label="Mostrar contraseña">
-                            <span class="pw-icon"></span>
-                        </button>
-                    </label>
+          <!-- Políticas -->
+          <div class="policy-row" id="policyRow">
+            <label class="check">
+              <input id="policy" name="policy" type="checkbox" required aria-describedby="policyError">
+              <span>Acepto las <a href="politicasYPrivacidad.html" target="_blank">políticas y privacidad</a>.</span>
+            </label>
+            <p class="input-error" id="policyError" role="alert" aria-live="polite"></p>
+          </div>
 
-                    <!-- Términos -->
-                    <label class="check">
-                        <input type="checkbox" required>
-                        <span>Acepto la <a href="politicasYPrivacidad.html"
-                                target="_blank">política y
-                                privacidad</a>.</span>
-                    </label>
+          <!-- Acciones -->
+          <div class="signup-actions">
+            <button type="submit" class="btn-login" id="btnSignup">Registrarse</button>
+          </div>
 
-                    <button class="signup-submit"
-                        type="submit">Registrarse</button>
-                    <p class="signup-meta">¿Ya tienes una cuenta?
-                        <a class="signup-link" href="iniciarSesion.html">Inicia
-                            sesión</a>
-                    </p>
-                </form>
-            </section>
+          <!-- Mensajes generales -->
+          <p class="auth-error" id="signupError" role="alert" aria-live="assertive"></p>
+          <p class="auth-info" id="signupInfo" aria-live="polite"></p>
 
-            <!-- Modal pago (maqueta) -->
-            <div class="modal" id="payModal" aria-hidden="true" role="dialog"
-                aria-modal="true">
-                <div class="modal__backdrop" data-close></div>
-                <div class="modal__card pay-sheet" role="document">
-                    <h2 class="modal__title">Elige el método de pago</h2>
+          <!-- Mensaje de duplicado -->
+          <p class="dup-hint" id="dupHint" hidden>
+            Este correo ya está registrado.
+            <a href="iniciarSesion.html"><strong>Inicia sesión</strong></a> o
+            <a href="#" id="openForgot"><strong>recupera tu contraseña</strong></a>.
+          </p>
+        </form>
+      </div>
+    </main>
 
-                    <!-- MONTOS / PRODUCTO (opcional) -->
-                    <div class="pay-summary" aria-hidden="true">
-                        <div class="pay-summary__title">Suscripción de
-                            Asesor</div>
-                        <div class="pay-summary__price"><strong>$149.00</strong>
-                            / mes</div>
-                    </div>
+    <!-- MODAL ELECCIÓN DE ROL -->
+    <div id="roleModal" class="role-modal" aria-hidden="true" role="dialog" aria-labelledby="roleTitle" aria-modal="true">
+      <div class="role-modal__backdrop" data-role-dismiss></div>
+      <div class="role-modal__card" role="document">
+        <h2 id="roleTitle" class="role-modal__title">Elige cómo deseas iniciar</h2>
+        <p class="role-modal__sub">Tu cuenta tiene ambos roles disponibles.</p>
+        <div class="role-modal__actions">
+          <a href="panelAsesor.html" class="btn">Entrar como asesor</a>
+          <a href="panelAsesorado.html" class="btn outline">Entrar como asesorado</a>
+        </div>
+        <button type="button" class="role-modal__close" aria-label="Cerrar" data-role-dismiss>✕</button>
+      </div>
+    </div>
 
-                    <!-- MÉTODOS -->
-                    <div class="pay-methods" role="tablist"
-                        aria-label="Selecciona método">
-                        <button class="pay-method is-selected" role="tab"
-                            aria-selected="true" data-method="card">
-                            <span>VISA</span>
-                        </button>
-                        <button class="pay-method" role="tab"
-                            aria-selected="false" data-method="mastercard">
-                            <span>Mastercard</span>
-                        </button>
-                        <button class="pay-method" role="tab"
-                            aria-selected="false" data-method="sepa">
-                            <span>SEPA</span>
-                        </button>
-                        <button class="pay-method" role="tab"
-                            aria-selected="false" data-method="transfer">
-                            <span>Transferencia</span>
-                        </button>
-                        <button class="pay-method" role="tab"
-                            aria-selected="false" data-method="gpay">
-                            <span>G&nbsp;Pay</span>
-                        </button>
-                        <button class="pay-method" role="tab"
-                            aria-selected="false" data-method="applepay">
-                            <span>Apple&nbsp;Pay</span>
-                        </button>
-                    </div>
+    <!-- MODAL Recuperar contraseña -->
+    <div id="forgotModal" class="role-modal" aria-hidden="true" role="dialog" aria-modal="true"
+      aria-labelledby="forgotTitle">
+      <div class="role-modal__backdrop" data-forgot-dismiss></div>
+      <div class="role-modal__card" role="document">
+        <h2 id="forgotTitle" class="role-modal__title">Recupera tu contraseña</h2>
+        <form id="forgotForm" class="login-form" novalidate>
+          <label class="input-group">
+            <span class="icon" aria-hidden="true">✉️</span>
+            <input id="forgotEmail" type="email" placeholder="Correo electrónico" required>
+            <p class="input-error" id="forgotEmailError" role="alert" aria-live="polite"></p>
+          </label>
+          <div class="signup-actions">
+            <button type="button" class="btn-secondary" id="forgotCancel">Cancelar</button>
+            <button type="submit" class="btn-login">Enviar enlace</button>
+          </div>
+          <p class="auth-info" id="forgotMsg"></p>
+        </form>
+        <button type="button" class="role-modal__close" aria-label="Cerrar" data-forgot-dismiss>✕</button>
+      </div>
+    </div>
+  </div>
 
-                    <!-- FORM TARJETA -->
-                    <fieldset class="pay-card" id="payCard"
-                        aria-labelledby="cardTitle">
-                        <legend id="cardTitle" class="sr-only">Datos de
-                            tarjeta</legend>
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+      <nav class="site-footer__links" aria-label="Legal">
+        <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
+        <a href="donar.html" class="site-footer__link">Donar a la comunidad UTMentor</a>
+      </nav>
+    </div>
+  </footer>
 
-                        <label class="f-field">
-                            <span class="f-label">Número de la tarjeta</span>
-                            <input class="f-input" inputmode="numeric"
-                                autocomplete="cc-number"
-                                placeholder="1234 1234 1234 1234">
-                        </label>
-
-                        <div class="grid-2">
-                            <label class="f-field">
-                                <span class="f-label">Vencimiento</span>
-                                <input class="f-input" inputmode="numeric"
-                                    autocomplete="cc-exp" placeholder="MM / YY">
-                            </label>
-                            <label class="f-field f-field-pw">
-                                <span class="f-label">CVC</span>
-                                <input class="f-input" inputmode="numeric"
-                                    autocomplete="cc-csc" type="password"
-                                    placeholder="CVC">
-                                <button class="pw-toggle" type="button"
-                                    aria-label="Mostrar CVC"></button>
-                            </label>
-                        </div>
-
-                        <label class="f-field">
-                            <span class="f-label">País</span>
-                            <select class="f-input">
-                                <option value hidden>Selecciona un país</option>
-                                <option>México</option>
-                                <option>Estados Unidos</option>
-                                <option>España</option>
-                                <option>Colombia</option>
-                                <option>Argentina</option>
-                            </select>
-                        </label>
-                    </fieldset>
-
-                    <!-- CTA -->
-                    <div class="modal__actions">
-                        <button class="btn outline" data-close>Cancelar</button>
-                        <button class="btn pay-cta" id="payConfirm">
-                            Continuar con tu compra
-                        </button>
-                    </div>
-
-                    <button class="modal__close" data-close
-                        aria-label="Cerrar">✕</button>
-                </div>
-            </div>
-
-            <!-- Modal elección de rol (para “Ambos”) -->
-            <div class="modal" id="roleModal" aria-hidden="true" role="dialog"
-                aria-modal="true">
-                <div class="modal__backdrop"></div>
-                <div class="modal__card" role="document">
-                    <h2 class="modal__title">Elige cómo deseas iniciar</h2>
-                    <p class="modal__text">Tu cuenta tiene ambos roles
-                        disponibles.</p>
-                    <div class="modal__actions">
-                        <a class="btn" href="panelAsesor.html">Entrar como
-                            asesor</a>
-                        <a class="btn outline" href="panelAsesorado.html">Entrar
-                            como asesorado</a>
-                    </div>
-                    <button class="modal__close" data-close
-                        aria-label="Cerrar">✕</button>
-                </div>
-            </div>
-        </main>
-
-        <footer class="site-footer">
-            <div class="site-footer__inner">
-                <p class="site-footer__copy">
-                    © 2025 UTMentor. Todos los derechos reservados.
-                </p>
-                <nav class="site-footer__links" aria-label="Legal">
-                    <a href="politicasYPrivacidad.html"
-                        class="site-footer__link">Politicas y privacidad</a>
-                </nav>
-            </div>
-        </footer>
-
-        <script src="../js/registro.js" defer></script>
-    </body>
+  <script src="../js/iniciarSesion.js" defer></script>
+  <script src="../js/registro.js" defer></script>
+</body>
 
 </html>

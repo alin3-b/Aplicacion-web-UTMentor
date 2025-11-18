@@ -8,18 +8,51 @@ import swaggerUi from "swagger-ui-express";
 
 import { mysqlPool, testMySQLConnection } from "./config/db.js";
 
-// IMPORTAR RUTAS NUEVAS DE PAGO  👇
+// IMPORTAR RUTAS
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import paymentsRoutes from "./routes/paymentsRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import authTestRoutes from "./routes/authTestRoutes.js";
 
 dotenv.config();
 
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// === MIDDLEWARES ===
-app.use(cors());
-app.use(express.json());
+// === MIDDLEWARES – deben ir antes de las rutas ===
+// Configurar CORS para aceptar Authorization header en preflight y exponerlo en respuestas si es necesario.
+app.use(cors({
+  origin: true, // o especifica tu origen: ['https://mi-front.com']
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  exposedHeaders: ['Authorization']
+}));
+
+app.use(express.json()); // parsea JSON body
+
+// === RUTAS DE AUTENTICACIÓN y TEST (ya con middlewares arriba) ===
+app.use("/api/auth", authRoutes);
+app.use("/api/test", authTestRoutes);
+
+// === RUTAS REST ===
+app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/pagos", paymentsRoutes);
+
+// === SWAGGER ===
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "UTmentor API",
+            version: "1.0.0",
+            description: "API para sistema de mentorías UTmentor (MySQL)",
+        },
+        servers: [{ url: `http://localhost:${process.env.PORT || 3000}` }],
+    },
+    apis: ["./controllers/*.js", "./routes/*.js"],
+};
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // === CONEXIÓN A BASE DE DATOS ===
 await testMySQLConnection();
@@ -50,29 +83,6 @@ app.get("/health", async (req, res) => {
         timestamp: new Date().toISOString(),
     });
 });
-
-// === RUTAS API ===
-app.use("/api/usuarios", usuarioRoutes);
-
-// RUTAS DE PAGO (DONACIONES)  👇
-app.use("/api/pagos", paymentsRoutes);
-
-// === SWAGGER ===
-const swaggerOptions = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "UTmentor API",
-            version: "1.0.0",
-            description: "API para sistema de mentorías UTmentor (MySQL)",
-        },
-        servers: [{ url: `http://localhost:${process.env.PORT || 3000}` }],
-    },
-    apis: ["./controllers/*.js", "./routes/*.js"],
-};
-
-const swaggerDocs = swaggerJSDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // === INICIAR SERVIDOR ===
 const PORT = process.env.PORT || 3001;

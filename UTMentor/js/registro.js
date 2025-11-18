@@ -1,212 +1,115 @@
-// Quita la clase no-js si existiera
-document.documentElement.classList.remove("no-js");
+// js/registro.js
+const signupForm = document.getElementById("signupForm");
+const btnSignup = document.getElementById("btnSignup");
+const signupError = document.getElementById("signupError");
+const signupInfo = document.getElementById("signupInfo");
+const dupHint = document.getElementById("dupHint");
 
-/* -------- NAV móvil (reutilizado) -------- */
-(() => {
-  const burger = document.querySelector(".burger");
-  const panel = document.getElementById("mobile-panel");
-  const label = burger ? burger.querySelector(".burger-label") : null;
+// URL FINAL CORRECTA (puerto 3000 + ruta montada en server.js)
+const API_BASE = "http://localhost:3000/api/usuarios";
 
-  if (!burger || !panel) return;
+// MAPEO DE ROLES SEGÚN TU BASE DE DATOS REAL
+const ROLES_MAP = {
+  asesorado: [2],     // Solo estudiante
+  asesor: [1],        // Solo asesor
+  ambos: [1, 2]       // Ambos roles
+};
 
-  const setOpen = (open) => {
-    panel.classList.toggle("open", open);
-    burger.setAttribute("aria-expanded", String(open));
-    burger.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-    burger.setAttribute("title", open ? "Cerrar menú" : "Abrir menú");
-    if (label) label.textContent = open ? "Cerrar" : "Menú";
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Limpiar mensajes anteriores
+  signupError.textContent = "";
+  signupInfo.textContent = "";
+  dupHint.hidden = true;
+
+  // Capturar datos del formulario
+  const rolSeleccionado = document.getElementById("role").value;
+  const nombre_completo = document.getElementById("fullName").value.trim();
+  const semestre = parseInt(document.getElementById("semester").value);
+  const fk_carrera = parseInt(document.getElementById("career").value);
+  const correo = document.getElementById("email").value.trim().toLowerCase();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const policy = document.getElementById("policy").checked;
+
+  // Validaciones del frontend
+  if (!rolSeleccionado) return showError("Selecciona tu rol");
+  if (!nombre_completo) return showError("Ingresa tu nombre completo");
+  if (isNaN(semestre)) return showError("Selecciona tu semestre");
+  if (isNaN(fk_carrera)) return showError("Selecciona tu carrera");
+  if (!correo) return showError("Ingresa tu correo");
+  if (password.length < 6) return showError("La contraseña debe tener al menos 6 caracteres");
+  if (password !== confirmPassword) return showError("Las contraseñas no coinciden");
+  if (!policy) return showError("Debes aceptar las políticas de privacidad");
+
+  // Datos que se envían al backend
+  const payload = {
+    nombre_completo,
+    correo,
+    semestre,
+    fk_carrera,
+    password,
+    roles: ROLES_MAP[rolSeleccionado]  // Aquí se decide si es 1, 2 o [1,2]
   };
 
-  burger.addEventListener("click", () =>
-    setOpen(!panel.classList.contains("open"))
-  );
-  panel.addEventListener("click", (e) => {
-    if (e.target.closest("a")) setOpen(false);
-  });
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") setOpen(false);
-  });
-  document.addEventListener("click", (e) => {
-    if (window.innerWidth > 860) return;
-    if (!panel.contains(e.target) && !burger.contains(e.target)) setOpen(false);
-  });
-})();
+  console.log("Enviando al backend:", payload); // Para que veas exactamente qué se manda
 
-/* -------- Toggle de contraseña (ambos campos) -------- */
-(() => {
-  document.querySelectorAll(".f-field-pw").forEach((wrap) => {
-    const input = wrap.querySelector(".f-input");
-    const btn = wrap.querySelector(".pw-toggle");
-    if (!input || !btn) return;
+  try {
+    btnSignup.disabled = true;
+    btnSignup.textContent = "Creando cuenta...";
 
-    let visible = false;
-    btn.addEventListener("click", () => {
-      visible = !visible;
-      input.type = visible ? "text" : "password";
-      btn.classList.toggle("is-visible", visible);
-      btn.setAttribute(
-        "aria-label",
-        visible ? "Ocultar contraseña" : "Mostrar contraseña"
-      );
-    });
-  });
-})();
-
-/* -------- Tabs de rol + mostrar/ocultar campos de tutor -------- */
-(() => {
-  const tabs = document.querySelectorAll(".role-tab");
-  const onlyTutor = document.querySelector(".only-tutor");
-  let role = "asesor"; // por defecto coincide con el tab activo
-
-  const setRole = (r) => {
-    role = r;
-    tabs.forEach((t) => t.classList.toggle("is-active", t.dataset.role === r));
-    if (onlyTutor) onlyTutor.classList.toggle("is-hidden", r === "asesorado");
-  };
-
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => setRole(tab.dataset.role));
-  });
-})();
-
-/* -------- Chips de temas (simple Enter para agregar) -------- */
-(() => {
-  const input = document.getElementById("topicInput");
-  const holder = document.getElementById("topicChips");
-  if (!input || !holder) return;
-
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const val = input.value.trim();
-      if (!val) return;
-      const chip = document.createElement("span");
-      chip.className = "chip";
-      chip.textContent = val;
-      holder.appendChild(chip);
-      input.value = "";
-    }
-  });
-})();
-
-/* -------- Modales: pago (asesor/ambos) y elección de rol (ambos) -------- */
-(() => {
-  const form = document.getElementById("signupForm");
-  const payModal = document.getElementById("payModal");
-  const roleModal = document.getElementById("roleModal");
-
-  // utilidades
-  const open = (el) => {
-    el?.classList.add("is-open");
-    el?.setAttribute("aria-hidden", "false");
-  };
-  const close = (el) => {
-    el?.classList.remove("is-open");
-    el?.setAttribute("aria-hidden", "true");
-  };
-  const bindBackdropClose = (el) => {
-    el?.addEventListener("click", (e) => {
-      if (
-        e.target.classList.contains("modal__backdrop") ||
-        e.target.hasAttribute("data-close")
-      )
-        close(el);
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") close(el);
-    });
-  };
-  bindBackdropClose(payModal);
-  bindBackdropClose(roleModal);
-
-  // recoge el rol activo
-  const getActiveRole = () => {
-    const active = document.querySelector(".role-tab.is-active");
-    return active ? active.dataset.role : "asesor";
-  };
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const role = getActiveRole();
-
-    if (role === "asesorado") {
-      // flujo simple de demo
-      window.location.href = "panelAsesorado.html";
-      return;
-    }
-
-    if (role === "asesor") {
-      // abrir modal de pago
-      open(payModal);
-      document.getElementById("payConfirm")?.addEventListener(
-        "click",
-        () => {
-          close(payModal);
-          window.location.href = "panelAsesor.html";
-        },
-        { once: true }
-      );
-      return;
-    }
-
-    // AMBOS: pago → luego modal de elección
-    open(payModal);
-    document.getElementById("payConfirm")?.addEventListener(
-      "click",
-      () => {
-        close(payModal);
-        open(roleModal);
+    const response = await fetch(API_BASE, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
       },
-      { once: true }
-    );
-  });
-})();
+      body: JSON.stringify(payload)
+    });
 
-// --- UI Pago: selección de método + mostrar form tarjeta + toggle ojo CVC ---
-(function () {
-  const payModal = document.getElementById("payModal");
-  if (!payModal) return;
+    const data = await response.json();
+    console.log("Respuesta del servidor:", data);
 
-  const methods = payModal.querySelectorAll(".pay-method");
-  const cardBlock = payModal.querySelector("#payCard");
-  const cvcField = payModal.querySelector("#payCard .f-field-pw input");
-  const cvcToggle = payModal.querySelector("#payCard .pw-toggle");
-  const confirmBtn = payModal.querySelector("#payConfirm");
+    if (response.status === 201) {
+      // ÉXITO: usuario creado y guardado en la base de datos
+      signupInfo.textContent = "¡Cuenta creada con éxito!";
+      signupInfo.style.color = "#10b981";
 
-  // por defecto: tarjeta visible
-  function showCardForm(show) {
-    if (show) {
-      cardBlock.removeAttribute("hidden");
+      setTimeout(() => {
+        if (rolSeleccionado === "ambos") {
+          document.getElementById("roleModal").style.display = "block";
+          document.getElementById("roleModal").removeAttribute("aria-hidden");
+        } else if (rolSeleccionado === "asesor") {
+          window.location.href = "panelAsesor.html";
+        } else {
+          window.location.href = "panelAsesorado.html";
+        }
+      }, 1500);
+
+    } else if (response.status === 400 && data.error?.includes("correo")) {
+      dupHint.hidden = false;
     } else {
-      cardBlock.setAttribute("hidden", "");
+      showError(data.error || "Error desconocido al registrarse");
     }
+
+  } catch (err) {
+    console.error("Error de red:", err);
+    showError("No se pudo conectar al servidor. Asegúrate de que esté corriendo en el puerto 3000");
+  } finally {
+    btnSignup.disabled = false;
+    btnSignup.textContent = "Registrarse";
   }
-  showCardForm(true);
+});
 
-  methods.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      methods.forEach((b) => {
-        b.classList.remove("is-selected");
-        b.setAttribute("aria-selected", "false");
-      });
-      btn.classList.add("is-selected");
-      btn.setAttribute("aria-selected", "true");
+function showError(mensaje) {
+  signupError.textContent = mensaje;
+}
 
-      const m = btn.dataset.method;
-      // mostramos form de tarjeta solo para card/mastercard/visa
-      if (m === "card" || m === "mastercard") {
-        showCardForm(true);
-      } else {
-        showCardForm(false);
-      }
-    });
+// Cerrar modal
+document.querySelectorAll("[data-role-dismiss]").forEach(el => {
+  el.addEventListener("click", () => {
+    const modal = document.getElementById("roleModal");
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
   });
-
-  // ejemplo de “continuar” (solo UI)
-  if (confirmBtn) {
-    confirmBtn.addEventListener("click", () => {
-      // aquí dispararías tu call a Stripe/Uelz/etc.
-      alert("Continuar con tu compra (demo UI)");
-    });
-  }
-})();
+});

@@ -1,13 +1,11 @@
 //UTMentor/js/principal.js
-// Importar servicio de asesores
 import { obtenerAsesores } from "./services/asesorService.js";
 import { obtenerTemasPopulares } from "./services/topicService.js";
 import { obtenerMetricas } from "./services/metricasService.js";
 
-
 document.documentElement.classList.remove("no-js");
 
-// Toggle del menú móvil + actualización de etiqueta/aria
+// ---------------- MENÚ MÓVIL ----------------
 (function () {
   const burger = document.querySelector(".burger");
   const panel = document.getElementById("mobile-panel");
@@ -23,30 +21,20 @@ document.documentElement.classList.remove("no-js");
     if (label) label.textContent = open ? "Cerrar" : "Menú";
   }
 
-  burger.addEventListener("click", () => {
-    setOpen(!panel.classList.contains("open"));
-  });
-
-  // Cierra al hacer click en un enlace (móvil)
+  burger.addEventListener("click", () => setOpen(!panel.classList.contains("open")));
   panel.addEventListener("click", (e) => {
     if (e.target.closest("a")) setOpen(false);
   });
-
-  // Cierra con Escape
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") setOpen(false);
   });
-
-  // Cierra si se hace click fuera (solo móvil)
   document.addEventListener("click", (e) => {
     if (window.innerWidth > 860) return;
-    if (!panel.contains(e.target) && !burger.contains(e.target)) {
-      setOpen(false);
-    }
+    if (!panel.contains(e.target) && !burger.contains(e.target)) setOpen(false);
   });
 })();
 
-// --- Nav transparente sobre el hero usando IntersectionObserver ---
+// ---------------- NAV TRANSPARENTE ----------------
 (function () {
   const navWrap = document.querySelector(".nav-wrap");
   const hero = document.querySelector(".hero");
@@ -55,7 +43,6 @@ document.documentElement.classList.remove("no-js");
   const observer = new IntersectionObserver(
     (entries) => {
       const e = entries[0];
-      // Si el hero es visible al menos 30%, el nav es transparente
       if (e.isIntersecting && e.intersectionRatio >= 0.3) {
         navWrap.classList.add("is-transparent");
       } else {
@@ -68,85 +55,41 @@ document.documentElement.classList.remove("no-js");
   observer.observe(hero);
 })();
 
-// ---------------- TESTIMONIOS (slider) ----------------
-
-// Data de testimonios
+// ---------------- TESTIMONIOS ----------------
 const testimonials = [
-  {
-    img: "../imagenes/testimony1.jpg",
-    quote:
-      "“Agendé cálculo en minutos y pasé mi extraordinario. La asesoría fue directa, clara y sin vueltas.”",
-    author: "— Andrea M., Ingeniería Industrial",
-    alt: "Andrea M.",
-  },
-  {
-    img: "../imagenes/testimony2.jpg",
-    quote: "“Me gustó que el asesor ya tenía reseñas y horario claro.”",
-    author: "— Luis R., Ingeniería en Física Aplicada",
-    alt: "Luis R.",
-  },
-  {
-    img: "../imagenes/testimony3.jpg",
-    quote: "“Confirmaron por correo en menos de un día. Muy serio todo.”",
-    author: "— Pablo S., Ingeniería Mecánica Automotriz",
-    alt: "Pablo S.",
-  },
-  {
-    img: "../imagenes/testimony4.jpg",
-    quote:
-      "“Doy asesorías de programación y mi reputación me trae más alumnos.”",
-    author: "— Sofía G., Asesora en Programación Modular",
-    alt: "Sofía G.",
-  },
-  {
-    img: "../imagenes/testimony5.jpg",
-    quote: "“Funciona presencial o por videollamada, eso me salvó.”",
-    author: "— Miriam A., Ingeniería Civil",
-    alt: "Miriam A.",
-  },
+  { img: "../imagenes/testimony1.jpg", quote: "“Agendé cálculo en minutos y pasé mi extraordinario. La asesoría fue directa, clara y sin vueltas.”", author: "— Andrea M., Ingeniería Industrial", alt: "Andrea M." },
+  { img: "../imagenes/testimony2.jpg", quote: "“Me gustó que el asesor ya tenía reseñas y horario claro.”", author: "— Luis R., Ingeniería en Física Aplicada", alt: "Luis R." },
+  { img: "../imagenes/testimony3.jpg", quote: "“Confirmaron por correo en menos de un día. Muy serio todo.”", author: "— Pablo S., Ingeniería Mecánica Automotriz", alt: "Pablo S." },
+  { img: "../imagenes/testimony4.jpg", quote: "“Doy asesorías de programación y mi reputación me trae más alumnos.”", author: "— Sofía G., Asesora en Programación Modular", alt: "Sofía G." },
+  { img: "../imagenes/testimony5.jpg", quote: "“Funciona presencial o por videollamada, eso me salvó.”", author: "— Miriam A., Ingeniería Civil", alt: "Miriam A." },
 ];
 
-// Estado actual
 let currentTestimonial = 0;
-
-// Elements
 const mainAvatarEl = document.getElementById("review-main-avatar");
 const quoteEl = document.getElementById("review-quote");
 const authorEl = document.getElementById("review-author");
 const avatarsListEl = document.getElementById("review-avatars");
-
 const prevBtn = document.querySelector('.reviews-arrow[data-action="prev"]');
 const nextBtn = document.querySelector('.reviews-arrow[data-action="next"]');
 
-// Función para renderizar el testimonio actual
 function renderTestimonial(idx) {
   const t = testimonials[idx];
   if (!t) return;
 
-  // Actualiza imagen grande
   mainAvatarEl.src = t.img;
   mainAvatarEl.alt = "Foto de " + t.alt;
-
-  // Actualiza texto
   quoteEl.textContent = t.quote;
   authorEl.textContent = t.author;
 
-  // Actualiza miniaturas activas
   const miniItems = avatarsListEl.querySelectorAll(".reviews-avatars__item");
   miniItems.forEach((item) => {
     const itemIndex = parseInt(item.getAttribute("data-index"), 10);
-    if (itemIndex === idx) {
-      item.classList.add("reviews-avatars__item--active");
-    } else {
-      item.classList.remove("reviews-avatars__item--active");
-    }
+    item.classList.toggle("reviews-avatars__item--active", itemIndex === idx);
   });
 }
 
-// Navegar prev/next
 function goPrev() {
-  currentTestimonial =
-    (currentTestimonial - 1 + testimonials.length) % testimonials.length;
+  currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
   renderTestimonial(currentTestimonial);
 }
 function goNext() {
@@ -158,8 +101,6 @@ if (prevBtn && nextBtn) {
   prevBtn.addEventListener("click", goPrev);
   nextBtn.addEventListener("click", goNext);
 }
-
-// Click directo en los avatares pequeños
 if (avatarsListEl) {
   avatarsListEl.addEventListener("click", (e) => {
     const item = e.target.closest(".reviews-avatars__item");
@@ -172,12 +113,9 @@ if (avatarsListEl) {
   });
 }
 
-// Render inicial
 renderTestimonial(currentTestimonial);
 
-// ---------------- ASESORES POPULARES (desde API) ----------------
-
-// Imágenes dummy para reutilizar (ya que no hay fotos en BD)
+// ---------------- ASESORES POPULARES ----------------
 const advisorImages = [
   "../imagenes/adviser1.jpg",
   "../imagenes/adviser2.jpg",
@@ -187,67 +125,35 @@ const advisorImages = [
 ];
 
 function formatDisponibilidad(disponibilidades) {
-  if (!disponibilidades || disponibilidades.length === 0) {
-    return "Sin disponibilidad";
-  }
-
+  if (!disponibilidades || disponibilidades.length === 0) return "Sin disponibilidad";
   const nombresDias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
   const dias = new Set();
-
   disponibilidades.forEach((disp) => {
     const fecha = new Date(disp.fecha_inicio);
     dias.add(nombresDias[fecha.getDay()]);
   });
-
-  // Mostrar máximo 3 días
   return Array.from(dias).slice(0, 3).join(" · ") || "Próximamente";
 }
 
-
-// Función para generar estrellas
 function generarEstrellas(calificacion) {
   const rating = parseFloat(calificacion) || 0;
   const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
   let html = "";
-
-  for (let i = 0; i < 5; i++) {
-    if (i < fullStars) {
-      html += '<span class="star">★</span>';
-    } else {
-      html += '<span class="star star--off">★</span>';
-    }
-  }
-
+  for (let i = 0; i < 5; i++) html += i < fullStars ? '<span class="star">★</span>' : '<span class="star star--off">★</span>';
   return html;
 }
 
-// Función para crear card de asesor
 function crearAsesorCard(asesor, index) {
   const imagenAsesor = advisorImages[index % advisorImages.length];
-
-  // Formatear nombre: Primer nombre + Primera letra del apellido
   const partesNombre = asesor.nombre_completo.trim().split(" ");
   const primerNombre = partesNombre[0] || "";
   const primeraLetraApellido = partesNombre[1] ? partesNombre[1][0] + "." : "";
   const nombreCorto = `${primerNombre} ${primeraLetraApellido}`.trim();
-
   const rating = parseFloat(asesor.puntuacion_promedio) || 0;
   const sesiones = asesor.numero_sesiones || 0;
-  const sesionesTexto =
-    sesiones >= 100
-      ? "100+"
-      : sesiones >= 50
-      ? "50+"
-      : sesiones >= 10
-      ? "10+"
-      : sesiones;
+  const sesionesTexto = sesiones >= 100 ? "100+" : sesiones >= 50 ? "50+" : sesiones >= 10 ? "10+" : sesiones;
   const disponibilidad = formatDisponibilidad(asesor.disponibilidades);
-  const carreraCorta = asesor.nombre_carrera
-    ? asesor.nombre_carrera
-        .replace("Ingenieri­a", "Ing.")
-        .replace("Licenciatura", "Lic.")
-    : "Universidad";
+  const carreraCorta = asesor.nombre_carrera ? asesor.nombre_carrera.replace("Ingenieri­a", "Ing.").replace("Licenciatura", "Lic.") : "Universidad";
 
   return `
     <li class="advisorCard">
@@ -279,9 +185,7 @@ function crearAsesorCard(asesor, index) {
         </div>
       </div>
       <div class="advisorCard__rowBottom">
-        <a class="advisorCard__cta" href="panelPublicoAsesor.html?id=${
-          asesor.id_usuario
-        }">Ver perfil</a>
+        <a class="advisorCard__cta" href="panelPublicoAsesor.html?id=${asesor.id_usuario}">Ver perfil</a>
       </div>
     </li>
   `;
@@ -292,71 +196,43 @@ async function cargarAsesoresPopulares() {
   if (!track) return;
 
   try {
-    // Usar el servicio
     const asesores = await obtenerAsesores();
-    console.log("Asesores JSON:", JSON.stringify(asesores, null, 2));
     if (!asesores || asesores.length === 0) {
-      track.innerHTML =
-        '<li style="padding: 2rem; text-align: center; width: 100%;">No hay asesores disponibles en este momento.</li>';
+      track.innerHTML = '<li style="padding: 2rem; text-align: center; width: 100%;">No hay asesores disponibles en este momento.</li>';
       return;
     }
 
-    // Ordenar primero por calificación y luego por número de sesiones (descendente)
-    const asesoresOrdenados = asesores.sort((a, b) => {
-      if (b.puntuacion_promedio !== a.puntuacion_promedio) {
-        return b.puntuacion_promedio - a.puntuacion_promedio;
-      }
-      return b.numero_sesiones - a.numero_sesiones;
-    });
-
-    // Tomar solo los primeros 5 asesores
+    const asesoresOrdenados = asesores.sort((a, b) => b.puntuacion_promedio - a.puntuacion_promedio || b.numero_sesiones - a.numero_sesiones);
     const asesoresTop = asesoresOrdenados.slice(0, 5);
-
-    // Generar las cards
-    track.innerHTML = asesoresTop
-      .map((asesor, index) => crearAsesorCard(asesor, index))
-      .join("");
-
-    // Inicializar carrusel después de cargar
+    track.innerHTML = asesoresTop.map((asesor, index) => crearAsesorCard(asesor, index)).join("");
     inicializarCarruselAsesores();
   } catch (error) {
     console.error("Error al cargar asesores populares:", error);
-    track.innerHTML =
-      '<li style="padding: 2rem; text-align: center; width: 100%;">Error al cargar asesores. Intenta recargar la página.</li>';
+    track.innerHTML = '<li style="padding: 2rem; text-align: center; width: 100%;">Error al cargar asesores. Intenta recargar la página.</li>';
   }
 }
 
-
-// Función para inicializar el carrusel
 function inicializarCarruselAsesores() {
   const track = document.getElementById("featured-track");
   if (!track) return;
-
   const arrows = document.querySelectorAll(".featured-arrow");
   const card = track.querySelector(".advisorCard");
   const step = card ? card.offsetWidth + 16 : 360;
 
   arrows.forEach((btn) => {
-    // Remover listeners anteriores si existen
     const newBtn = btn.cloneNode(true);
     btn.parentNode.replaceChild(newBtn, btn);
-
     newBtn.addEventListener("click", () => {
       const dir = newBtn.getAttribute("data-dir");
-      track.scrollBy({
-        left: dir === "next" ? step : -step,
-        behavior: "smooth",
-      });
+      track.scrollBy({ left: dir === "next" ? step : -step, behavior: "smooth" });
     });
   });
 }
 
 // ---------------- TEMAS POPULARES ----------------
-
-// Función para generar el HTML de un tema
 function crearTemaCard(tema) {
   return `
-    <li class="subject">
+    <li class="subject subject--clickable" data-tema="${encodeURIComponent(tema.nombre_tema)}">
       <div class="subject__body">
         <h4>${tema.nombre_tema}</h4>
         <span class="subject__meta">${tema.numero_asesores} asesores</span>
@@ -366,26 +242,34 @@ function crearTemaCard(tema) {
   `;
 }
 
-// Función para cargar temas populares desde la API
+
 async function cargarTemasPopulares() {
   const grid = document.querySelector(".subjects__grid");
   if (!grid) return;
 
   try {
-    const temas = await obtenerTemasPopulares(); // Llama a tu service
+    const temas = await obtenerTemasPopulares();
     if (!temas || temas.length === 0) {
       grid.innerHTML = `<li style="padding: 2rem; text-align: center; width: 100%;">No hay temas disponibles</li>`;
       return;
     }
 
-    // Como vienen ordenados y siempre son 6, solo mapeamos
     grid.innerHTML = temas.map(crearTemaCard).join("");
+
+    // Click en tema -> redirige y pasa parámetro
+    grid.querySelectorAll(".subject--clickable").forEach((el) => {
+      el.addEventListener("click", () => {
+        const tema = el.getAttribute("data-tema");
+        window.location.href = `explorar.html?tema=${tema}`;
+      });
+    });
   } catch (error) {
     console.error("Error al cargar temas populares:", error);
     grid.innerHTML = `<li style="padding: 2rem; text-align: center; width: 100%;">Error al cargar temas</li>`;
   }
 }
 
+// ---------------- MÉTRICAS ----------------
 async function cargarMetricas() {
   const metricas = await obtenerMetricas();
   if (!metricas) return;
@@ -398,31 +282,22 @@ async function cargarMetricas() {
       <div class="trust-metric__value">+${metricas.asesoresActivos}</div>
       <div class="trust-metric__label">asesores impartiendo temas cada semana.</div>
     </div>
-
     <div class="trust-metric">
       <div class="trust-metric__value">+${metricas.calificaciones5}</div>
       <div class="trust-metric__label">calificaciones de asesores con 5 estrellas.</div>
     </div>
-
     <div class="trust-metric">
       <div class="trust-metric__value">+${metricas.temasImpartidos}</div>
       <div class="trust-metric__label">temas impartidos.</div>
     </div>
-
     <div class="trust-metric">
       <div class="trust-metric__value">${metricas.satisfaccionPromedio}/5</div>
       <div class="trust-metric__label">en satisfacción de los usuarios.</div>
     </div>
   `;
 }
-// Inicializar al cargar la página
-document.addEventListener("DOMContentLoaded", () => {
-  cargarAsesoresPopulares();  // Ya existente
-  cargarTemasPopulares();
-  cargarMetricas();
-});
 
-// FAQ: permitir sólo una tarjeta abierta a la vez
+// ---------------- FAQ ----------------
 (function () {
   const items = document.querySelectorAll(".faq__item");
   if (!items.length) return;
@@ -436,3 +311,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 })();
+
+// ---------------- INICIALIZACIÓN ----------------
+document.addEventListener("DOMContentLoaded", () => {
+  cargarAsesoresPopulares();
+  cargarTemasPopulares();
+  cargarMetricas();
+});

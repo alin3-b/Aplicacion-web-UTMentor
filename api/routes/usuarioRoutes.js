@@ -6,7 +6,8 @@ import {
   listarAsesores,
   obtenerInfoAsesor,
   listarTemasPopulares,
-  obtenerMetricas
+  obtenerMetricas,
+  checkEmailController
 } from "../controllers/usuarioController.js";
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.get("/temas/populares", listarTemasPopulares);
 
 router.get("/metricas", obtenerMetricas);
 
+router.get("/check-email", checkEmailController);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");
