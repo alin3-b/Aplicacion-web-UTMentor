@@ -9,12 +9,13 @@ export async function getUsuarios() {
       u.correo,
       u.semestre,
       c.nombre_carrera,
-      r.nombre_rol
+      GROUP_CONCAT(r.nombre_rol) AS roles
     FROM usuarios u
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
     LEFT JOIN usuario_rol ur ON u.id_usuario = ur.fk_usuario
     LEFT JOIN roles r ON ur.fk_rol = r.id_rol
     WHERE u.es_activo = TRUE
+    GROUP BY u.id_usuario
     ORDER BY u.fecha_registro DESC
   `);
   return rows;
@@ -140,8 +141,6 @@ export async function getAllAsesores(filtros = {}) {
   return Array.from(asesoresMap.values());
 }
 
-
-
 export async function getAsesorInfo(id_asesor) {
   const [rows] = await mysqlPool.query(
     `
@@ -225,15 +224,43 @@ export async function addUsuario({
   semestre,
   fk_carrera,
   password_hash,
+  roles = []
 }) {
-  const [result] = await mysqlPool.query(
-    `INSERT INTO usuarios 
-    (nombre_completo, correo, semestre, fk_carrera, password_hash, es_activo)
-    VALUES (?, ?, ?, ?, ?, TRUE)`,
-    [nombre_completo, correo, semestre, fk_carrera, password_hash]
-  );
-  return { id_usuario: result.insertId, nombre_completo, correo };
+  const conn = await mysqlPool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // 1. Crear usuario
+    const [result] = await conn.query(
+      `INSERT INTO usuarios 
+       (nombre_completo, correo, semestre, fk_carrera, password_hash, es_activo)
+       VALUES (?, ?, ?, ?, ?, TRUE)`,
+      [nombre_completo, correo, semestre, fk_carrera, password_hash]
+    );
+
+    const id_usuario = result.insertId;
+
+    // 2. Insertar roles directamente (ya vienen validos desde frontend)
+    if (roles.length > 0) {
+      const values = roles.map(r => [id_usuario, r]);
+      await conn.query(
+        `INSERT INTO usuario_rol (fk_usuario, fk_rol) VALUES ?`,
+        [values]
+      );
+    }
+
+    await conn.commit();
+
+    return { id_usuario, roles };
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
 }
+
+
 export async function getMetricas() {
   const [[asesoresActivos]] = await mysqlPool.query(`
     SELECT COUNT(DISTINCT u.id_usuario) AS total
@@ -261,4 +288,12 @@ export async function getMetricas() {
     temasImpartidos: temasImpartidos.total,
     satisfaccionPromedio: satisfaccion.promedio,
   };
+}
+
+export async function getUsuarioCheckByCorreo(correo) {
+  const [rows] = await mysqlPool.query(
+    "SELECT id_usuario FROM usuarios WHERE correo = ? LIMIT 1",
+    [correo]
+  );
+  return rows.length > 0;
 }
