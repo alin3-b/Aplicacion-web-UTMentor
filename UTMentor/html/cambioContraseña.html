@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="es" class="no-js">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Restablecer contraseña · UTMentor</title>
-  <style>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Restablecer contraseña · UTMentor</title>
+    <style>
     :root{
       --brand:#5b68ff;
       --brand-2:#19c0ff;
@@ -78,198 +78,69 @@
     .token-alert{margin-bottom:12px}
     footer{margin-top:16px;text-align:center;color:var(--muted);font-size:.85rem}
   </style>
-</head>
-<body>
-  <div class="shell">
-    <div class="card" id="card">
-      <h1>Restablecer contraseña</h1>
-      <p class="sub">Crea una nueva contraseña para tu cuenta.</p>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="card" id="card">
+        <h1>Restablecer contraseña</h1>
+        <p class="sub">Crea una nueva contraseña para tu cuenta.</p>
 
-      <!-- Alerta de token -->
-      <div id="tokenAlert" class="alert err token-alert" role="alert" aria-live="assertive"></div>
+        <!-- Alerta de token -->
+        <div id="tokenAlert" class="alert err token-alert" role="alert"
+          aria-live="assertive"></div>
 
-      <form id="resetForm" class="form" novalidate>
-        <div class="field">
-          <label class="label" for="password">Nueva contraseña</label>
-          <input id="password" name="password" type="password" class="input"
-                 placeholder="••••••••" autocomplete="new-password" required
-                 aria-describedby="pwError pwHelp">
-          <button type="button" class="eye" data-toggle="password" aria-label="Mostrar u ocultar contraseña"></button>
-          <p id="pwError" class="error" role="alert" aria-live="polite"></p>
-          <ul id="pwHelp" class="checks" aria-live="polite">
-            <li id="cLen" class="bad"><span class="dot">•</span> Mínimo 8 caracteres</li>
-            <li id="cUp"  class="bad"><span class="dot">•</span> Al menos 1 mayúscula</li>
-            <li id="cLow" class="bad"><span class="dot">•</span> Al menos 1 minúscula</li>
-            <li id="cNum" class="bad"><span class="dot">•</span> Al menos 1 número</li>
-            <li id="cSpec" class="bad"><span class="dot">•</span> Al menos 1 carácter especial (!@#$...)</li>
-          </ul>
-        </div>
+        <form id="resetForm" class="form" novalidate>
+          <div class="field">
+            <label class="label" for="password">Nueva contraseña</label>
+            <input id="password" name="password" type="password" class="input"
+              placeholder="••••••••" autocomplete="new-password" required
+              aria-describedby="pwError pwHelp">
+            <button type="button" class="eye" data-toggle="password"
+              aria-label="Mostrar u ocultar contraseña"></button>
+            <p id="pwError" class="error" role="alert" aria-live="polite"></p>
+            <ul id="pwHelp" class="checks" aria-live="polite">
+              <li id="cLen" class="bad"><span class="dot">•</span> Mínimo 8
+                caracteres</li>
+              <li id="cUp" class="bad"><span class="dot">•</span> Al menos 1
+                mayúscula</li>
+              <li id="cLow" class="bad"><span class="dot">•</span> Al menos 1
+                minúscula</li>
+              <li id="cNum" class="bad"><span class="dot">•</span> Al menos 1
+                número</li>
+              <li id="cSpec" class="bad"><span class="dot">•</span> Al menos 1
+                carácter especial (!@#$...)</li>
+            </ul>
+          </div>
 
-        <div class="field">
-          <label class="label" for="confirm">Confirmar contraseña</label>
-          <input id="confirm" name="confirm" type="password" class="input"
-                 placeholder="••••••••" autocomplete="new-password" required
-                 aria-describedby="cfError">
-          <button type="button" class="eye" data-toggle="confirm" aria-label="Mostrar u ocultar confirmación"></button>
-          <p id="cfError" class="error" role="alert" aria-live="polite"></p>
-        </div>
+          <div class="field">
+            <label class="label" for="confirm">Confirmar contraseña</label>
+            <input id="confirm" name="confirm" type="password" class="input"
+              placeholder="••••••••" autocomplete="new-password" required
+              aria-describedby="cfError">
+            <button type="button" class="eye" data-toggle="confirm"
+              aria-label="Mostrar u ocultar confirmación"></button>
+            <p id="cfError" class="error" role="alert" aria-live="polite"></p>
+          </div>
 
-        <button id="submitBtn" class="btn" type="submit">Actualizar contraseña</button>
+          <button id="submitBtn" class="btn" type="submit">Actualizar
+            contraseña</button>
 
-        <!-- Mensajes globales -->
-        <div id="globalOk" class="alert ok" role="status" aria-live="polite"></div>
-        <div id="globalErr" class="alert err" role="alert" aria-live="assertive"></div>
+          <!-- Mensajes globales -->
+          <div id="globalOk" class="alert ok" role="status"
+            aria-live="polite"></div>
+          <div id="globalErr" class="alert err" role="alert"
+            aria-live="assertive"></div>
 
-        <div class="row">
-          <span></span>
-          <a class="link" href="iniciarSesion.html">Volver a iniciar sesión</a>
-        </div>
-      </form>
+          <div class="row">
+            <span></span>
+            <a class="link" href="iniciarSesion.html">Volver a iniciar
+              sesión</a>
+          </div>
+        </form>
+      </div>
+      <footer>© 2025 UTMentor</footer>
     </div>
-    <footer>© 2025 UTMentor</footer>
-  </div>
 
-  <script>
-    // Utilidad: obtener query param
-    const getParam = (k) => new URL(location.href).searchParams.get(k);
-
-    // Simulación de token: si no hay token o es "expired", bloquear
-    const token = getParam('token');
-    const tokenAlert = document.getElementById('tokenAlert');
-    const form = document.getElementById('resetForm');
-    const submitBtn = document.getElementById('submitBtn');
-
-    if (!token || token === 'expired') {
-      tokenAlert.textContent = !token
-        ? 'Enlace inválido. Falta el token de recuperación. Solicita un nuevo correo.'
-        : 'El enlace de recuperación ha caducado. Solicita uno nuevo.';
-      form.querySelectorAll('input,button').forEach(el => {
-        if (el !== tokenAlert) el.disabled = true;
-      });
-    }
-
-    // Reglas de contraseña
-    const rules = {
-      len:  (v) => v.length >= 8,
-      up:   (v) => /[A-ZÁÉÍÓÚÑ]/.test(v),
-      low:  (v) => /[a-záéíóúñ]/.test(v),
-      num:  (v) => /\d/.test(v),
-      spec: (v) => /[^A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s]/.test(v)
-    };
-
-    const pw = document.getElementById('password');
-    const cf = document.getElementById('confirm');
-    const pwErr = document.getElementById('pwError');
-    const cfErr = document.getElementById('cfError');
-
-    const cLen  = document.getElementById('cLen');
-    const cUp   = document.getElementById('cUp');
-    const cLow  = document.getElementById('cLow');
-    const cNum  = document.getElementById('cNum');
-    const cSpec = document.getElementById('cSpec');
-
-    function setState(el, ok){
-      el.classList.toggle('ok', ok);
-      el.classList.toggle('bad', !ok);
-    }
-
-    function validatePassword(showMsg=true){
-      const v = pw.value.trim();
-      const okLen  = rules.len(v);
-      const okUp   = rules.up(v);
-      const okLow  = rules.low(v);
-      const okNum  = rules.num(v);
-      const okSpec = rules.spec(v);
-
-      setState(cLen,  okLen);
-      setState(cUp,   okUp);
-      setState(cLow,  okLow);
-      setState(cNum,  okNum);
-      setState(cSpec, okSpec);
-
-      const allOk = okLen && okUp && okLow && okNum && okSpec;
-
-      if (!v && showMsg){
-        pwErr.textContent = 'Este campo es obligatorio.';
-      } else if (!allOk && showMsg){
-        pwErr.textContent = 'La contraseña no cumple los requisitos.';
-      } else {
-        pwErr.textContent = '';
-      }
-      return allOk;
-    }
-
-    function validateConfirm(showMsg=true){
-      const v1 = pw.value.trim();
-      const v2 = cf.value.trim();
-      if (!v2 && showMsg){
-        cfErr.textContent = 'Este campo es obligatorio.';
-        return false;
-      }
-      if (v1 !== v2){
-        if (showMsg) cfErr.textContent = 'Las contraseñas no coinciden.';
-        return false;
-      }
-      cfErr.textContent = '';
-      return true;
-    }
-
-    pw.addEventListener('input', () => {
-      validatePassword(false);
-      if (cf.value) validateConfirm(false);
-    });
-    cf.addEventListener('input', () => validateConfirm(false));
-
-    // Mostrar/ocultar contraseña
-    document.querySelectorAll('.eye').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const targetId = btn.getAttribute('data-toggle');
-        const input = document.getElementById(targetId);
-        input.type = input.type === 'password' ? 'text':'password';
-      });
-    });
-
-    // Mensajes globales
-    const globalOk = document.getElementById('globalOk');
-    const globalErr = document.getElementById('globalErr');
-
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      globalOk.style.display = 'none';
-      globalErr.style.display = 'none';
-
-      const okPw = validatePassword(true);
-      const okCf = validateConfirm(true);
-      if (!okPw || !okCf) return;
-
-      // Hook de API real:
-      // const res = await fetch('/api/reset', { method:'POST', body:JSON.stringify({ token, password: pw.value }) })
-      // if (!res.ok) { ... } else { ... }
-
-      // Simulación de servidor
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Actualizando...';
-      await new Promise(r => setTimeout(r, 900));
-
-      // Simula errores comunes según valor:
-      if (pw.value.toLowerCase().includes('password')){
-        globalErr.textContent = 'La contraseña es demasiado común. Prueba con una más segura.';
-        globalErr.style.display = 'block';
-      } else if (pw.value.length > 128){
-        globalErr.textContent = 'La contraseña es demasiado larga.';
-        globalErr.style.display = 'block';
-      } else {
-        globalOk.innerHTML = 'Tu contraseña ha sido actualizada. <a class="link" href="iniciarSesion.html">Inicia sesión ahora</a>.';
-        globalOk.style.display = 'block';
-        // Limpia campos
-        pw.value = '';
-        cf.value = '';
-        validatePassword(false);
-        validateConfirm(false);
-      }
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Actualizar contraseña';
-    });
-  </script>
-</body>
+    <script src="../js/cambioContraseña.js"></script>
+  </body>
 </html>

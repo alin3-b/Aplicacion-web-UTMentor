@@ -48,11 +48,19 @@ export async function getAllAsesores(filtros = {}) {
   }
 
   if (dia) {
-    const diasMap = { "Domingo":0,"Lunes":1,"Martes":2,"Miércoles":3,"Jueves":4,"Viernes":5,"Sábado":6 };
+    const diasMap = {
+      Domingo: 0,
+      Lunes: 1,
+      Martes: 2,
+      Miércoles: 3,
+      Jueves: 4,
+      Viernes: 5,
+      Sábado: 6,
+    };
     conditions.push("DAYOFWEEK(d.fecha_inicio) = ?");
     params.push(diasMap[dia] + 1);
   }
-  
+
   if (desde && hasta) {
     conditions.push("(TIME(d.fecha_fin) >= ? AND TIME(d.fecha_inicio) <= ?)");
     params.push(desde, hasta);
@@ -63,7 +71,6 @@ export async function getAllAsesores(filtros = {}) {
     conditions.push("TIME(d.fecha_inicio) <= ?");
     params.push(hasta);
   }
-  
 
   const query = `
     SELECT 
@@ -104,9 +111,23 @@ export async function getAllAsesores(filtros = {}) {
   const asesoresMap = new Map();
   rows.forEach((row) => {
     const {
-      id_disponibilidad, fecha_inicio, fecha_fin, modalidad, tipo_sesion,
-      nombre_tema, nombre_area, precio, capacidad, es_disponible, inscritos,
-      id_usuario, nombre_completo, nombre_carrera, numero_sesiones, puntuacion_promedio, correo_contacto
+      id_disponibilidad,
+      fecha_inicio,
+      fecha_fin,
+      modalidad,
+      tipo_sesion,
+      nombre_tema,
+      nombre_area,
+      precio,
+      capacidad,
+      es_disponible,
+      inscritos,
+      id_usuario,
+      nombre_completo,
+      nombre_carrera,
+      numero_sesiones,
+      puntuacion_promedio,
+      correo_contacto,
     } = row;
 
     if (!asesoresMap.has(id_usuario)) {
@@ -117,7 +138,7 @@ export async function getAllAsesores(filtros = {}) {
         numero_sesiones,
         puntuacion_promedio,
         correo_contacto,
-        disponibilidades: []
+        disponibilidades: [],
       });
     }
 
@@ -133,7 +154,7 @@ export async function getAllAsesores(filtros = {}) {
         precio,
         capacidad,
         es_disponible,
-        inscritos
+        inscritos,
       });
     }
   });
@@ -224,7 +245,7 @@ export async function addUsuario({
   semestre,
   fk_carrera,
   password_hash,
-  roles = []
+  roles = [],
 }) {
   const conn = await mysqlPool.getConnection();
   try {
@@ -242,7 +263,7 @@ export async function addUsuario({
 
     // 2. Insertar roles directamente (ya vienen validos desde frontend)
     if (roles.length > 0) {
-      const values = roles.map(r => [id_usuario, r]);
+      const values = roles.map((r) => [id_usuario, r]);
       await conn.query(
         `INSERT INTO usuario_rol (fk_usuario, fk_rol) VALUES ?`,
         [values]
@@ -259,7 +280,6 @@ export async function addUsuario({
     conn.release();
   }
 }
-
 
 export async function getMetricas() {
   const [[asesoresActivos]] = await mysqlPool.query(`

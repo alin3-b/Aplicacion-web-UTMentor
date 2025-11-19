@@ -7,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3316:3306"
@@ -88,8 +88,8 @@ services:
     volumes:
       - minio_data:/data
     ports:
-      - "9000:9000"   # API S3 compatible
-      - "9001:9001"   # Consola web
+      - "9000:9000" # API S3 compatible
+      - "9001:9001" # Consola web
     networks:
       - services_net
 

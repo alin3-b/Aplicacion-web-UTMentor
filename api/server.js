@@ -21,12 +21,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // === MIDDLEWARES – deben ir antes de las rutas ===
 // Configurar CORS para aceptar Authorization header en preflight y exponerlo en respuestas si es necesario.
-app.use(cors({
-  origin: true, // o especifica tu origen: ['https://mi-front.com']
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  exposedHeaders: ['Authorization']
-}));
+app.use(
+  cors({
+    origin: true, // o especifica tu origen: ['https://mi-front.com']
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    exposedHeaders: ["Authorization"],
+  })
+);
 
 app.use(express.json()); // parsea JSON body
 
@@ -40,16 +42,16 @@ app.use("/api/pagos", paymentsRoutes);
 
 // === SWAGGER ===
 const swaggerOptions = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "UTmentor API",
-            version: "1.0.0",
-            description: "API para sistema de mentorías UTmentor (MySQL)",
-        },
-        servers: [{ url: `http://localhost:${process.env.PORT || 3000}` }],
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "UTmentor API",
+      version: "1.0.0",
+      description: "API para sistema de mentorías UTmentor (MySQL)",
     },
-    apis: ["./controllers/*.js", "./routes/*.js"],
+    servers: [{ url: `http://localhost:${process.env.PORT || 3000}` }],
+  },
+  apis: ["./controllers/*.js", "./routes/*.js"],
 };
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
@@ -59,7 +61,7 @@ await testMySQLConnection();
 
 // === RUTA RAÍZ ===
 app.get("/", (req, res) => {
-    res.send(`
+  res.send(`
     <h2>UTmentor API</h2>
     <p><strong>Estado:</strong> Activa</p>
     <p><strong>Entorno:</strong> ${process.env.NODE_ENV || "development"}</p>
@@ -70,24 +72,24 @@ app.get("/", (req, res) => {
 
 // === HEALTH CHECK ===
 app.get("/health", async (req, res) => {
-    const mysqlOk = await mysqlPool
-        .query("SELECT 1")
-        .then(() => true)
-        .catch(() => false);
+  const mysqlOk = await mysqlPool
+    .query("SELECT 1")
+    .then(() => true)
+    .catch(() => false);
 
-    res.json({
-        status: mysqlOk ? "ok" : "error",
-        services: {
-            mysql: mysqlOk ? "connected" : "disconnected",
-        },
-        timestamp: new Date().toISOString(),
-    });
+  res.json({
+    status: mysqlOk ? "ok" : "error",
+    services: {
+      mysql: mysqlOk ? "connected" : "disconnected",
+    },
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // === INICIAR SERVIDOR ===
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Servidor escuchando en puerto ${PORT}`);
-    console.log(`http://localhost:${PORT}/`);
-    console.log(`Documentación: http://localhost:${PORT}/api-docs`);
+  console.log(`Servidor escuchando en puerto ${PORT}`);
+  console.log(`http://localhost:${PORT}/`);
+  console.log(`Documentación: http://localhost:${PORT}/api-docs`);
 });

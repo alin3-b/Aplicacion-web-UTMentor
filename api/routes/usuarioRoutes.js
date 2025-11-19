@@ -7,7 +7,7 @@ import {
   obtenerInfoAsesor,
   listarTemasPopulares,
   obtenerMetricas,
-  checkEmailController
+  checkEmailController,
 } from "../controllers/usuarioController.js";
 
 const router = express.Router();
@@ -17,6 +17,9 @@ router.get("/", listarUsuarios);
 
 // === CREAR USUARIO ===
 router.post("/", crearUsuario);
+
+// === LOGIN USUARIO ===
+router.post("/login", loginUsuario);
 
 // === LISTAR TODOS LOS ASESORES ===
 router.get("/asesores", listarAsesores);
