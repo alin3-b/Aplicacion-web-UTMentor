@@ -1,115 +1,126 @@
-// js/registro.js
-const signupForm = document.getElementById("signupForm");
-const btnSignup = document.getElementById("btnSignup");
-const signupError = document.getElementById("signupError");
-const signupInfo = document.getElementById("signupInfo");
-const dupHint = document.getElementById("dupHint");
-
-// URL FINAL CORRECTA (puerto 3000 + ruta montada en server.js)
-const API_BASE = "http://localhost:3000/api/usuarios";
-
-// MAPEO DE ROLES SEGÚN TU BASE DE DATOS REAL
-const ROLES_MAP = {
-  asesorado: [2],     // Solo estudiante
-  asesor: [1],        // Solo asesor
-  ambos: [1, 2]       // Ambos roles
-};
-
-signupForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  // Limpiar mensajes anteriores
-  signupError.textContent = "";
-  signupInfo.textContent = "";
-  dupHint.hidden = true;
-
-  // Capturar datos del formulario
-  const rolSeleccionado = document.getElementById("role").value;
-  const nombre_completo = document.getElementById("fullName").value.trim();
-  const semestre = parseInt(document.getElementById("semester").value);
-  const fk_carrera = parseInt(document.getElementById("career").value);
-  const correo = document.getElementById("email").value.trim().toLowerCase();
-  const password = document.getElementById("password").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-  const policy = document.getElementById("policy").checked;
-
-  // Validaciones del frontend
-  if (!rolSeleccionado) return showError("Selecciona tu rol");
-  if (!nombre_completo) return showError("Ingresa tu nombre completo");
-  if (isNaN(semestre)) return showError("Selecciona tu semestre");
-  if (isNaN(fk_carrera)) return showError("Selecciona tu carrera");
-  if (!correo) return showError("Ingresa tu correo");
-  if (password.length < 6) return showError("La contraseña debe tener al menos 6 caracteres");
-  if (password !== confirmPassword) return showError("Las contraseñas no coinciden");
-  if (!policy) return showError("Debes aceptar las políticas de privacidad");
-
-  // Datos que se envían al backend
-  const payload = {
-    nombre_completo,
-    correo,
-    semestre,
-    fk_carrera,
-    password,
-    roles: ROLES_MAP[rolSeleccionado]  // Aquí se decide si es 1, 2 o [1,2]
-  };
-
-  console.log("Enviando al backend:", payload); // Para que veas exactamente qué se manda
-
-  try {
-    btnSignup.disabled = true;
-    btnSignup.textContent = "Creando cuenta...";
-
-    const response = await fetch(API_BASE, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-    console.log("Respuesta del servidor:", data);
-
-    if (response.status === 201) {
-      // ÉXITO: usuario creado y guardado en la base de datos
-      signupInfo.textContent = "¡Cuenta creada con éxito!";
-      signupInfo.style.color = "#10b981";
-
-      setTimeout(() => {
-        if (rolSeleccionado === "ambos") {
-          document.getElementById("roleModal").style.display = "block";
-          document.getElementById("roleModal").removeAttribute("aria-hidden");
-        } else if (rolSeleccionado === "asesor") {
-          window.location.href = "panelAsesor.html";
-        } else {
-          window.location.href = "panelAsesorado.html";
-        }
-      }, 1500);
-
-    } else if (response.status === 400 && data.error?.includes("correo")) {
-      dupHint.hidden = false;
-    } else {
-      showError(data.error || "Error desconocido al registrarse");
-    }
-
-  } catch (err) {
-    console.error("Error de red:", err);
-    showError("No se pudo conectar al servidor. Asegúrate de que esté corriendo en el puerto 3000");
-  } finally {
-    btnSignup.disabled = false;
-    btnSignup.textContent = "Registrarse";
-  }
-});
-
-function showError(mensaje) {
-  signupError.textContent = mensaje;
+// ../js/registro.js
+function sanitize(input) {
+    return input.replace(/[<>'"]/g, "");
 }
 
-// Cerrar modal
-document.querySelectorAll("[data-role-dismiss]").forEach(el => {
-  el.addEventListener("click", () => {
-    const modal = document.getElementById("roleModal");
-    modal.style.display = "none";
-    modal.setAttribute("aria-hidden", "true");
-  });
+const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,60}$/;
+const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const regexPassword = /^[A-Za-z0-9!@#$%^&*()_\-+=.?]{6,50}$/;
+
+// Limpia errores mientras escribe
+document.getElementById("nombre_completo").addEventListener("input", () => {
+    document.getElementById("errorNombre").style.display = "none";
+});
+document.getElementById("correo").addEventListener("input", () => {
+    document.getElementById("errorCorreo").style.display = "none";
+});
+
+// Toggle contraseñas
+document.getElementById("togglePass").addEventListener("click", () => {
+    const pass = document.getElementById("password");
+    const icon = document.getElementById("togglePass");
+    if (pass.type === "password") { pass.type = "text"; icon.src = "../imagenes/ocultar.png"; }
+    else { pass.type = "password"; icon.src = "../imagenes/vista.png"; }
+});
+document.getElementById("toggleConfirmPass").addEventListener("click", () => {
+    const pass = document.getElementById("confirmPassword");
+    const icon = document.getElementById("toggleConfirmPass");
+    if (pass.type === "password") { pass.type = "text"; icon.src = "../imagenes/ocultar.png"; }
+    else { pass.type = "password"; icon.src = "../imagenes/vista.png"; }
+});
+
+// Llenar select de semestres
+const semestre = document.getElementById("semestre");
+for (let i = 1; i <= 10; i++) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `${i}° semestre`;
+    semestre.appendChild(opt);
+}
+
+// Listener del formulario
+document.getElementById("formRegistro").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = sanitize(document.getElementById("nombre_completo").value.trim());
+    const correo = sanitize(document.getElementById("correo").value.trim());
+    const password = sanitize(document.getElementById("password").value.trim());
+    const confirmPassword = sanitize(document.getElementById("confirmPassword").value.trim());
+    const errorConfirm = document.getElementById("errorConfirm");
+    const errorNombre = document.getElementById("errorNombre");
+    const errorCorreo = document.getElementById("errorCorreo");
+    const policy = document.getElementById("policy");
+
+    // Validar contraseñas
+    if (password !== confirmPassword) {
+        errorConfirm.textContent = "Las contraseñas no coinciden.";
+        errorConfirm.style.display = "block";
+        return;
+    } else { errorConfirm.style.display = "none"; }
+
+    // Validar nombre
+    if (!regexNombre.test(nombre)) {
+        errorNombre.textContent = "El nombre solo debe contener letras y espacios (3 a 60 caracteres).";
+        errorNombre.style.display = "block";
+        return;
+    }
+
+    // Validar correo
+    if (!regexCorreo.test(correo)) { alert("❌ Correo inválido."); return; }
+
+    // Validar contraseña
+    if (!regexPassword.test(password)) { alert("❌ Contraseña inválida."); return; }
+
+    // Validar términos y condiciones
+    if (!policy.checked) { alert("Debes aceptar los términos y condiciones."); return; }
+
+    const roles = document.getElementById("roles").value.split(",").map(Number);
+
+    const data = {
+        nombre_completo: nombre,
+        correo,
+        semestre: Number(document.getElementById("semestre").value),
+        fk_carrera: Number(document.getElementById("fk_carrera").value),
+        password,
+        roles
+    };
+
+    try {
+        const response = await fetch("/api/usuarios", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        const toast = document.getElementById("toastMensaje");
+        errorCorreo.style.display = "none";
+
+        if (!response.ok) {
+            if (result.error === "El correo ya está registrado") {
+                errorCorreo.textContent = result.error;
+                errorCorreo.style.display = "block";
+                return;
+            }
+            toast.textContent = result.error || "Error interno del servidor";
+            toast.classList.add("error", "show");
+            setTimeout(() => toast.classList.remove("show"), 3500);
+            return;
+        }
+
+        // Éxito
+        toast.textContent = "Usuario creado con éxito";
+        toast.classList.remove("error");
+        toast.classList.add("show");
+        document.getElementById("formRegistro").reset();
+        setTimeout(() => toast.classList.remove("show"), 3500);
+
+    } catch (error) {
+        console.error("Error del fetch:", error);
+        const toast = document.getElementById("toastMensaje");
+        toast.textContent = "No se pudo conectar con el servidor.";
+        toast.classList.add("error", "show");
+        setTimeout(() => toast.classList.remove("show"), 3500);
+    }
+
 });
