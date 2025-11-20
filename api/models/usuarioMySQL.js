@@ -307,15 +307,30 @@ export async function getUserByEmail(correo) {
       u.password_hash,
       u.semestre,
       u.es_activo,
-      c.nombre_carrera,
-      r.nombre_rol
+      c.nombre_carrera
     FROM usuarios u
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
-    LEFT JOIN usuario_rol ur ON u.id_usuario = ur.fk_usuario
-    LEFT JOIN roles r ON ur.fk_rol = r.id_rol
-    WHERE u.correo = ? AND u.es_activo = TRUE
+    WHERE u.correo = ? 
+      AND u.es_activo = TRUE
+    LIMIT 1
     `,
     [correo]
   );
+
   return rows[0] || null;
+}
+
+
+export async function getRolesByUserId(idUsuario) {
+  const [rows] = await mysqlPool.query(
+    `
+    SELECT ur.fk_rol AS id_rol
+    FROM usuario_rol ur
+    WHERE ur.fk_usuario = ?
+    `,
+    [idUsuario]
+  );
+
+  // Devuelve un array de IDs: [1] o [1,2]
+  return rows.map(r => r.id_rol);
 }

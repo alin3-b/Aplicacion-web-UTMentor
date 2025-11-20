@@ -9,7 +9,10 @@ import {
   getMetricas,
   getUsuarioCheckByCorreo,
   getUserByEmail,
+  getRolesByUserId,
 } from "../models/usuarioMySQL.js";
+import { generarToken } from "../utils/jwt.js";
+
 
 /**
  * @openapi
@@ -322,7 +325,7 @@ export async function checkEmailController(req, res) {
  * @openapi
  * /api/usuarios/login:
  *   post:
- *     summary: Autentica un usuario con correo y contraseña
+ *     summary: Inicia sesión y genera un JWT para el usuario
  *     tags: [Usuarios]
  *     requestBody:
  *       required: true
@@ -337,13 +340,13 @@ export async function checkEmailController(req, res) {
  *               correo:
  *                 type: string
  *                 format: email
- *                 example: usuario@example.com
+ *                 example: "usuario@example.com"
  *               password:
  *                 type: string
- *                 example: miContraseña123
+ *                 example: "MiPassword123"
  *     responses:
  *       200:
- *         description: Login exitoso
+ *         description: Inicio de sesión exitoso
  *         content:
  *           application/json:
  *             schema:
@@ -351,7 +354,7 @@ export async function checkEmailController(req, res) {
  *               properties:
  *                 success:
  *                   type: boolean
- *                 message:
+ *                 mensaje:
  *                   type: string
  *                 usuario:
  *                   type: object
@@ -366,58 +369,99 @@ export async function checkEmailController(req, res) {
  *                       type: integer
  *                     nombre_carrera:
  *                       type: string
- *                     nombre_rol:
- *                       type: string
+ *                     roles:
+ *                       type: array
+ *                       items:
+ *                         type: integer
+ *                 token:
+ *                   type: string
  *       400:
- *         description: Faltan campos obligatorios
+ *         description: Campos faltantes
  *       401:
- *         description: Credenciales inválidas
+ *         description: Credenciales incorrectas
+ *       500:
+ *         description: Error interno del servidor
  */
 export async function loginUsuario(req, res) {
-  const { correo, password } = req.body;
-
-  // Validación de campos
-  if (!correo || !password) {
-    return res.status(400).json({
-      success: false,
-      error: "Correo y contraseña son obligatorios",
-    });
-  }
-
   try {
-    // Buscar usuario por correo
+    const { correo, password } = req.body;
+
+    // ===========================
+    // 1. Validar campos
+    // ===========================
+    if (!correo || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Correo y contraseña son obligatorios",
+      });
+    }
+
+    // ===========================
+    // 2. Buscar usuario por correo
+    // ===========================
     const usuario = await getUserByEmail(correo);
-    console.log(`Usuario: ${JSON.stringify(usuario)}`);
     if (!usuario) {
       return res.status(401).json({
         success: false,
-        error: "Credenciales inválidas",
+        error: "Correo o contraseña incorrectos",
       });
     }
 
-    // Validar contraseña (comparación directa por ahora)
-    // NOTA: En producción deberías usar bcrypt.compare() si las contraseñas están hasheadas
-    if (usuario.password_hash !== password) {
+    // ===========================
+    // 3. Comparar contraseña hasheada
+    // ===========================
+    const okPassword = await bcrypt.compare(password, usuario.password_hash);
+
+    if (!okPassword) {
       return res.status(401).json({
         success: false,
-        error: "Credenciales inválidas",
+        error: "Correo o contraseña incorrectos",
       });
     }
 
-    // Login exitoso - no devolver el password_hash
+    // ===========================
+    // 4. Obtener roles (1 o varios)
+    // ===========================
+    const roles = await getRolesByUserId(usuario.id_usuario);
+    // → ejemplo resultado: [1] o [1,2]
+
+    // ===========================
+    // 5. Crear payload del JWT
+    // ===========================
+    const payload = {
+      id_usuario: usuario.id_usuario,
+      nombre: usuario.nombre_completo,
+      correo: usuario.correo,
+      roles // MANDAMOS TODOS LOS ROLES, no solo uno
+    };
+
+    // ===========================
+    // 6. Generar token JWT
+    // ===========================
+    const token = generarToken(payload);
+
+    // ===========================
+    // 7. Respuesta limpia sin password
+    // ===========================
     const { password_hash, ...usuarioSinPassword } = usuario;
 
-    res.json({
+    return res.status(200).json({
       success: true,
-      message: "Login exitoso",
-      usuario: usuarioSinPassword,
+      mensaje: "Inicio de sesión exitoso",
+      usuario: {
+        ...usuarioSinPassword,
+        roles
+      },
+      token
     });
+
   } catch (error) {
-    console.error("Error en login:", error);
-    res.status(500).json({
+    console.error("❌ Error en loginUsuario:", error);
+    return res.status(500).json({
       success: false,
       error: "Error interno del servidor",
     });
   }
 }
+
 
