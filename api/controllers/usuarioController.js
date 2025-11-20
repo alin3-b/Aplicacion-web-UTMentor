@@ -1,5 +1,4 @@
 // api/controllers/usuarioController.js
-import bcrypt from "bcryptjs";
 import {
   getUsuarios,
   addUsuario,
@@ -7,7 +6,7 @@ import {
   getAsesorInfo,
   getTemasPopulares,
   getMetricas,
-  getUsuarioCheckByCorreo
+  getUserByEmail,
 } from "../models/usuarioMySQL.js";
 
 /**
@@ -23,13 +22,27 @@ import {
  *           application/json:
  *             schema:
  *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_usuario:
+ *                     type: integer
+ *                   nombre_completo:
+ *                     type: string
+ *                   correo:
+ *                     type: string
+ *                   semestre:
+ *                     type: integer
+ *                   nombre_carrera:
+ *                     type: string
+ *                     nullable: true
+ *                   nombre_rol:
+ *                     type: string
+ *                     nullable: true
  */
 export async function listarUsuarios(req, res) {
   try {
     const usuarios = await getUsuarios();
-    if (usuarios.length === 0) {
-      return res.status(200).json({ ok: true, message: "No se encontraron usuarios", usuarios: [] });
-    }
     res.json(usuarios);
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
@@ -41,54 +54,52 @@ export async function listarUsuarios(req, res) {
  * @openapi
  * /api/usuarios/asesores:
  *   get:
- *     summary: Obtiene todos los asesores con filtros opcionales
+ *     summary: Obtiene todos los asesores con su información y disponibilidades
  *     tags: [Asesores]
- *     parameters:
- *       - name: nombre
- *         in: query
- *         schema: { type: string }
- *       - name: carrera
- *         in: query
- *         schema: { type: string }
- *       - name: calificacionMin
- *         in: query
- *         schema: { type: number }
- *       - name: dia
- *         in: query
- *         schema: { type: string }
- *       - name: horaDesde
- *         in: query
- *         schema: { type: string }
- *       - name: horaHasta
- *         in: query
- *         schema: { type: string }
- *       - name: tema
- *         in: query
- *         schema: { type: string }
- *       - name: area
- *         in: query
- *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Lista de asesores activos
+ *         description: Lista de todos los asesores activos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_usuario:
+ *                     type: integer
+ *                   nombre_completo:
+ *                     type: string
+ *                   nombre_carrera:
+ *                     type: string
+ *                   numero_sesiones:
+ *                     type: integer
+ *                   puntuacion_promedio:
+ *                     type: number
+ *                     format: float
+ *                   descripcion:
+ *                     type: string
+ *                   correo_contacto:
+ *                     type: string
+ *                   disponibilidades:
+ *                     type: array
+ *                     items:
+ *                       type: object
  */
 export async function listarAsesores(req, res) {
   try {
     const filtros = {
       nombre: req.query.nombre,
       carrera: req.query.carrera,
-      calificacionMin: req.query.calificacionMin,
+      calificacionMin: req.query.calificacionMin, // si quieres filtrar por calificación
       dia: req.query.dia,
-      desde: req.query.horaDesde,
-      hasta: req.query.horaHasta,
+      desde: req.query.horaDesde, // coincide con getAllAsesores
+      hasta: req.query.horaHasta, // coincide con getAllAsesores
       tema: req.query.tema,
       area: req.query.area,
     };
 
     const asesores = await getAllAsesores(filtros);
-    if (asesores.length === 0) {
-      return res.status(200).json({ ok: true, message: "No se encontraron asesores", asesores: [] });
-    }
     res.json(asesores);
   } catch (error) {
     console.error("Error al obtener asesores:", error);
@@ -98,7 +109,7 @@ export async function listarAsesores(req, res) {
 
 /**
  * @openapi
- * /api/usuarios/asesores/{id}:
+ * /api/usuarios/asesor/{id}:
  *   get:
  *     summary: Obtiene información completa de un asesor
  *     tags: [Asesores]
@@ -108,9 +119,62 @@ export async function listarAsesores(req, res) {
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID del asesor
  *     responses:
  *       200:
- *         description: Información del asesor
+ *         description: Información del asesor con disponibilidades
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_usuario:
+ *                   type: integer
+ *                 nombre_completo:
+ *                   type: string
+ *                 nombre_carrera:
+ *                   type: string
+ *                 numero_sesiones:
+ *                   type: integer
+ *                 puntuacion_promedio:
+ *                   type: number
+ *                   format: float
+ *                 descripcion:
+ *                   type: string
+ *                 correo_contacto:
+ *                   type: string
+ *                 disponibilidades:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_disponibilidad:
+ *                         type: integer
+ *                       fecha_inicio:
+ *                         type: string
+ *                         format: date-time
+ *                       fecha_fin:
+ *                         type: string
+ *                         format: date-time
+ *                       modalidad:
+ *                         type: string
+ *                         enum: [presencial, virtual]
+ *                       tipo_sesion:
+ *                         type: string
+ *                         enum: [grupal, individual]
+ *                       nombre_tema:
+ *                         type: string
+ *                       nombre_area:
+ *                         type: string
+ *                       precio:
+ *                         type: number
+ *                         format: float
+ *                       capacidad:
+ *                         type: integer
+ *                       es_disponible:
+ *                         type: boolean
+ *                       inscritos:
+ *                         type: integer
  *       404:
  *         description: Asesor no encontrado
  */
@@ -138,14 +202,26 @@ export async function obtenerInfoAsesor(req, res) {
  *     tags: [Temas]
  *     responses:
  *       200:
- *         description: Lista de temas populares
+ *         description: Lista de temas populares con número de asesores y reservas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_tema:
+ *                     type: integer
+ *                   nombre_tema:
+ *                     type: string
+ *                   numero_asesores:
+ *                     type: integer
+ *                   numero_reservas:
+ *                     type: integer
  */
 export async function listarTemasPopulares(req, res) {
   try {
     const temas = await getTemasPopulares();
-    if (temas.length === 0) {
-      return res.status(200).json({ ok: true, message: "No se encontraron temas populares", temas: [] });
-    }
     res.json(temas);
   } catch (error) {
     console.error("Error al obtener temas populares:", error);
@@ -170,39 +246,24 @@ export async function listarTemasPopulares(req, res) {
  *               - correo
  *               - semestre
  *               - fk_carrera
- *               - password
+ *               - password_hash
  *             properties:
  *               nombre_completo:
  *                 type: string
- *                 description: Nombre completo del usuario
  *               correo:
  *                 type: string
  *                 format: email
- *                 description: Correo electrónico único del usuario
  *               semestre:
  *                 type: integer
- *                 description: Semestre del usuario (1-10)
+ *                 minimum: 1
+ *                 maximum: 10
  *               fk_carrera:
  *                 type: integer
- *                 description: ID de la carrera del usuario
- *               password:
+ *               password_hash:
  *                 type: string
- *                 description: Contraseña del usuario
- *               roles:
- *                 type: array
- *                 description: IDs de los roles del usuario (opcional)
- *                 items:
- *                   type: integer
- *             example:
- *               nombre_completo: "Aline Pérez"
- *               correo: "aline@example.com"
- *               semestre: 3
- *               fk_carrera: 1
- *               password: "MiContraseña123"
- *               roles: [2]
  *     responses:
  *       201:
- *         description: Usuario creado correctamente
+ *         description: Usuario creado exitosamente
  *         content:
  *           application/json:
  *             schema:
@@ -210,56 +271,43 @@ export async function listarTemasPopulares(req, res) {
  *               properties:
  *                 id_usuario:
  *                   type: integer
- *                 roles:
- *                   type: array
- *                   items:
- *                     type: integer
+ *                 nombre_completo:
+ *                   type: string
+ *                 correo:
+ *                   type: string
  *       400:
- *         description: Faltan campos obligatorios o correo duplicado
- *       500:
- *         description: Error interno del servidor
+ *         description: Faltan campos obligatorios
  */
 export async function crearUsuario(req, res) {
-  const { nombre_completo, correo, semestre, fk_carrera, password, roles } = req.body;
+  const { nombre_completo, correo, semestre, fk_carrera, password_hash } =
+    req.body;
 
-  if (!nombre_completo || !correo || !semestre || !fk_carrera || !password) {
+  // Validación básica (como tu profe)
+  if (
+    !nombre_completo ||
+    !correo ||
+    !semestre ||
+    !fk_carrera ||
+    !password_hash
+  ) {
     return res.status(400).json({ error: "Faltan campos obligatorios" });
   }
 
   try {
-    const password_hash = await bcrypt.hash(password, 10);
-
     const nuevoUsuario = await addUsuario({
       nombre_completo,
       correo,
       semestre,
       fk_carrera,
       password_hash,
-      roles: roles && roles.length > 0 ? roles : [2] // Rol por defecto "Estudiante"
     });
-
     res.status(201).json(nuevoUsuario);
   } catch (error) {
     console.error("Error al crear usuario:", error);
-
-    if (error.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({ error: "El correo ya está registrado" });
-    }
-
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 
-/**
- * @openapi
- * /api/usuarios/metricas:
- *   get:
- *     summary: Obtiene métricas de la plataforma
- *     tags: [Usuarios]
- *     responses:
- *       200:
- *         description: Métricas del sistema
- */
 export const obtenerMetricas = async (req, res) => {
   try {
     const metricas = await getMetricas();
@@ -272,33 +320,103 @@ export const obtenerMetricas = async (req, res) => {
 
 /**
  * @openapi
- * /api/usuarios/check-email:
- *   get:
- *     summary: Verifica si un correo ya está registrado
+ * /api/usuarios/login:
+ *   post:
+ *     summary: Autentica un usuario con correo y contraseña
  *     tags: [Usuarios]
- *     parameters:
- *       - in: query
- *         name: correo
- *         required: true
- *         schema:
- *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - correo
+ *               - password
+ *             properties:
+ *               correo:
+ *                 type: string
+ *                 format: email
+ *                 example: usuario@example.com
+ *               password:
+ *                 type: string
+ *                 example: miContraseña123
  *     responses:
  *       200:
- *         description: Indica si el correo existe
+ *         description: Login exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 usuario:
+ *                   type: object
+ *                   properties:
+ *                     id_usuario:
+ *                       type: integer
+ *                     nombre_completo:
+ *                       type: string
+ *                     correo:
+ *                       type: string
+ *                     semestre:
+ *                       type: integer
+ *                     nombre_carrera:
+ *                       type: string
+ *                     nombre_rol:
+ *                       type: string
+ *       400:
+ *         description: Faltan campos obligatorios
+ *       401:
+ *         description: Credenciales inválidas
  */
-export async function checkEmailController(req, res) {
-  try {
-    const { correo } = req.query;
+export async function loginUsuario(req, res) {
+  const { correo, password } = req.body;
 
-    if (!correo) {
-      return res.status(400).json({ error: "Correo requerido" });
+  // Validación de campos
+  if (!correo || !password) {
+    return res.status(400).json({
+      success: false,
+      error: "Correo y contraseña son obligatorios",
+    });
+  }
+
+  try {
+    // Buscar usuario por correo
+    const usuario = await getUserByEmail(correo);
+    console.log(`Usuario: ${JSON.stringify(usuario)}`);
+    if (!usuario) {
+      return res.status(401).json({
+        success: false,
+        error: "Credenciales inválidas",
+      });
     }
 
-    const exists = await getUsuarioCheckByCorreo(correo);
+    // Validar contraseña (comparación directa por ahora)
+    // NOTA: En producción deberías usar bcrypt.compare() si las contraseñas están hasheadas
+    if (usuario.password_hash !== password) {
+      return res.status(401).json({
+        success: false,
+        error: "Credenciales inválidas",
+      });
+    }
 
-    res.json({ exists });
+    // Login exitoso - no devolver el password_hash
+    const { password_hash, ...usuarioSinPassword } = usuario;
+
+    res.json({
+      success: true,
+      message: "Login exitoso",
+      usuario: usuarioSinPassword,
+    });
   } catch (error) {
-    console.error("Error en check-email:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    console.error("Error en login:", error);
+    res.status(500).json({
+      success: false,
+      error: "Error interno del servidor",
+    });
   }
 }

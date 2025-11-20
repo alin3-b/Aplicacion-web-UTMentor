@@ -1,261 +1,266 @@
 <!doctype html>
-<html lang="es" class="no-js">
+<html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Panel de Asesor · UTMentor</title>
-  <link rel="preload" href="../css/panelAsesor.css" as="style">
+  <title>Panel del Asesor | UTMentor</title>
+  <link rel="stylesheet" href="../css/estilo.css">
   <link rel="stylesheet" href="../css/panelAsesor.css">
+  <link rel="stylesheet" href="../css/editarPerfil.css">
+  <link rel="stylesheet" href="../css/calendario.css">
+  <link rel="stylesheet" href="../css/detallesAsesoria.css">
+  <link rel="stylesheet" href="../css/crearAsesoria.css">
 </head>
+
 <body>
-  <!-- Barra lateral -->
-  <aside class="sidebar" aria-label="Navegación lateral">
-    <div class="brand">
-      <img src="../imagenes/logo.png" alt="UTMentor" />
-    </div>
+  <header class="nav-wrap">
+    <nav class="nav">
+      <a href="principal.html" class="brand">
+        <img src="../imagenes/logo.png" alt="UTMentor logo">
+      </a>
 
-    <nav class="side-nav">
-      <button class="side-link is-active" data-view="sesiones">
-        <span>Mis sesiones</span>
-      </button>
-      <button class="side-link" data-view="publicar">
-        <span>Publicar disponibilidad</span>
-      </button>
-      <button class="side-link" data-view="temas">
-        <span>Mis temas</span>
-      </button>
-      <button class="side-link" data-view="perfil">
-        <span>Perfil</span>
-      </button>
-      <button class="side-link" data-action="switch-role">
-        <span>Cambiar a asesorado</span>
-      </button>
+      <div class="panel">
+        <div class="links">
+          <a class="link" href="explorar.html">Explorar</a>
+          <a class="link" href="politicasYPrivacidad.html">Privacidad</a>
+          <a class="link active" href="perfil.html">Perfil</a>
+        </div>
+
+        <div class="usuario">
+          <img src="../imagenes/user.jpg" alt="Usuario" class="avatar" id="btnUsuario">
+          <div class="dropdown" id="menuUsuario">
+            <a href="#">Editar perfil</a>
+            <a href="#">Cambiar / Agregar rol</a>
+            <a href="#">Cerrar sesión</a>
+            <a href="#" class="danger">Eliminar cuenta</a>
+          </div>
+        </div>
+      </div>
     </nav>
+  </header>
 
-    <div class="side-footer">
-      <button class="link-danger" data-action="delete-account">Eliminar perfil</button>
-      <button class="link" data-action="logout">Cerrar sesión</button>
+  <main class="panel-container">
+    <h1 class="panel-title">Panel del Asesor</h1>
+
+    <!-- Tarjeta del perfil -->
+    <section class="profile-card">
+      <div class="profile-photo">
+        <img id="profileImage" src="../imagenes/user.jpg" alt="Foto del asesor">
+      </div>
+
+      <div class="profile-info">
+        <div class="basic-info">
+          <h2 id="profileName" class="profile-name">Ana Martínez López</h2>
+          <p><span class="icon"><img src="../imagenes/graduacion.png" alt="Carrera"></span>
+            <strong>Carrera:</strong> <span id="profileCareer">Ingeniería en Software</span>
+          </p>
+          <p><span class="icon"><img src="../imagenes/calendar_18779676.png" alt="Semestre"></span>
+            <strong>Semestre:</strong> <span id="profileSemester">6º</span>
+          </p>
+          <p><span class="icon"><img src="../imagenes/sobre.png" alt="Correo"></span>
+            <strong>Correo:</strong> <span id="profileEmail">ana.martinez@utmentor.edu.mx</span>
+          </p>
+          <p><span class="icon"><img src="../imagenes/trophy_11329908.png" alt="Asesorías"></span>
+            <strong>Asesorías dadas:</strong> 12
+          </p>
+          <p class="rating rating-4"><strong>Puntuación:</strong>
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </p>
+        </div>
+
+        <div id="profileTopics" class="topics-list">
+          <h3 class="topics-title"><span class="icon"><img src="../imagenes/libro.png" alt="Temas"></span>Temas:</h3>
+          <ul>
+            <li>Programación</li>
+            <li>Bases de Datos</li>
+            <li>Lógica Computacional</li>
+            <li>Estructuras de Datos</li>
+            <li>Desarrollo Web</li>
+          </ul>
+        </div>
+
+        <button id="btnEdit" class="btn-edit">Editar perfil</button>
+      </div>
+    </section>
+
+    <!-- Calendario Semanal + Botón Agregar Asesoría -->
+    <section class="weekly-calendar">
+      <div class="calendar-header">
+        <h2 class="calendar-title">
+          <span class="icon"><img src="../imagenes/calendar_18779676.png" alt="Calendario"></span>
+          Mis Asesorías
+        </h2>
+        <button id="btnAgregarAsesoria" class="btn-add">Agregar Asesoría</button>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="day" data-sessions="2">
+          <span class="day-name">Lunes</span>
+          <span class="day-date">27 Oct</span>
+          <span class="session-count">2</span>
+          <ul class="session-details">
+            <li class="session-item">
+              Programación, 9:00-10:00 AM
+            </li>
+            <li class="session-item">
+              Bases de Datos, 2:00-3:00 PM
+            </li>
+          </ul>
+        </div>
+        <div class="day"><span class="day-name">Martes</span><span class="day-date">28 Oct</span></div>
+        <div class="day" data-sessions="1">
+          <span class="day-name">Miércoles</span><span class="day-date">29 Oct</span>
+          <span class="session-count">1</span>
+          <ul class="session-details">
+            <li>Algoritmos, 10:00-11:00 AM</li>
+          </ul>
+        </div>
+        <div class="day"><span class="day-name">Jueves</span><span class="day-date">30 Oct</span></div>
+        <div class="day"><span class="day-name">Viernes</span><span class="day-date">31 Oct</span></div>
+        <div class="day"><span class="day-name">Sábado</span><span class="day-date">1 Nov</span></div>
+        <div class="day"><span class="day-name">Domingo</span><span class="day-date">2 Nov</span></div>
+      </div>
+    </section>
+
+    <!-- Modal de edición de perfil -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Editar Perfil</h2>
+        <div class="modal-body">
+          <div class="profile-edit-grid">
+            <!-- Columna Izquierda: Foto + Botón -->
+            <div class="photo-column">
+              <div class="photo-wrapper">
+                <img id="previewImage" src="../imagenes/user.jpg" alt="Vista previa">
+                <button id="changePhoto">Cambiar foto</button>
+                <input type="file" id="photoInput" accept="image/*" style="display:none">
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Formulario -->
+            <div class="form-column">
+              <div class="form-grid">
+                <div>
+                  <label for="editName">Nombre completo</label>
+                  <input type="text" id="editName" placeholder="Ana Martínez López">
+                </div>
+
+                <div>
+                  <label for="editCareer">Carrera</label>
+                  <input type="text" id="editCareer" placeholder="Ingeniería en Software">
+                </div>
+
+                <div>
+                  <label for="editSemester">Semestre</label>
+                  <input type="text" id="editSemester" placeholder="6º">
+                </div>
+
+                <div>
+                  <label for="editEmail">Correo electrónico</label>
+                  <input type="email" id="editEmail" readonly>
+                </div>
+
+                <div class="full-width">
+                  <label for="editTopics">Temas de asesoría (separados por coma)</label>
+                  <input type="text" id="editTopics" placeholder="Programación, Bases de Datos, Lógica">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer con botones -->
+        <div class="modal-footer">
+          <button id="saveChanges">Guardar cambios</button>
+          <button id="cancelChanges" class="cancel-btn">Cancelar</button>
+        </div>
+      </div>
     </div>
-  </aside>
+    <div id="addSessionModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeAddSession">×</span>
+        <h2>Agregar Asesoría</h2>
 
-  <!-- Contenido -->
-  <main class="main">
-    <header class="topbar" role="banner">
-      <div class="user-chip">
-        <img id="chipAvatar" src="../imagenes/adviser1.jpg" alt="Foto de perfil" />
-        <div>
-          <strong id="chipName">Mario Ortega</strong>
-          <small id="chipCareer">Ing. Civil · 9º</small>
+        <div class="modal-body">
+          <div class="form-grid">
+            <!-- Tema: select dinámico -->
+            <div>
+              <label for="sessionTema">Tema</label>
+              <select id="sessionTema">
+                <!-- Se llenará dinámicamente desde JS -->
+              </select>
+            </div>
+
+            <!-- Día -->
+            <div>
+              <label for="sessionDia">Día</label>
+              <input type="date" id="sessionDia">
+            </div>
+
+            <!-- Horario -->
+            <div>
+              <label for="sessionHorario">Horario</label>
+              <input type="time" id="sessionHorario">
+            </div>
+
+            <!-- Modalidad -->
+            <div>
+              <label for="sessionModalidad">Modalidad</label>
+              <select id="sessionModalidad">
+                <option value="Presencial">Presencial</option>
+                <option value="En línea">En línea</option>
+              </select>
+            </div>
+
+            <!-- Tipo de sesión -->
+            <div>
+              <label for="sessionTipo">Tipo de sesión</label>
+              <select id="sessionTipo">
+                <option value="Individual">Individual</option>
+                <option value="Grupo">Grupo</option>
+              </select>
+            </div>
+
+            <!-- Cantidad máxima: solo para Grupo -->
+            <div id="maxPeopleDiv" style="display:none;">
+              <label for="sessionMaxPeople">Cantidad máxima de personas</label>
+              <input type="number" id="sessionMaxPeople" placeholder="4" min="1">
+            </div>
+
+            <!-- Área -->
+            <div>
+              <label for="sessionArea">Área</label>
+              <select id="sessionArea">
+                <option value="Software">Software</option>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Física">Física</option>
+                <option value="Base de Datos">Base de Datos</option>
+              </select>
+            </div>
+
+            <!-- Costo -->
+            <div>
+              <label for="sessionCosto">Costo</label>
+              <input type="number" id="sessionCosto" placeholder="200">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="saveSession">Guardar Asesoría</button>
+          <button id="cancelSession" class="cancel-btn">Cancelar</button>
         </div>
       </div>
-      <div class="week-controls" aria-label="Selector semanal">
-        <button class="btn ghost" id="prevWeek" aria-label="Semana anterior">←</button>
-        <div class="week-label" id="weekLabel" aria-live="polite"></div>
-        <button class="btn ghost" id="nextWeek" aria-label="Semana siguiente">→</button>
-        <button class="btn ghost" id="thisWeek">Esta semana</button>
-      </div>
-    </header>
+    </div>
 
-    <!-- Vista: Mis sesiones -->
-    <section class="view is-visible" id="view-sesiones" aria-labelledby="h-sesiones">
-      <h2 id="h-sesiones" class="h">Mis sesiones</h2>
-      <p class="muted">Gestiona únicamente sesiones dentro de la semana seleccionada.</p>
 
-      <ul class="cards" id="sessionsList" aria-live="polite"></ul>
-
-      <template id="sessionCardTpl">
-        <li class="card session">
-          <div class="session-row">
-            <div class="session-meta">
-              <span class="badge" data-slot="mode">Virtual</span>
-              <strong data-slot="title">Cálculo diferencial</strong>
-              <span class="dim" data-slot="date">Lun 10:00–11:00</span>
-            </div>
-            <div class="session-actions">
-              <button class="btn icon" data-action="toggle">
-                <span aria-hidden="true">＋</span><span class="sr-only">Ver detalles</span>
-              </button>
-              <button class="btn danger" data-action="cancel">Cancelar</button>
-            </div>
-          </div>
-          <div class="session-detail" hidden>
-            <dl class="dl">
-              <div><dt>Alumno:</dt><dd data-slot="student">—</dd></div>
-              <div><dt>Tipo:</dt><dd data-slot="type">Individual</dd></div>
-              <div><dt>Área:</dt><dd data-slot="area">Matemáticas</dd></div>
-              <div><dt>Precio:</dt><dd data-slot="price">$0</dd></div>
-              <div><dt>Notas:</dt><dd data-slot="notes">—</dd></div>
-            </dl>
-          </div>
-        </li>
-      </template>
-    </section>
-
-    <!-- Vista: Publicar disponibilidad -->
-    <section class="view" id="view-publicar" aria-labelledby="h-publicar">
-      <h2 id="h-publicar" class="h">Publicar disponibilidad</h2>
-      <p class="muted">Publica sesiones dentro de la semana seleccionada. Los campos marcados son obligatorios.</p>
-
-      <form id="publishForm" class="form" novalidate>
-        <div class="grid">
-          <label class="field">
-            <span class="label">Tema</span>
-            <div class="with-inline">
-              <select id="topicSel" required></select>
-            </div>
-            <input id="topicCustom" class="mt" type="text" placeholder="Escribe el tema" hidden>
-            <small class="hint">Si seleccionas “tema libre”, los asesorados podrán elegir para esta sesión cualquiera de tus temas.</small>
-          </label>
-
-          <label class="field">
-            <span class="label">Día</span>
-            <select id="daySel" required></select>
-          </label>
-
-          <label class="field">
-            <span class="label">Inicio</span>
-            <input id="startTime" type="time" step="900" required>
-            <small class="hint">Ej.: 10:00 a. m.</small>
-          </label>
-
-          <label class="field">
-            <span class="label">Fin</span>
-            <input id="endTime" type="time" step="900" required>
-            <small class="hint">Ej.: 11:00 a. m.</small>
-          </label>
-
-          <label class="field">
-            <span class="label">Modalidad</span>
-            <select id="modeSel" required>
-              <option value="virtual">Virtual</option>
-              <option value="presencial">Presencial</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span class="label">Tipo</span>
-            <select id="typeSel" required>
-              <option value="individual">Individual</option>
-              <option value="grupal">Grupal</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span class="label">Precio</span>
-            <input id="price" type="number" min="0" step="10" placeholder="0" required>
-            <small class="hint">MXN por sesión</small>
-          </label>
-
-        </div>
-
-        <div class="form-actions">
-          <button class="btn ghost" type="reset" id="cancelPublish">Cancelar</button>
-          <button class="btn" type="submit">Publicar</button>
-        </div>
-
-        <div class="publish-result" id="publishResult" hidden></div>
-      </form>
-    </section>
-
-    <!-- Vista: Mis temas -->
-    <section class="view" id="view-temas" aria-labelledby="h-temas">
-      <h2 id="h-temas" class="h">Mis temas</h2>
-
-      <form id="topicsForm" class="form">
-        <div id="topicsList" class="topics"></div>
-        <button class="btn ghost mt" type="button" id="addTopic">+ Agregar tema</button>
-        <div class="form-actions">
-          <button class="btn" type="submit">Guardar cambios</button>
-        </div>
-      </form>
-
-      <template id="topicRowTpl">
-        <div class="topic-row">
-          <input type="text" class="topic-input" placeholder="Tema (p. ej. Cálculo I)" required>
-          <select class="topic-area">
-            <option value="Matemáticas">Matemáticas</option>
-            <option value="Física">Física</option>
-            <option value="Química">Química</option>
-            <option value="Computación">Computación</option>
-            <option value="Diseño">Diseño</option>
-            <option value="Idiomas">Idiomas</option>
-            <option value="Otra">Otra</option>
-          </select>
-          <button class="btn danger ghost" type="button" data-action="remove-topic">Eliminar</button>
-        </div>
-      </template>
-    </section>
-
-    <!-- Vista: Perfil -->
-    <section class="view" id="view-perfil" aria-labelledby="h-perfil">
-      <h2 id="h-perfil" class="h">Perfil</h2>
-
-      <div class="profile">
-        <div class="profile-photo">
-          <img id="profileAvatar" src="../imagenes/adviser1.jpg" alt="Foto de perfil" />
-          <label class="btn ghost mt">
-            Cargar foto
-            <input id="photoInput" type="file" accept="image/*" hidden>
-          </label>
-        </div>
-
-        <form id="profileForm" class="form">
-          <div class="grid">
-            <label class="field">
-              <span class="label">Calificación</span>
-              <div class="stars" id="stars" aria-label="4.8 de 5">★★★★★</div>
-              <small class="hint">Número de estrellas es solo lectura.</small>
-            </label>
-
-            <label class="field">
-              <span class="label">Nombre completo</span>
-              <input id="pName" type="text" required>
-            </label>
-
-            <label class="field">
-              <span class="label">Carrera</span>
-              <input id="pCareer" type="text" required>
-            </label>
-
-            <label class="field">
-              <span class="label">Semestre</span>
-              <input id="pSemester" type="number" min="1" max="12" required>
-            </label>
-
-            <label class="field">
-              <span class="label">Correo electrónico</span>
-              <input id="pEmail" type="email" disabled>
-              <small class="hint">El correo no se puede modificar.</small>
-            </label>
-
-            <label class="field">
-              <span class="label">Contraseña</span>
-              <input id="pPassword" type="password" placeholder="••••••••">
-              <small class="hint">Déjalo en blanco para no cambiarla.</small>
-            </label>
-          </div>
-
-          <div class="form-actions">
-            <button class="btn" type="submit">Guardar perfil</button>
-          </div>
-        </form>
-      </div>
-    </section>
   </main>
 
-  <!-- Diálogos / toasts -->
-  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-
-  <dialog class="confirm" id="confirmDlg">
-    <form method="dialog">
-      <p id="confirmMsg">¿Confirmas esta acción?</p>
-      <menu>
-        <button value="cancel" class="btn ghost">Cancelar</button>
-        <button value="ok" class="btn danger">Confirmar</button>
-      </menu>
-    </form>
-  </dialog>
-
-  <script src="../js/panelAsesor.js" defer></script>
+  <script src="../js/script.js" defer></script>
+  <script src="../js/editar.js" defer></script>
+  <script src="../js/agregarAsesoria.js" defer></script>
 </body>
+
 </html>

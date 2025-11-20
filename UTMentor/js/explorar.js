@@ -205,8 +205,6 @@ document.documentElement.classList.remove('no-js');
       hastaTime?.classList.remove("input-error");
 
       actualizarBotonLimpiar();
-      cargarAsesores();
-
     });
   }
 })();

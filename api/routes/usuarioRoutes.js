@@ -7,7 +7,11 @@ import {
   obtenerInfoAsesor,
   listarTemasPopulares,
   obtenerMetricas,
+<<<<<<< HEAD
   checkEmailController,
+=======
+  loginUsuario,
+>>>>>>> 4c6f4f3 (Descripción de los cambios agregados desde ZIP)
 } from "../controllers/usuarioController.js";
 
 const router = express.Router();
@@ -30,8 +34,6 @@ router.get("/asesores/:id", obtenerInfoAsesor);
 router.get("/temas/populares", listarTemasPopulares);
 
 router.get("/metricas", obtenerMetricas);
-
-router.get("/check-email", checkEmailController);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");

@@ -1,126 +1,212 @@
-// ../js/registro.js
-function sanitize(input) {
-    return input.replace(/[<>'"]/g, "");
-}
+// Quita la clase no-js si existiera
+document.documentElement.classList.remove("no-js");
 
-const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,60}$/;
-const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const regexPassword = /^[A-Za-z0-9!@#$%^&*()_\-+=.?]{6,50}$/;
+/* -------- NAV móvil (reutilizado) -------- */
+(() => {
+  const burger = document.querySelector(".burger");
+  const panel = document.getElementById("mobile-panel");
+  const label = burger ? burger.querySelector(".burger-label") : null;
 
-// Limpia errores mientras escribe
-document.getElementById("nombre_completo").addEventListener("input", () => {
-    document.getElementById("errorNombre").style.display = "none";
-});
-document.getElementById("correo").addEventListener("input", () => {
-    document.getElementById("errorCorreo").style.display = "none";
-});
+  if (!burger || !panel) return;
 
-// Toggle contraseñas
-document.getElementById("togglePass").addEventListener("click", () => {
-    const pass = document.getElementById("password");
-    const icon = document.getElementById("togglePass");
-    if (pass.type === "password") { pass.type = "text"; icon.src = "../imagenes/ocultar.png"; }
-    else { pass.type = "password"; icon.src = "../imagenes/vista.png"; }
-});
-document.getElementById("toggleConfirmPass").addEventListener("click", () => {
-    const pass = document.getElementById("confirmPassword");
-    const icon = document.getElementById("toggleConfirmPass");
-    if (pass.type === "password") { pass.type = "text"; icon.src = "../imagenes/ocultar.png"; }
-    else { pass.type = "password"; icon.src = "../imagenes/vista.png"; }
-});
+  const setOpen = (open) => {
+    panel.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", String(open));
+    burger.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    burger.setAttribute("title", open ? "Cerrar menú" : "Abrir menú");
+    if (label) label.textContent = open ? "Cerrar" : "Menú";
+  };
 
-// Llenar select de semestres
-const semestre = document.getElementById("semestre");
-for (let i = 1; i <= 10; i++) {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = `${i}° semestre`;
-    semestre.appendChild(opt);
-}
+  burger.addEventListener("click", () =>
+    setOpen(!panel.classList.contains("open"))
+  );
+  panel.addEventListener("click", (e) => {
+    if (e.target.closest("a")) setOpen(false);
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+  document.addEventListener("click", (e) => {
+    if (window.innerWidth > 860) return;
+    if (!panel.contains(e.target) && !burger.contains(e.target)) setOpen(false);
+  });
+})();
 
-// Listener del formulario
-document.getElementById("formRegistro").addEventListener("submit", async (e) => {
+/* -------- Toggle de contraseña (ambos campos) -------- */
+(() => {
+  document.querySelectorAll(".f-field-pw").forEach((wrap) => {
+    const input = wrap.querySelector(".f-input");
+    const btn = wrap.querySelector(".pw-toggle");
+    if (!input || !btn) return;
+
+    let visible = false;
+    btn.addEventListener("click", () => {
+      visible = !visible;
+      input.type = visible ? "text" : "password";
+      btn.classList.toggle("is-visible", visible);
+      btn.setAttribute(
+        "aria-label",
+        visible ? "Ocultar contraseña" : "Mostrar contraseña"
+      );
+    });
+  });
+})();
+
+/* -------- Tabs de rol + mostrar/ocultar campos de tutor -------- */
+(() => {
+  const tabs = document.querySelectorAll(".role-tab");
+  const onlyTutor = document.querySelector(".only-tutor");
+  let role = "asesor"; // por defecto coincide con el tab activo
+
+  const setRole = (r) => {
+    role = r;
+    tabs.forEach((t) => t.classList.toggle("is-active", t.dataset.role === r));
+    if (onlyTutor) onlyTutor.classList.toggle("is-hidden", r === "asesorado");
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => setRole(tab.dataset.role));
+  });
+})();
+
+/* -------- Chips de temas (simple Enter para agregar) -------- */
+(() => {
+  const input = document.getElementById("topicInput");
+  const holder = document.getElementById("topicChips");
+  if (!input || !holder) return;
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (!val) return;
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.textContent = val;
+      holder.appendChild(chip);
+      input.value = "";
+    }
+  });
+})();
+
+/* -------- Modales: pago (asesor/ambos) y elección de rol (ambos) -------- */
+(() => {
+  const form = document.getElementById("signupForm");
+  const payModal = document.getElementById("payModal");
+  const roleModal = document.getElementById("roleModal");
+
+  // utilidades
+  const open = (el) => {
+    el?.classList.add("is-open");
+    el?.setAttribute("aria-hidden", "false");
+  };
+  const close = (el) => {
+    el?.classList.remove("is-open");
+    el?.setAttribute("aria-hidden", "true");
+  };
+  const bindBackdropClose = (el) => {
+    el?.addEventListener("click", (e) => {
+      if (
+        e.target.classList.contains("modal__backdrop") ||
+        e.target.hasAttribute("data-close")
+      )
+        close(el);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close(el);
+    });
+  };
+  bindBackdropClose(payModal);
+  bindBackdropClose(roleModal);
+
+  // recoge el rol activo
+  const getActiveRole = () => {
+    const active = document.querySelector(".role-tab.is-active");
+    return active ? active.dataset.role : "asesor";
+  };
+
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
+    const role = getActiveRole();
 
-    const nombre = sanitize(document.getElementById("nombre_completo").value.trim());
-    const correo = sanitize(document.getElementById("correo").value.trim());
-    const password = sanitize(document.getElementById("password").value.trim());
-    const confirmPassword = sanitize(document.getElementById("confirmPassword").value.trim());
-    const errorConfirm = document.getElementById("errorConfirm");
-    const errorNombre = document.getElementById("errorNombre");
-    const errorCorreo = document.getElementById("errorCorreo");
-    const policy = document.getElementById("policy");
-
-    // Validar contraseñas
-    if (password !== confirmPassword) {
-        errorConfirm.textContent = "Las contraseñas no coinciden.";
-        errorConfirm.style.display = "block";
-        return;
-    } else { errorConfirm.style.display = "none"; }
-
-    // Validar nombre
-    if (!regexNombre.test(nombre)) {
-        errorNombre.textContent = "El nombre solo debe contener letras y espacios (3 a 60 caracteres).";
-        errorNombre.style.display = "block";
-        return;
+    if (role === "asesorado") {
+      // flujo simple de demo
+      window.location.href = "panelAsesorado.html";
+      return;
     }
 
-    // Validar correo
-    if (!regexCorreo.test(correo)) { alert("❌ Correo inválido."); return; }
-
-    // Validar contraseña
-    if (!regexPassword.test(password)) { alert("❌ Contraseña inválida."); return; }
-
-    // Validar términos y condiciones
-    if (!policy.checked) { alert("Debes aceptar los términos y condiciones."); return; }
-
-    const roles = document.getElementById("roles").value.split(",").map(Number);
-
-    const data = {
-        nombre_completo: nombre,
-        correo,
-        semestre: Number(document.getElementById("semestre").value),
-        fk_carrera: Number(document.getElementById("fk_carrera").value),
-        password,
-        roles
-    };
-
-    try {
-        const response = await fetch("/api/usuarios", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-        const toast = document.getElementById("toastMensaje");
-        errorCorreo.style.display = "none";
-
-        if (!response.ok) {
-            if (result.error === "El correo ya está registrado") {
-                errorCorreo.textContent = result.error;
-                errorCorreo.style.display = "block";
-                return;
-            }
-            toast.textContent = result.error || "Error interno del servidor";
-            toast.classList.add("error", "show");
-            setTimeout(() => toast.classList.remove("show"), 3500);
-            return;
-        }
-
-        // Éxito
-        toast.textContent = "Usuario creado con éxito";
-        toast.classList.remove("error");
-        toast.classList.add("show");
-        document.getElementById("formRegistro").reset();
-        setTimeout(() => toast.classList.remove("show"), 3500);
-
-    } catch (error) {
-        console.error("Error del fetch:", error);
-        const toast = document.getElementById("toastMensaje");
-        toast.textContent = "No se pudo conectar con el servidor.";
-        toast.classList.add("error", "show");
-        setTimeout(() => toast.classList.remove("show"), 3500);
+    if (role === "asesor") {
+      // abrir modal de pago
+      open(payModal);
+      document.getElementById("payConfirm")?.addEventListener(
+        "click",
+        () => {
+          close(payModal);
+          window.location.href = "panelAsesor.html";
+        },
+        { once: true }
+      );
+      return;
     }
 
-});
+    // AMBOS: pago → luego modal de elección
+    open(payModal);
+    document.getElementById("payConfirm")?.addEventListener(
+      "click",
+      () => {
+        close(payModal);
+        open(roleModal);
+      },
+      { once: true }
+    );
+  });
+})();
+
+// --- UI Pago: selección de método + mostrar form tarjeta + toggle ojo CVC ---
+(function () {
+  const payModal = document.getElementById("payModal");
+  if (!payModal) return;
+
+  const methods = payModal.querySelectorAll(".pay-method");
+  const cardBlock = payModal.querySelector("#payCard");
+  const cvcField = payModal.querySelector("#payCard .f-field-pw input");
+  const cvcToggle = payModal.querySelector("#payCard .pw-toggle");
+  const confirmBtn = payModal.querySelector("#payConfirm");
+
+  // por defecto: tarjeta visible
+  function showCardForm(show) {
+    if (show) {
+      cardBlock.removeAttribute("hidden");
+    } else {
+      cardBlock.setAttribute("hidden", "");
+    }
+  }
+  showCardForm(true);
+
+  methods.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      methods.forEach((b) => {
+        b.classList.remove("is-selected");
+        b.setAttribute("aria-selected", "false");
+      });
+      btn.classList.add("is-selected");
+      btn.setAttribute("aria-selected", "true");
+
+      const m = btn.dataset.method;
+      // mostramos form de tarjeta solo para card/mastercard/visa
+      if (m === "card" || m === "mastercard") {
+        showCardForm(true);
+      } else {
+        showCardForm(false);
+      }
+    });
+  });
+
+  // ejemplo de “continuar” (solo UI)
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", () => {
+      // aquí dispararías tu call a Stripe/Uelz/etc.
+      alert("Continuar con tu compra (demo UI)");
+    });
+  }
+})();

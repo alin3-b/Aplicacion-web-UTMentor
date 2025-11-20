@@ -9,13 +9,12 @@ export async function getUsuarios() {
       u.correo,
       u.semestre,
       c.nombre_carrera,
-      GROUP_CONCAT(r.nombre_rol) AS roles
+      r.nombre_rol
     FROM usuarios u
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
     LEFT JOIN usuario_rol ur ON u.id_usuario = ur.fk_usuario
     LEFT JOIN roles r ON ur.fk_rol = r.id_rol
     WHERE u.es_activo = TRUE
-    GROUP BY u.id_usuario
     ORDER BY u.fecha_registro DESC
   `);
   return rows;
@@ -245,6 +244,7 @@ export async function addUsuario({
   semestre,
   fk_carrera,
   password_hash,
+<<<<<<< HEAD
   roles = [],
 }) {
   const conn = await mysqlPool.getConnection();
@@ -281,6 +281,40 @@ export async function addUsuario({
   }
 }
 
+=======
+}) {
+  const [result] = await mysqlPool.query(
+    `INSERT INTO usuarios 
+    (nombre_completo, correo, semestre, fk_carrera, password_hash, es_activo)
+    VALUES (?, ?, ?, ?, ?, TRUE)`,
+    [nombre_completo, correo, semestre, fk_carrera, password_hash]
+  );
+  return { id_usuario: result.insertId, nombre_completo, correo };
+}
+
+export async function getUserByEmail(correo) {
+  const [rows] = await mysqlPool.query(
+    `
+    SELECT 
+      u.id_usuario,
+      u.nombre_completo,
+      u.correo,
+      u.password_hash,
+      u.semestre,
+      u.es_activo,
+      c.nombre_carrera,
+      r.nombre_rol
+    FROM usuarios u
+    LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
+    LEFT JOIN usuario_rol ur ON u.id_usuario = ur.fk_usuario
+    LEFT JOIN roles r ON ur.fk_rol = r.id_rol
+    WHERE u.correo = ? AND u.es_activo = TRUE
+    `,
+    [correo]
+  );
+  return rows[0] || null;
+}
+>>>>>>> 4c6f4f3 (Descripción de los cambios agregados desde ZIP)
 export async function getMetricas() {
   const [[asesoresActivos]] = await mysqlPool.query(`
     SELECT COUNT(DISTINCT u.id_usuario) AS total
@@ -309,6 +343,7 @@ export async function getMetricas() {
     satisfaccionPromedio: satisfaccion.promedio,
   };
 }
+<<<<<<< HEAD
 
 export async function getUsuarioCheckByCorreo(correo) {
   const [rows] = await mysqlPool.query(
@@ -317,3 +352,5 @@ export async function getUsuarioCheckByCorreo(correo) {
   );
   return rows.length > 0;
 }
+=======
+>>>>>>> 4c6f4f3 (Descripción de los cambios agregados desde ZIP)
