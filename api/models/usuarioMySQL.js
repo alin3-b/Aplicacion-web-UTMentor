@@ -260,7 +260,6 @@ export async function addUsuario({
   }
 }
 
-
 export async function getMetricas() {
   const [[asesoresActivos]] = await mysqlPool.query(`
     SELECT COUNT(DISTINCT u.id_usuario) AS total
@@ -296,4 +295,27 @@ export async function getUsuarioCheckByCorreo(correo) {
     [correo]
   );
   return rows.length > 0;
+}
+
+export async function getUserByEmail(correo) {
+  const [rows] = await mysqlPool.query(
+    `
+    SELECT 
+      u.id_usuario,
+      u.nombre_completo,
+      u.correo,
+      u.password_hash,
+      u.semestre,
+      u.es_activo,
+      c.nombre_carrera,
+      r.nombre_rol
+    FROM usuarios u
+    LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
+    LEFT JOIN usuario_rol ur ON u.id_usuario = ur.fk_usuario
+    LEFT JOIN roles r ON ur.fk_rol = r.id_rol
+    WHERE u.correo = ? AND u.es_activo = TRUE
+    `,
+    [correo]
+  );
+  return rows[0] || null;
 }

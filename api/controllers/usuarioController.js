@@ -7,7 +7,8 @@ import {
   getAsesorInfo,
   getTemasPopulares,
   getMetricas,
-  getUsuarioCheckByCorreo
+  getUsuarioCheckByCorreo,
+  getUserByEmail,
 } from "../models/usuarioMySQL.js";
 
 /**
@@ -23,13 +24,27 @@ import {
  *           application/json:
  *             schema:
  *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_usuario:
+ *                     type: integer
+ *                   nombre_completo:
+ *                     type: string
+ *                   correo:
+ *                     type: string
+ *                   semestre:
+ *                     type: integer
+ *                   nombre_carrera:
+ *                     type: string
+ *                     nullable: true
+ *                   nombre_rol:
+ *                     type: string
+ *                     nullable: true
  */
 export async function listarUsuarios(req, res) {
   try {
     const usuarios = await getUsuarios();
-    if (usuarios.length === 0) {
-      return res.status(200).json({ ok: true, message: "No se encontraron usuarios", usuarios: [] });
-    }
     res.json(usuarios);
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
@@ -302,3 +317,107 @@ export async function checkEmailController(req, res) {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
+/**
+ * @openapi
+ * /api/usuarios/login:
+ *   post:
+ *     summary: Autentica un usuario con correo y contraseña
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - correo
+ *               - password
+ *             properties:
+ *               correo:
+ *                 type: string
+ *                 format: email
+ *                 example: usuario@example.com
+ *               password:
+ *                 type: string
+ *                 example: miContraseña123
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 usuario:
+ *                   type: object
+ *                   properties:
+ *                     id_usuario:
+ *                       type: integer
+ *                     nombre_completo:
+ *                       type: string
+ *                     correo:
+ *                       type: string
+ *                     semestre:
+ *                       type: integer
+ *                     nombre_carrera:
+ *                       type: string
+ *                     nombre_rol:
+ *                       type: string
+ *       400:
+ *         description: Faltan campos obligatorios
+ *       401:
+ *         description: Credenciales inválidas
+ */
+export async function loginUsuario(req, res) {
+  const { correo, password } = req.body;
+
+  // Validación de campos
+  if (!correo || !password) {
+    return res.status(400).json({
+      success: false,
+      error: "Correo y contraseña son obligatorios",
+    });
+  }
+
+  try {
+    // Buscar usuario por correo
+    const usuario = await getUserByEmail(correo);
+    console.log(`Usuario: ${JSON.stringify(usuario)}`);
+    if (!usuario) {
+      return res.status(401).json({
+        success: false,
+        error: "Credenciales inválidas",
+      });
+    }
+
+    // Validar contraseña (comparación directa por ahora)
+    // NOTA: En producción deberías usar bcrypt.compare() si las contraseñas están hasheadas
+    if (usuario.password_hash !== password) {
+      return res.status(401).json({
+        success: false,
+        error: "Credenciales inválidas",
+      });
+    }
+
+    // Login exitoso - no devolver el password_hash
+    const { password_hash, ...usuarioSinPassword } = usuario;
+
+    res.json({
+      success: true,
+      message: "Login exitoso",
+      usuario: usuarioSinPassword,
+    });
+  } catch (error) {
+    console.error("Error en login:", error);
+    res.status(500).json({
+      success: false,
+      error: "Error interno del servidor",
+    });
+  }
+}
+
