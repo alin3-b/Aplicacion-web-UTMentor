@@ -13,6 +13,7 @@ import usuarioRoutes from "./routes/usuarioRoutes.js";
 import paymentsRoutes from "./routes/paymentsRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import authTestRoutes from "./routes/authTestRoutes.js";
+import emailRoutes from "./routes/emailRoutes.js";
 
 dotenv.config();
 
@@ -37,6 +38,9 @@ app.use("/api/test", authTestRoutes);
 // === RUTAS REST ===
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/pagos", paymentsRoutes);
+
+// RUTAS DE EMAIL (RECUPERACIÓN DE CONTRASEÑA)  👇
+app.use("/api/email", emailRoutes);
 
 // === SWAGGER ===
 const swaggerOptions = {
