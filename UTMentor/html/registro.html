@@ -123,18 +123,36 @@
     </div>
   </main>
 
-    <!-- FOOTER -->
-    <footer class="site-footer">
-      <div class="site-footer__inner">
-        <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
-        <nav class="site-footer__links" aria-label="Legal">
-          <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
-          <a href="donar.html" class="site-footer__link">Donar a la comunidad UTMentor</a>
-        </nav>
+  <!-- MODAL DE ROLES (ya existente) -->
+  <div id="roleModal" class="role-modal" aria-hidden="true" role="dialog" aria-labelledby="roleTitle" aria-modal="true">
+    <div class="role-modal__backdrop" data-role-dismiss></div>
+    <div class="role-modal__card" role="document">
+      <h2 id="roleTitle" class="role-modal__title">Elige cómo deseas
+        iniciar</h2>
+      <p class="role-modal__sub">Tu cuenta tiene ambos roles
+        disponibles.</p>
+      <div class="role-modal__actions">
+        <button type="button" class="btn" data-role="Asesor">Entrar como asesor</button>
+        <button type="button" class="btn outline" data-role="Asesorado">Entrar como asesorado</button>
       </div>
-    </footer>
+      <button type="button" class="role-modal__close" aria-label="Cerrar" data-role-dismiss>✕</button>
+    </div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+      <nav class="site-footer__links" aria-label="Legal">
+        <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
+        <a href="donar.html" class="site-footer__link">Donar a la comunidad UTMentor</a>
+      </nav>
+    </div>
+  </footer>
   <!-- TOAST -->
   <div id="toastMensaje" class="toast-custom"></div>
   <script type="module" src="../js/registro.js"></script>
 </body>
+
 </html>
