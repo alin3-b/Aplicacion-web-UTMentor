@@ -929,4 +929,21 @@ img{max-width: 100%; display: block;}
 .btn-limpiar__label{
   white-space:nowrap;
 }
+.input-error-msg {
+  color: #d90000;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: none;
+}
+
+.input-error-msg.visible {
+  display: block;
+}
+
+.input-error {
+  border-color: #d90000 !important;
+}
+
+
+
 

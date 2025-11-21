@@ -241,7 +241,7 @@ function sanitizeInput(str) {
   function validatePassword() {
     const value = (passwordInput.value || "").trim();
     if (!value) { setFieldError(passGroup, passwordError, "Ingresa tu contraseña."); return false; }
-    if (value.length < 6) { setFieldError(passGroup, passwordError, "La contraseña debe tener al menos 6 caracteres."); return false; }
+    if (value.length < 6) { setFieldError(passGroup, passwordError, "La contraseña debe tener al menos 8 caracteres."); return false; }
     setFieldError(passGroup, passwordError, ""); return true;
   }
 
@@ -255,6 +255,7 @@ function sanitizeInput(str) {
     showAuthError("");
 
     if (!validateEmail() || !validatePassword()) {
+      showAuthError("Por favor completa todos los campos");
       form.querySelector(".input-group.is-invalid input")?.focus();
       return;
     }
