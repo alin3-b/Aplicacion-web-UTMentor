@@ -81,21 +81,21 @@ function configurarBotonesModal() {
 // LIMPIAR INPUTS AL CARGAR O VOLVER ATRÁS
 // ===========================
 function limpiarInputsRegistro() {
-  const inputs = [
-    "nombre_completo",
-    "correo",
-    "password",
-    "confirmPassword",
-    "semestre",
-    "fk_carrera",
-    "roles"
-  ];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  const policy = document.getElementById("policy");
-  if (policy) policy.checked = false;
+    const inputs = [
+        "nombre_completo",
+        "correo",
+        "password",
+        "confirmPassword",
+        "semestre",
+        "fk_carrera",
+        "roles"
+    ];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    });
+    const policy = document.getElementById("policy");
+    if (policy) policy.checked = false;
 }
 
 window.addEventListener("load", () => limpiarInputsRegistro());
@@ -168,4 +168,28 @@ document.getElementById("formRegistro").addEventListener("submit", async (e) => 
     if (usuario.roles.length > 1) abrirModalDeRoles();
     else if (usuario.nombre_rol === "Asesor") window.location.href = "panelAsesor.html";
     else window.location.href = "panelAsesorado.html";
+});
+// ===========================
+// TOGGLE PASSWORD
+// ===========================
+
+// Mostrar / ocultar contraseña principal
+const passInput = document.getElementById("password");
+const togglePass = document.getElementById("togglePass");
+
+togglePass.addEventListener("click", () => {
+    const isVisible = passInput.type === "text";
+    passInput.type = isVisible ? "password" : "text";
+    togglePass.src = isVisible ? "../imagenes/vista.png" : "../imagenes/ocultar.png";
+});
+
+
+// Mostrar / ocultar confirmación de contraseña
+const confirmInput = document.getElementById("confirmPassword");
+const toggleConfirmPass = document.getElementById("toggleConfirmPass");
+
+toggleConfirmPass.addEventListener("click", () => {
+    const isVisible = confirmInput.type === "text";
+    confirmInput.type = isVisible ? "password" : "text";
+    toggleConfirmPass.src = isVisible ? "../imagenes/vista.png" : "../imagenes/ocultar.png";
 });
