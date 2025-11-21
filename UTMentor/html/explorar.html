@@ -4,7 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UTMentor Explorar</title>
+  <title>Explorar · UTMentor</title>
+  <link rel="icon" href="../imagenes/favicon.ico" type="image/x-icon">
   <link rel="preload" href="../css/explorar.css" as="style">
   <link rel="stylesheet" href="../css/explorar.css">
 </head>
@@ -50,6 +51,7 @@
           <label for="filtro-tema" class="filtro-label">Tema</label>
           <input id="filtro-tema" class="filtro-input" type="text"
             placeholder="Ej. Métodos de integración" autocomplete="off" />
+            <div class="input-error-msg" id="error-tema"></div>
         </div>
 
         <!-- Área de conocimiento (NUEVO) -->
@@ -80,6 +82,7 @@
           <label for="filtro-asesor" class="filtro-label">Nombre del asesor/a</label>
           <input id="filtro-asesor" class="filtro-input" type="text" placeholder="Ej. María Olguín, Luis Javier..."
             autocomplete="off" />
+            <div class="input-error-msg" id="error-asesor"></div>
         </div>
 
         <!-- Carrera -->

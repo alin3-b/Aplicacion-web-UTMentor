@@ -120,7 +120,7 @@ for (let i = 1; i <= 10; i++) {
 // ===========================
 const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,60}$/;
 const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const regexPassword = /^[A-Za-z0-9!@#$%^&*()_\-+=.?]{6,50}$/;
+const regexPassword = /^[A-Za-z0-9!@#$%^&*()_\-+=.?]{8,50}$/;
 
 document.getElementById("formRegistro").addEventListener("submit", async (e) => {
     e.preventDefault();
