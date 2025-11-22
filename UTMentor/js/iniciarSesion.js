@@ -287,7 +287,7 @@ function sanitizeInput(str) {
       if (usuario.roles.length > 1) abrirModalDeRoles();
       else redirigirSegunRol(usuario);
     } else {
-      showAuthError(data.message || "Usuario o contraseña incorrectos.");
+      showAuthError(data.message || "Correo o contraseña incorrectos.");
       passwordInput.focus();
     }
 

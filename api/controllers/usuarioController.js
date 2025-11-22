@@ -261,7 +261,7 @@ export async function crearUsuario(req, res) {
     console.error("Error al crear usuario:", error);
 
     if (error.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({ error: "El correo ya está registrado" });
+      return res.status(400).json({ error: "Este correo ya está registrado" });
     }
 
     res.status(500).json({ error: "Error interno del servidor" });

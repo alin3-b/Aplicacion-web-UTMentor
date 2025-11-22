@@ -35,25 +35,25 @@
             <!-- 1️⃣ Rol -->
             <div class="mb-3">
               <label class="form-label" for="roles">Rol</label>
-              <select id="roles" required>
+              <select id="roles">
                 <option value="">Selecciona...</option>
                 <option value="1">Asesor</option>
                 <option value="2">Asesorado</option>
                 <option value="1,2">Ambos</option>
               </select>
             </div>
-
+          
             <!-- 2️⃣ Nombre completo -->
             <div class="mb-3">
               <label class="form-label" for="nombre_completo">Nombre completo</label>
-              <input type="text" id="nombre_completo" required>
+              <input type="text" id="nombre_completo">
               <div id="errorNombre" class="error-msg"></div>
             </div>
-
+          
             <!-- 3️⃣ Carrera -->
             <div class="mb-3">
               <label class="form-label" for="fk_carrera">Carrera</label>
-              <select id="fk_carrera" required>
+              <select id="fk_carrera">
                 <option value="">Selecciona...</option>
                 <option value="1">Ingeniería Civil</option>
                 <option value="2">Ingeniería en Alimentos</option>
@@ -70,55 +70,58 @@
                 <option value="13">Licenciatura en Estudios Mexicanos</option>
               </select>
             </div>
-
+          
             <!-- 4️⃣ Semestre -->
             <div class="mb-3">
               <label class="form-label" for="semestre">Semestre</label>
-              <select id="semestre" required>
+              <select id="semestre">
                 <option value="">Selecciona...</option>
               </select>
             </div>
-
+          
             <!-- 5️⃣ Correo -->
             <div class="mb-3">
               <label class="form-label" for="correo">Correo</label>
-              <input type="email" id="correo" required>
+              <input type="text" id="correo"> <!-- CAMBIO: era type="email" -->
               <div id="errorCorreo" class="error-msg"></div>
             </div>
-
+          
             <!-- 6️⃣ Contraseña -->
             <div class="mb-3 password-wrapper">
               <label class="form-label" for="password">Contraseña</label>
               <div class="password-field">
-                <input type="password" id="password" required minlength="8">
+                <input type="password" id="password"> <!-- CAMBIO: sin required ni minlength -->
                 <img id="togglePass" class="toggle-pass" src="../imagenes/vista.png" alt="ver">
               </div>
+              <div id="errorContras" class="error-msg"></div>
             </div>
-
+          
             <div class="mb-3 password-wrapper">
               <label class="form-label" for="confirmPassword">Confirmar contraseña</label>
               <div class="password-field">
-                <input type="password" id="confirmPassword" required minlength="8">
+                <input type="password" id="confirmPassword"> <!-- CAMBIO: sin required ni minlength -->
                 <img id="toggleConfirmPass" class="toggle-pass" src="../imagenes/vista.png" alt="ver">
               </div>
               <div id="errorConfirm" class="error-msg"></div>
             </div>
-
+          
             <!-- 7️⃣ Términos y condiciones -->
             <div class="mb-3">
               <label>
-                <input type="checkbox" id="policy" required>
-                Acepto los términos y condiciones
+                <input type="checkbox" id="policy"> <!-- CAMBIO: sin required -->
+                Acepto los <a href="politicasYPrivacidad.html" target="_blank" class="link-blanco">términos y condiciones</a>
               </label>
+              <div id="policyError" class="error-msg"></div>
             </div>
-
+          
             <!-- Botones -->
             <div class="btn-row" style="margin-top: 20px;">
               <a href="principal.html" class="btn btn-secondary">Cancelar</a>
-              <button type="submit" class="btn btn-primary">Crear Usuario</button>
+              <button type="submit" class="btn btn-primary">Iniciar</button> <!-- NO TOQUÉ EL TEXTO -->
             </div>
-
+          
           </form>
+          
 
         </div>
       </div>

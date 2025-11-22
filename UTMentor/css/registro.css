@@ -538,3 +538,23 @@ select option {
   color: #0f172a;
 }
 
+.link-blanco {
+  color: white;
+  text-decoration: none; /* opcional */
+}
+
+.link-blanco:hover {
+  color: #f0f0f0; /* color al pasar el mouse */
+}
+.input-error {
+  border: 2px solid #ff3b3b !important;
+}
+
+.error-msg {
+  color: #860303;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+.campo-error {
+  border: 1px solid red !important;
+}
