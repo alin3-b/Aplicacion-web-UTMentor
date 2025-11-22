@@ -679,11 +679,33 @@ function loadProfile() {
   if (deleteBtn) {
     deleteBtn.onclick = async () => {
       if (await confirmDialog("¿Eliminar foto de perfil?")) {
-        const defaultAvatar = "../imagenes/adviser1.jpg"; // O una imagen por defecto genérica
-        $("#profileAvatar").src = defaultAvatar;
-        $("#chipAvatar").src = defaultAvatar;
-        $("#photoInput").value = ""; // Limpiar input file
-        toast("Foto eliminada");
+        const defaultAvatar = "../imagenes/adviser1.jpg"; // Imagen por defecto
+
+        try {
+          // Actualizar en backend
+          const response = await fetch(`${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ruta_foto: defaultAvatar })
+          });
+
+          if (response.ok) {
+            // Actualizar UI y estado local solo si el backend respondió OK
+            state.profile.avatar = defaultAvatar;
+            $("#profileAvatar").src = defaultAvatar;
+            $("#chipAvatar").src = defaultAvatar;
+            $("#photoInput").value = ""; // Limpiar input file
+            toast("Foto eliminada correctamente");
+          } else {
+            const res = await response.json();
+            toast(res.error || "Error al eliminar la foto", "danger");
+          }
+        } catch (error) {
+          console.error("Error al eliminar foto:", error);
+          toast("Error de conexión", "danger");
+        }
       }
     };
   }
