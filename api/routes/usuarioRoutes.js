@@ -5,6 +5,7 @@ import {
   crearUsuario,
   listarAsesores,
   obtenerInfoAsesor,
+  actualizarAsesor,
   listarTemasPopulares,
   obtenerMetricas,
   checkEmailController,
@@ -28,6 +29,9 @@ router.get("/asesores", listarAsesores);
 
 // === OBTENER INFO COMPLETA DE ASESOR ===
 router.get("/asesores/:id", obtenerInfoAsesor);
+
+// === ACTUALIZAR ASESOR ===
+router.put("/asesores/:id", actualizarAsesor);
 
 router.get("/temas/populares", listarTemasPopulares);
 

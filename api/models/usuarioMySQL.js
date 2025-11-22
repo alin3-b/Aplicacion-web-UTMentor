@@ -377,3 +377,42 @@ export async function getRolesByUserId(idUsuario) {
   // Devuelve un array de IDs: [1] o [1,2]
   return rows.map(r => r.id_rol);
 }
+
+export async function updateAsesorProfile(id_asesor, data) {
+  const { nombre_completo, semestre, fk_carrera, password_hash, ruta_foto } = data;
+
+  const updates = [];
+  const params = [];
+
+  if (nombre_completo) {
+    updates.push("nombre_completo = ?");
+    params.push(nombre_completo);
+  }
+  if (semestre) {
+    updates.push("semestre = ?");
+    params.push(semestre);
+  }
+  if (fk_carrera) {
+    updates.push("fk_carrera = ?");
+    params.push(fk_carrera);
+  }
+  if (password_hash) {
+    updates.push("password_hash = ?");
+    params.push(password_hash);
+  }
+  if (ruta_foto) {
+    updates.push("ruta_foto = ?");
+    params.push(ruta_foto);
+  }
+
+  if (updates.length === 0) return false;
+
+  params.push(id_asesor);
+
+  const [result] = await mysqlPool.query(
+    `UPDATE usuarios SET ${updates.join(", ")} WHERE id_usuario = ?`,
+    params
+  );
+
+  return result.affectedRows > 0;
+}
