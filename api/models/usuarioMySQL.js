@@ -442,14 +442,17 @@ export async function updateAsesorProfile(id_asesor, data) {
         }
 
         // Buscar o crear el tema
+        // Buscamos solo por nombre porque tiene restricción UNIQUE en la BD
         const [temaRows] = await conn.query(
-          "SELECT id_tema FROM temas WHERE nombre_tema = ? AND fk_area = ? LIMIT 1",
-          [t.topic, id_area]
+          "SELECT id_tema FROM temas WHERE nombre_tema = ? LIMIT 1",
+          [t.topic]
         );
 
         let id_tema = null;
         if (temaRows.length > 0) {
           id_tema = temaRows[0].id_tema;
+          // Actualizamos el área del tema existente para reflejar el cambio solicitado
+          await conn.query("UPDATE temas SET fk_area = ? WHERE id_tema = ?", [id_area, id_tema]);
         } else {
           const [insertTema] = await conn.query(
             "INSERT INTO temas (nombre_tema, fk_area) VALUES (?, ?)",
