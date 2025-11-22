@@ -405,6 +405,20 @@ function preparePublishForm() {
   optLibre.textContent = "Tema Libre";
   topicSel.appendChild(optLibre);
 
+  // Lógica para actualizar el área automáticamente
+  const areaDisplay = $("#areaDisplay");
+  const updateArea = () => {
+    const val = topicSel.value;
+    if (val === "Tema Libre") {
+      areaDisplay.value = "Cualquier área";
+    } else {
+      const found = state.topics.find((t) => t.topic === val);
+      areaDisplay.value = found ? found.area : "";
+    }
+  };
+  topicSel.addEventListener("change", updateArea);
+  updateArea(); // Inicializar
+
   // Días de la semana actual
   const daySel = $("#daySel");
   daySel.innerHTML = "";
