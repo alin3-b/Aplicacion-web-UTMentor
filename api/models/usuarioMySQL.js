@@ -546,3 +546,11 @@ export async function deleteDisponibilidad(id_disponibilidad, id_asesor) {
   );
   return result.affectedRows > 0;
 }
+
+export async function deleteUsuario(id_usuario) {
+  const [result] = await mysqlPool.query(
+    "UPDATE usuarios SET es_activo = FALSE WHERE id_usuario = ?",
+    [id_usuario]
+  );
+  return result.affectedRows > 0;
+}

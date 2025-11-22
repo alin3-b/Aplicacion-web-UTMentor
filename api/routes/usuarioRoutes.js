@@ -14,6 +14,8 @@ import {
   crearDisponibilidadController,
   listarDisponibilidadesController,
   eliminarDisponibilidadController,
+  eliminarUsuarioController,
+  cerrarSesion,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -26,8 +28,14 @@ router.get("/", listarUsuarios);
 // === CREAR USUARIO ===
 router.post("/", crearUsuario);
 
+// === ELIMINAR USUARIO ===
+router.delete("/:id", eliminarUsuarioController);
+
 // === LOGIN USUARIO ===
 router.post("/login", loginUsuario);
+
+// === LOGOUT USUARIO ===
+router.post("/:id/logout", cerrarSesion);
 
 // === LISTAR TODOS LOS ASESORES ===
 router.get("/asesores", listarAsesores);

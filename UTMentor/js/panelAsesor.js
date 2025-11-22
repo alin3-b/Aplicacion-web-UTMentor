@@ -266,7 +266,25 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (
       await confirmDialog("Esto eliminará tu perfil y tus datos. ¿Continuar?")
     ) {
-      toast("Perfil eliminado");
+      try {
+        const response = await fetch(`${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          toast("Perfil eliminado correctamente", "success");
+          // Redirigir al inicio o login después de un breve retraso
+          setTimeout(() => {
+            window.location.href = "iniciarSesion.html";
+          }, 1500);
+        } else {
+          const res = await response.json();
+          toast(res.error || "Error al eliminar el perfil", "danger");
+        }
+      } catch (error) {
+        console.error("Error al eliminar perfil:", error);
+        toast("Error de conexión", "danger");
+      }
     }
   });
 
@@ -433,28 +451,6 @@ function preparePublishForm() {
     });
     daySel.appendChild(opt);
   }
-
-  // Llenar selectores de hora (07 a 22) y minutos (00, 15, 30, 45)
-  const hours = [];
-  for (let h = 7; h <= 22; h++) hours.push(h.toString().padStart(2, "0"));
-  const minutes = ["00", "15", "30", "45"];
-
-  const populate = (selId, opts) => {
-    const sel = $(`#${selId}`);
-    if (!sel) return;
-    sel.innerHTML = "";
-    opts.forEach((o) => {
-      const el = document.createElement("option");
-      el.value = o;
-      el.textContent = o;
-      sel.appendChild(el);
-    });
-  };
-
-  populate("startHour", hours);
-  populate("endHour", hours);
-  populate("startMin", minutes);
-  populate("endMin", minutes);
 
   // Reset de resultado
   $("#publishResult").hidden = true;

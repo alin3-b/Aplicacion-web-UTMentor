@@ -14,6 +14,7 @@ import {
   createDisponibilidad,
   getDisponibilidades,
   deleteDisponibilidad,
+  deleteUsuario,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 import minioClient, { bucketName } from "../config/minio.js";
@@ -786,6 +787,70 @@ export async function eliminarDisponibilidadController(req, res) {
     console.error("Error al eliminar disponibilidad:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}:
+ *   delete:
+ *     summary: Desactiva (elimina lógicamente) un usuario
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado correctamente
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function eliminarUsuarioController(req, res) {
+  const { id } = req.params;
+
+  try {
+    const deleted = await deleteUsuario(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.json({ success: true, message: "Usuario eliminado correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}/logout:
+ *   post:
+ *     summary: Cierra la sesión de un usuario
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Sesión cerrada correctamente
+ */
+export async function cerrarSesion(req, res) {
+  const { id } = req.params;
+  
+  // En JWT stateless, el servidor no invalida el token automáticamente sin una lista negra.
+  // Aquí asumimos que el cliente borrará el token.
+  // Podríamos registrar el evento de logout si fuera necesario.
+  console.log(`Usuario ${id} ha cerrado sesión.`);
+
+  res.json({ success: true, message: "Sesión cerrada correctamente" });
 }
 
 
