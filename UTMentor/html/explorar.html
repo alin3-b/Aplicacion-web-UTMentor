@@ -45,38 +45,6 @@
           Todos los campos son <strong>opcionales</strong>. Usa uno o varios para afinar los resultados.
         </p>
 
-
-        <!-- Tema -->
-        <div class="filtro-bloque">
-          <label for="filtro-tema" class="filtro-label">Tema</label>
-          <input id="filtro-tema" class="filtro-input" type="text"
-            placeholder="Ej. Métodos de integración" autocomplete="off" />
-            <div class="input-error-msg" id="error-tema"></div>
-        </div>
-
-        <!-- Área de conocimiento (NUEVO) -->
-        <div class="filtro-bloque">
-          <label for="filtro-area" class="filtro-label">Área de conocimiento</label>
-          <div class="select-wrap">
-            <select id="filtro-area" class="filtro-select">
-              <option value="">Cualquiera</option>
-              <option>Matemáticas</option>
-              <option>Programación</option>
-              <option>Ingeniería</option>
-              <option>Idiomas</option>
-              <option>Física</option>
-              <option>Química</option>
-              <option>Biología y Biotecnología</option>
-              <option>Ciencias Sociales</option>
-              <option>Negocios/Administración</option>
-              <option>Diseño y Artes Gráficas</option>
-              <option>Humanidades y Ética</option>
-              <option>Sostenibilidad/Ambiente</option>
-            </select>
-            <span class="select-arrow" aria-hidden="true">▼</span>
-          </div>
-        </div>
-
         <!-- Nombre del asesor -->
         <div class="filtro-bloque">
           <label for="filtro-asesor" class="filtro-label">Nombre del asesor/a</label>
@@ -85,28 +53,12 @@
             <div class="input-error-msg" id="error-asesor"></div>
         </div>
 
-        <!-- Carrera -->
+        <!-- Tema -->
         <div class="filtro-bloque">
-          <label for="filtro-carrera" class="filtro-label">Carrera</label>
-          <div class="select-wrap">
-            <select id="filtro-carrera" class="filtro-select">
-              <option value="">Cualquiera</option>
-              <option>Ingeniería Civil</option>
-              <option>Ingeniería en Alimentos</option>
-              <option>Ingeniería en Computación</option>
-              <option>Ingeniería en Diseño</option>
-              <option>Ingeniería en Electrónica</option>
-              <option>Ingeniería en Física Aplicada</option>
-              <option>Ingeniería Industrial</option>
-              <option>Ingeniería en Mecánica Automotriz</option>
-              <option>Ingeniería en Mecatrónica</option>
-              <option>Ingeniería Química en Procesos Sostenibles</option>
-              <option>Licenciatura en Ciencias Empresariales</option>
-              <option>Licenciatura en Matemáticas Aplicadas</option>
-              <option>Licenciatura en Estudios Mexicanos modalidad virtual</option>
-            </select>
-            <span class="select-arrow" aria-hidden="true">▼</span>
-          </div>
+          <label for="filtro-tema" class="filtro-label">Tema</label>
+          <input id="filtro-tema" class="filtro-input" type="text"
+            placeholder="Ej. Métodos de integración" autocomplete="off" />
+            <div class="input-error-msg" id="error-tema"></div>
         </div>
 
         <!-- Disponibilidad -->
@@ -137,6 +89,53 @@
               <input id="filtro-hora-hasta" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" aria-describedby="hint-hasta">
               <small id="hint-hasta" class="filtro-hint">Ej.: 13:30  </small>
             </div>
+          </div>
+        </div>
+
+        <!-- Carrera -->
+        <div class="filtro-bloque">
+          <label for="filtro-carrera" class="filtro-label">Carrera</label>
+          <div class="select-wrap">
+            <select id="filtro-carrera" class="filtro-select">
+              <option value="">Cualquiera</option>
+              <option>Ingeniería Civil</option>
+              <option>Ingeniería en Alimentos</option>
+              <option>Ingeniería en Computación</option>
+              <option>Ingeniería en Diseño</option>
+              <option>Ingeniería en Electrónica</option>
+              <option>Ingeniería en Física Aplicada</option>
+              <option>Ingeniería Industrial</option>
+              <option>Ingeniería en Mecánica Automotriz</option>
+              <option>Ingeniería en Mecatrónica</option>
+              <option>Ingeniería Química en Procesos Sostenibles</option>
+              <option>Licenciatura en Ciencias Empresariales</option>
+              <option>Licenciatura en Matemáticas Aplicadas</option>
+              <option>Licenciatura en Estudios Mexicanos modalidad virtual</option>
+            </select>
+            <span class="select-arrow" aria-hidden="true">▼</span>
+          </div>
+        </div>
+
+        <!-- Área de conocimiento (NUEVO) -->
+        <div class="filtro-bloque">
+          <label for="filtro-area" class="filtro-label">Área de conocimiento</label>
+          <div class="select-wrap">
+            <select id="filtro-area" class="filtro-select">
+              <option value="">Cualquiera</option>
+              <option>Matemáticas</option>
+              <option>Programación</option>
+              <option>Ingeniería</option>
+              <option>Idiomas</option>
+              <option>Física</option>
+              <option>Química</option>
+              <option>Biología y Biotecnología</option>
+              <option>Ciencias Sociales</option>
+              <option>Negocios/Administración</option>
+              <option>Diseño y Artes Gráficas</option>
+              <option>Humanidades y Ética</option>
+              <option>Sostenibilidad/Ambiente</option>
+            </select>
+            <span class="select-arrow" aria-hidden="true">▼</span>
           </div>
         </div>
 
