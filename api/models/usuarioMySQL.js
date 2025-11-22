@@ -48,11 +48,11 @@ export async function getAllAsesores(filtros = {}) {
   }
 
   if (dia) {
-    const diasMap = { "Domingo":0,"Lunes":1,"Martes":2,"Miércoles":3,"Jueves":4,"Viernes":5,"Sábado":6 };
+    const diasMap = { "Domingo": 0, "Lunes": 1, "Martes": 2, "Miércoles": 3, "Jueves": 4, "Viernes": 5, "Sábado": 6 };
     conditions.push("DAYOFWEEK(d.fecha_inicio) = ?");
     params.push(diasMap[dia] + 1);
   }
-  
+
   if (desde && hasta) {
     conditions.push("(TIME(d.fecha_fin) >= ? AND TIME(d.fecha_inicio) <= ?)");
     params.push(desde, hasta);
@@ -63,7 +63,7 @@ export async function getAllAsesores(filtros = {}) {
     conditions.push("TIME(d.fecha_inicio) <= ?");
     params.push(hasta);
   }
-  
+
 
   const query = `
     SELECT 
@@ -95,7 +95,9 @@ export async function getAllAsesores(filtros = {}) {
     LEFT JOIN temas t ON d.fk_tema = t.id_tema
     LEFT JOIN areas_conocimiento a ON t.fk_area = a.id_area
     WHERE ${conditions.join(" AND ")}
-    ORDER BY pa.conteo_asesorias DESC, d.fecha_inicio ASC
+    ORDER BY pa.conteo_asesorias DESC, 
+        CASE WHEN d.fecha_inicio IS NULL THEN 1 ELSE 0 END ASC,
+        d.fecha_inicio ASC
   `;
 
   const [rows] = await mysqlPool.query(query, params);
@@ -142,30 +144,41 @@ export async function getAllAsesores(filtros = {}) {
 }
 
 export async function getAsesorInfo(id_asesor) {
-  const [rows] = await mysqlPool.query(
+  // === 1. Datos básicos del usuario y perfil de asesor ===
+  const [userRows] = await mysqlPool.query(
     `
     SELECT 
       u.id_usuario,
       u.nombre_completo,
+      u.correo AS correo_contacto,
+      u.ruta_foto,
+      u.semestre,
       c.nombre_carrera,
       COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones,
-      COALESCE(pa.calificacion_promedio, 0.0) AS puntuacion_promedio,
-      u.correo AS correo_contacto
+      COALESCE(pa.calificacion_promedio, 0.0) AS puntuacion_promedio
     FROM usuarios u
     INNER JOIN perfiles_asesores pa ON u.id_usuario = pa.id_asesor
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
     WHERE u.id_usuario = ? AND u.es_activo = TRUE
-  `,
+    `,
     [id_asesor]
   );
 
-  if (rows.length === 0) {
-    return null;
-  }
+  if (userRows.length === 0) return null;
+  const asesor = userRows[0];
 
-  const asesor = rows[0];
+  // === 2. Roles del usuario ===
+  const [rolesRows] = await mysqlPool.query(
+    `SELECT r.nombre_rol
+     FROM usuario_rol ur
+     INNER JOIN roles r ON ur.fk_rol = r.id_rol
+     WHERE ur.fk_usuario = ?`,
+    [id_asesor]
+  );
+  asesor.roles = rolesRows.map(r => r.nombre_rol);
 
-  const [disponibilidades] = await mysqlPool.query(
+  // === 3. Todas las disponibilidades del asesor ===
+  const [disponibilidadesRows] = await mysqlPool.query(
     `
     SELECT 
       d.id_disponibilidad,
@@ -173,28 +186,48 @@ export async function getAsesorInfo(id_asesor) {
       d.fecha_fin,
       d.modalidad,
       d.tipo_sesion,
-      t.nombre_tema,
-      a.nombre_area,
       d.precio,
       d.capacidad,
       d.es_disponible,
+      t.nombre_tema,
+      a.nombre_area,
       IFNULL(COUNT(i.id_inscripcion), 0) AS inscritos
     FROM disponibilidades d
     LEFT JOIN temas t ON d.fk_tema = t.id_tema
     LEFT JOIN areas_conocimiento a ON t.fk_area = a.id_area
-    LEFT JOIN inscripciones_sesion i ON d.id_disponibilidad = i.fk_disponibilidad 
+    LEFT JOIN inscripciones_sesion i ON d.id_disponibilidad = i.fk_disponibilidad
       AND i.estado != 'cancelada'
     WHERE d.fk_asesor = ?
     GROUP BY d.id_disponibilidad
     ORDER BY d.fecha_inicio ASC
-  `,
+    `,
     [id_asesor]
   );
+  asesor.disponibilidades = disponibilidadesRows;
 
-  return {
-    ...asesor,
-    disponibilidades,
-  };
+  // === 4. Todos los temas y áreas que el asesor puede impartir ===
+  const [temasRows] = await mysqlPool.query(
+    `
+    SELECT 
+      t.id_tema,
+      t.nombre_tema,
+      a.id_area,
+      a.nombre_area
+    FROM asesores_temas at
+    INNER JOIN temas t ON at.fk_tema = t.id_tema
+    INNER JOIN areas_conocimiento a ON t.fk_area = a.id_area
+    WHERE at.fk_asesor = ?
+    ORDER BY a.nombre_area ASC, t.nombre_tema ASC
+    `,
+    [id_asesor]
+  );
+  asesor.temas = temasRows;
+
+  // === 5. Lista de áreas únicas del asesor ===
+  const areasUnicas = [...new Map(temasRows.map(t => [t.id_area, t])).values()];
+  asesor.areas = areasUnicas.map(a => ({ id_area: a.id_area, nombre_area: a.nombre_area }));
+
+  return asesor;
 }
 
 export async function getTemasPopulares() {
@@ -246,6 +279,16 @@ export async function addUsuario({
       await conn.query(
         `INSERT INTO usuario_rol (fk_usuario, fk_rol) VALUES ?`,
         [values]
+      );
+    }
+
+    // 3. Si el usuario es asesor (role = 1), crear su perfil de asesor
+    if (roles.includes(1)) {
+      await conn.query(
+        `INSERT INTO perfiles_asesores 
+        (id_asesor, conteo_asesorias, calificacion_promedio)
+        VALUES (?, 0, 0.0)`,
+        [id_usuario]
       );
     }
 
