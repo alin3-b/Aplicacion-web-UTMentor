@@ -494,6 +494,15 @@ export async function loginUsuario(req, res) {
  *                 type: string
  *               ruta_foto:
  *                 type: string
+ *               temas:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     topic:
+ *                       type: string
+ *                     area:
+ *                       type: string
  *     responses:
  *       200:
  *         description: Asesor actualizado correctamente
