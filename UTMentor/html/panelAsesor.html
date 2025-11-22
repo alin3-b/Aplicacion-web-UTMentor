@@ -109,6 +109,35 @@
 
         <form id="publishForm" class="form" novalidate>
           <div class="grid">
+            <!-- 1. Modalidad -->
+            <label class="field">
+              <span class="label">Modalidad</span>
+              <select id="modeSel" required>
+                <option value="virtual">Virtual</option>
+                <option value="presencial">Presencial</option>
+              </select>
+            </label>
+
+            <!-- 2. Día -->
+            <label class="field">
+              <span class="label">Día</span>
+              <select id="daySel" required></select>
+            </label>
+
+            <!-- 3. Horario -->
+            <label class="field">
+              <span class="label">Inicio</span>
+              <input id="startTime" type="time" step="900" required>
+              <small class="hint">Formato 24h (Ej.: 14:00)</small>
+            </label>
+
+            <label class="field">
+              <span class="label">Fin</span>
+              <input id="endTime" type="time" step="900" required>
+              <small class="hint">Formato 24h (Ej.: 15:00)</small>
+            </label>
+
+            <!-- 4. Tema -->
             <label class="field">
               <span class="label">Tema</span>
               <div class="with-inline">
@@ -120,41 +149,24 @@
                 podrán elegir para esta sesión cualquiera de tus temas.</small>
             </label>
 
+            <!-- 5. Tipo de sesión -->
             <label class="field">
-              <span class="label">Día</span>
-              <select id="daySel" required></select>
-            </label>
-
-            <label class="field">
-              <span class="label">Inicio</span>
-              <input id="startTime" type="time" step="900" required>
-              <small class="hint">Ej.: 10:00 a. m.</small>
-            </label>
-
-            <label class="field">
-              <span class="label">Fin</span>
-              <input id="endTime" type="time" step="900" required>
-              <small class="hint">Ej.: 11:00 a. m.</small>
-            </label>
-
-            <label class="field">
-              <span class="label">Modalidad</span>
-              <select id="modeSel" required>
-                <option value="virtual">Virtual</option>
-                <option value="presencial">Presencial</option>
-              </select>
-            </label>
-
-            <label class="field">
-              <span class="label">Tipo</span>
+              <span class="label">Tipo de sesión</span>
               <select id="typeSel" required>
                 <option value="individual">Individual</option>
                 <option value="grupal">Grupal</option>
               </select>
             </label>
 
+            <!-- 6. Área (Auto-filled) -->
             <label class="field">
-              <span class="label">Precio</span>
+              <span class="label">Área</span>
+              <input id="areaDisplay" type="text" disabled placeholder="Selecciona un tema">
+            </label>
+
+            <!-- 7. Costo -->
+            <label class="field">
+              <span class="label">Costo</span>
               <input id="price" type="number" min="0" step="10" placeholder="0"
                 required>
               <small class="hint">MXN por sesión</small>
