@@ -13,6 +13,7 @@ import {
   updateAsesorProfile,
   createDisponibilidad,
   getDisponibilidades,
+  deleteDisponibilidad,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 import minioClient, { bucketName } from "../config/minio.js";
@@ -739,6 +740,50 @@ export async function listarDisponibilidadesController(req, res) {
     });
   } catch (error) {
     console.error("Error al listar disponibilidades:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/asesores/{id}/disponibilidades/{id_disponibilidad}:
+ *   delete:
+ *     summary: Elimina una disponibilidad de un asesor
+ *     tags: [Asesores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del asesor
+ *       - in: path
+ *         name: id_disponibilidad
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la disponibilidad a eliminar
+ *     responses:
+ *       200:
+ *         description: Disponibilidad eliminada correctamente
+ *       404:
+ *         description: Disponibilidad no encontrada o no pertenece al asesor
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function eliminarDisponibilidadController(req, res) {
+  const { id, id_disponibilidad } = req.params;
+
+  try {
+    const deleted = await deleteDisponibilidad(id_disponibilidad, id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Disponibilidad no encontrada o no pertenece al asesor" });
+    }
+
+    res.json({ success: true, message: "Disponibilidad eliminada correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar disponibilidad:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }

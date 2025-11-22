@@ -13,6 +13,7 @@ import {
   subirFotoPerfil,
   crearDisponibilidadController,
   listarDisponibilidadesController,
+  eliminarDisponibilidadController,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -45,6 +46,9 @@ router.post("/asesores/:id/disponibilidades", crearDisponibilidadController);
 
 // === LISTAR DISPONIBILIDADES ===
 router.get("/asesores/:id/disponibilidades", listarDisponibilidadesController);
+
+// === ELIMINAR DISPONIBILIDAD ===
+router.delete("/asesores/:id/disponibilidades/:id_disponibilidad", eliminarDisponibilidadController);
 
 router.get("/temas/populares", listarTemasPopulares);
 
