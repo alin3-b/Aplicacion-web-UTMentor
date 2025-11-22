@@ -434,6 +434,28 @@ function preparePublishForm() {
     daySel.appendChild(opt);
   }
 
+  // Llenar selectores de hora (07 a 22) y minutos (00, 15, 30, 45)
+  const hours = [];
+  for (let h = 7; h <= 22; h++) hours.push(h.toString().padStart(2, "0"));
+  const minutes = ["00", "15", "30", "45"];
+
+  const populate = (selId, opts) => {
+    const sel = $(`#${selId}`);
+    if (!sel) return;
+    sel.innerHTML = "";
+    opts.forEach((o) => {
+      const el = document.createElement("option");
+      el.value = o;
+      el.textContent = o;
+      sel.appendChild(el);
+    });
+  };
+
+  populate("startHour", hours);
+  populate("endHour", hours);
+  populate("startMin", minutes);
+  populate("endMin", minutes);
+
   // Reset de resultado
   $("#publishResult").hidden = true;
 
