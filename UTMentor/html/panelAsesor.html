@@ -179,24 +179,19 @@
         <div class="profile">
           <div class="profile-photo">
             <img id="profileAvatar" src="../imagenes/adviser1.jpg"
-              alt="Foto de perfil" />
-            <label class="btn ghost mt">
-              Cargar foto
-              <input id="photoInput" type="file" accept="image/*" hidden>
-            </label>
+              alt="Foto de perfil" style="cursor: pointer" title="Clic para cambiar foto" />
+            <div class="mt" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+              <label class="btn ghost">
+                Cargar foto
+                <input id="photoInput" type="file" accept="image/*" hidden>
+              </label>
+              <button id="deletePhotoBtn" class="btn danger ghost" type="button">Eliminar foto</button>
+            </div>
           </div>
 
           <div class="profile-content">
             <form id="profileForm" class="form">
               <div class="grid">
-                <label class="field">
-                  <span class="label">Calificación</span>
-                  <div class="stars" id="stars"
-                    aria-label="4.8 de 5">★★★★★</div>
-                  <small class="hint">Número de estrellas es solo
-                    lectura.</small>
-                </label>
-
                 <label class="field">
                   <span class="label">Nombre completo</span>
                   <input id="pName" type="text" required>
@@ -219,15 +214,14 @@
                 </label>
 
                 <label class="field">
-                  <span class="label">Contraseña</span>
-                  <input id="pPassword" type="password" placeholder="••••••••">
-                  <small class="hint">Déjalo en blanco para no
-                    cambiarla.</small>
+                  <span class="label">Conteo de asesorías dadas</span>
+                  <input id="pAdvisories" type="text" disabled>
+                  <small class="hint">Este número se actualiza automáticamente.</small>
                 </label>
               </div>
 
               <div class="form-actions">
-                <button class="btn" type="submit">Guardar perfil</button>
+                <button class="btn" type="submit">Guardar cambios</button>
               </div>
             </form>
 
