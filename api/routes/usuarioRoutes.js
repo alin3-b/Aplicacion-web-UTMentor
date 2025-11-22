@@ -11,6 +11,8 @@ import {
   checkEmailController,
   loginUsuario,
   subirFotoPerfil,
+  crearDisponibilidadController,
+  listarDisponibilidadesController,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -37,6 +39,12 @@ router.put("/asesores/:id", actualizarAsesor);
 
 // === SUBIR FOTO PERFIL ===
 router.post("/asesores/:id/foto", upload.single('foto'), subirFotoPerfil);
+
+// === CREAR DISPONIBILIDAD ===
+router.post("/asesores/:id/disponibilidades", crearDisponibilidadController);
+
+// === LISTAR DISPONIBILIDADES ===
+router.get("/asesores/:id/disponibilidades", listarDisponibilidadesController);
 
 router.get("/temas/populares", listarTemasPopulares);
 

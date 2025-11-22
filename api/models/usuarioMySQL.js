@@ -478,3 +478,63 @@ export async function updateAsesorProfile(id_asesor, data) {
     conn.release();
   }
 }
+
+export async function createDisponibilidad(data) {
+  const {
+    fk_asesor,
+    fecha_inicio,
+    fecha_fin,
+    modalidad,
+    tipo_sesion,
+    fk_tema,
+    precio,
+    capacidad,
+    es_disponible
+  } = data;
+
+  const [result] = await mysqlPool.query(
+    `INSERT INTO disponibilidades 
+    (fk_asesor, fecha_inicio, fecha_fin, modalidad, tipo_sesion, fk_tema, precio, capacidad, es_disponible)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [fk_asesor, fecha_inicio, fecha_fin, modalidad, tipo_sesion, fk_tema, precio, capacidad, es_disponible || 1]
+  );
+  return result.insertId;
+}
+
+export async function getDisponibilidades(id_asesor, filtros = {}) {
+  const { fecha_desde, fecha_hasta } = filtros;
+  const conditions = ["d.fk_asesor = ?"];
+  const params = [id_asesor];
+
+  if (fecha_desde) {
+    conditions.push("DATE(d.fecha_inicio) >= ?");
+    params.push(fecha_desde);
+  }
+  if (fecha_hasta) {
+    conditions.push("DATE(d.fecha_fin) <= ?");
+    params.push(fecha_hasta);
+  }
+
+  const query = `
+    SELECT 
+      d.id_disponibilidad,
+      d.fecha_inicio,
+      d.fecha_fin,
+      d.modalidad,
+      d.tipo_sesion,
+      d.precio,
+      d.capacidad,
+      d.es_disponible,
+      t.nombre_tema,
+      a.nombre_area,
+      (SELECT COUNT(*) FROM inscripciones_sesion i WHERE i.fk_disponibilidad = d.id_disponibilidad AND i.estado != 'cancelada') as inscritos
+    FROM disponibilidades d
+    LEFT JOIN temas t ON d.fk_tema = t.id_tema
+    LEFT JOIN areas_conocimiento a ON t.fk_area = a.id_area
+    WHERE ${conditions.join(" AND ")}
+    ORDER BY d.fecha_inicio ASC
+  `;
+
+  const [rows] = await mysqlPool.query(query, params);
+  return rows;
+}
