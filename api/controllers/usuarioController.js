@@ -13,6 +13,8 @@ import {
   updateAsesorProfile,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
+import minioClient, { bucketName } from "../config/minio.js";
+import path from "path";
 
 
 /**
@@ -534,6 +536,83 @@ export async function actualizarAsesor(req, res) {
   } catch (error) {
     console.error("Error al actualizar asesor:", error);
     res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/asesores/{id}/foto:
+ *   post:
+ *     summary: Sube una foto de perfil para el asesor
+ *     tags: [Asesores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               foto:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Foto actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *       400:
+ *         description: No se subió ningún archivo
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function subirFotoPerfil(req, res) {
+  const { id } = req.params;
+  
+  if (!req.file) {
+    return res.status(400).json({ error: "No se ha subido ningún archivo" });
+  }
+
+  try {
+    const fileExtension = path.extname(req.file.originalname);
+    const fileName = `asesores/${id}-${Date.now()}${fileExtension}`;
+    
+    // Subir a MinIO
+    await minioClient.putObject(
+      bucketName,
+      fileName,
+      req.file.buffer,
+      req.file.size,
+      { 'Content-Type': req.file.mimetype }
+    );
+
+    // Construir URL pública
+    // Asumiendo que el bucket es público o usamos presigned URLs.
+    // Si usamos localhost para desarrollo, la URL debe ser accesible desde el navegador.
+    // process.env.MINIO_ENDPOINT suele ser interno (minio:9000).
+    // Para el navegador necesitamos localhost:9000.
+    
+    // Una opción es usar una variable de entorno para la URL pública base.
+    const publicHost = process.env.MINIO_PUBLIC_HOST || 'http://localhost:9000';
+    const url = `${publicHost}/${bucketName}/${fileName}`;
+
+    // Actualizar BD
+    await updateAsesorProfile(id, { ruta_foto: url });
+
+    res.json({ message: "Foto actualizada", url });
+  } catch (error) {
+    console.error("Error al subir foto:", error);
+    res.status(500).json({ error: "Error al procesar la imagen" });
   }
 }
 

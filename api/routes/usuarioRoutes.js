@@ -10,8 +10,10 @@ import {
   obtenerMetricas,
   checkEmailController,
   loginUsuario,
+  subirFotoPerfil,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -32,6 +34,9 @@ router.get("/asesores/:id", obtenerInfoAsesor);
 
 // === ACTUALIZAR ASESOR ===
 router.put("/asesores/:id", actualizarAsesor);
+
+// === SUBIR FOTO PERFIL ===
+router.post("/asesores/:id/foto", upload.single('foto'), subirFotoPerfil);
 
 router.get("/temas/populares", listarTemasPopulares);
 
