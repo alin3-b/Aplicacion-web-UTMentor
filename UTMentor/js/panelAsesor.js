@@ -27,39 +27,60 @@ const API_BASE_URL = "http://localhost:3000/api";
 const CURRENT_ASESOR_ID = 11; // En producción, esto vendría del JWT o sesión
 
 /**
- * Cargar temas del asesor desde la API
+ * Cargar perfil completo del asesor (incluye temas) desde la API
  */
-async function cargarTemasDesdeAPI() {
+async function cargarPerfilCompletoDesdeAPI() {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/asesores/${CURRENT_ASESOR_ID}/temas`
+      `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`
     );
     const result = await response.json();
 
-    if (response.ok && result.success) {
-      // Actualizar el estado con los temas reales
-      state.topics = result.data.map((tema) => ({
-        id_tema: tema.id_tema,
-        topic: tema.nombre_tema,
-        area: tema.nombre_area,
-      }));
+    if (response.ok) {
+      // Actualizar estado del perfil
+      state.profile.name = result.nombre_completo;
+      state.profile.career = result.nombre_carrera || "Carrera no especificada";
+      state.profile.semester = result.semestre;
+      state.profile.email = result.correo_contacto;
+      state.profile.advisoriesGiven = result.numero_sesiones;
+      state.profile.avatar = result.ruta_foto || "../imagenes/adviser1.jpg";
+      state.profile.stars = result.puntuacion_promedio;
 
-      // Agregar "Tema Libre" como opción especial
-      state.topics.push({
-        id_tema: null,
-        topic: "Tema Libre",
-        area: "Cualquier área",
-      });
+      // Actualizar estado de temas
+      if (result.temas && Array.isArray(result.temas)) {
+        state.topics = result.temas.map((t) => ({
+          id_tema: t.id_tema,
+          topic: t.nombre_tema,
+          area: t.nombre_area,
+        }));
 
-      console.log("Temas cargados desde API:", state.topics);
+        // Agregar "Tema Libre" como opción especial para el dropdown
+        state.topics.push({
+          id_tema: null,
+          topic: "Tema Libre",
+          area: "Cualquier área",
+        });
+      }
+
+      console.log("✅ Perfil y temas cargados:", state.profile);
+
+      // Actualizar UI del header
+      $("#chipName").textContent = state.profile.name;
+      $("#chipCareer").textContent = `${state.profile.career} · ${state.profile.semester}º`;
+      $("#chipAvatar").src = state.profile.avatar;
+
+      // Si estamos en la vista de perfil, recargar formulario
+      if ($("#view-perfil").classList.contains("is-visible")) {
+        loadProfile();
+        renderTopics();
+      }
     } else {
-      console.warn(
-        "No se pudieron cargar los temas desde la API, usando datos demo"
-      );
+      console.warn("No se pudo cargar el perfil del asesor");
+      toast("Error al cargar perfil", "warning");
     }
   } catch (error) {
-    console.error("Error al cargar temas desde API:", error);
-    console.log("Usando temas demo como respaldo");
+    console.error("❌ Error al cargar perfil:", error);
+    toast("Error de conexión al cargar perfil", "danger");
   }
 }
 
@@ -242,11 +263,11 @@ function addDayTime(base, dayIndex, start, end) {
 
 /* ========== INICIO ========= */
 window.addEventListener("DOMContentLoaded", async () => {
-  // Cargar temas y sesiones desde la API
-  await cargarTemasDesdeAPI();
+  // Cargar perfil (incluye temas) y sesiones desde la API
+  await cargarPerfilCompletoDesdeAPI();
   await cargarSesionesDesdeAPI();
 
-  // header user chip
+  // header user chip (ya se actualiza en cargarPerfilCompletoDesdeAPI, pero por si acaso falla la carga inicial)
   $("#chipName").textContent = state.profile.name;
   $(
     "#chipCareer"
