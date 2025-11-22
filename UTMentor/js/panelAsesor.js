@@ -53,13 +53,6 @@ async function cargarPerfilCompletoDesdeAPI() {
           topic: t.nombre_tema,
           area: t.nombre_area,
         }));
-
-        // Agregar "Tema Libre" como opción especial para el dropdown
-        state.topics.push({
-          id_tema: null,
-          topic: "Tema Libre",
-          area: "Cualquier área",
-        });
       }
 
       console.log("✅ Perfil y temas cargados:", state.profile);
@@ -424,6 +417,12 @@ function preparePublishForm() {
     opt.textContent = t.topic;
     topicSel.appendChild(opt);
   });
+
+  // Agregar "Tema Libre" manualmente
+  const optLibre = document.createElement("option");
+  optLibre.value = "Tema Libre";
+  optLibre.textContent = "Tema Libre";
+  topicSel.appendChild(optLibre);
 
   // Días de la semana actual
   const daySel = $("#daySel");
