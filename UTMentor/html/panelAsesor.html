@@ -127,20 +127,18 @@
             <!-- 3. Horario -->
             <label class="field">
               <span class="label">Inicio</span>
-              <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <select id="startHour" required style="width: 80px;"></select>
-                <span style="font-weight: bold;">:</span>
-                <select id="startMin" required style="width: 80px;"></select>
+              <div class="with-icon">
+                <input id="startTime" type="time" min="06:00" max="22:00" step="1800" required>
               </div>
+              <small class="hint">Ej.: 10:00 a. m.</small>
             </label>
 
             <label class="field">
               <span class="label">Fin</span>
-              <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <select id="endHour" required style="width: 80px;"></select>
-                <span style="font-weight: bold;">:</span>
-                <select id="endMin" required style="width: 80px;"></select>
+              <div class="with-icon">
+                <input id="endTime" type="time" min="06:00" max="22:00" step="1800" required>
               </div>
+              <small class="hint">Ej.: 12:00 p. m.</small>
             </label>
 
             <!-- 4. Tema -->
