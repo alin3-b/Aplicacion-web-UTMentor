@@ -506,10 +506,10 @@ export async function loginUsuario(req, res) {
  */
 export async function actualizarAsesor(req, res) {
   const { id } = req.params;
-  const { nombre_completo, semestre, fk_carrera, password, ruta_foto } = req.body;
+  const { nombre_completo, semestre, fk_carrera, password, ruta_foto, temas } = req.body;
 
   try {
-    const data = { nombre_completo, semestre, fk_carrera, ruta_foto };
+    const data = { nombre_completo, semestre, fk_carrera, ruta_foto, temas };
 
     if (password) {
       data.password_hash = await bcrypt.hash(password, 10);

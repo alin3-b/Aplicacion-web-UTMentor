@@ -379,40 +379,99 @@ export async function getRolesByUserId(idUsuario) {
 }
 
 export async function updateAsesorProfile(id_asesor, data) {
-  const { nombre_completo, semestre, fk_carrera, password_hash, ruta_foto } = data;
+  const { nombre_completo, semestre, fk_carrera, password_hash, ruta_foto, temas } = data;
 
-  const updates = [];
-  const params = [];
+  const conn = await mysqlPool.getConnection();
+  try {
+    await conn.beginTransaction();
 
-  if (nombre_completo) {
-    updates.push("nombre_completo = ?");
-    params.push(nombre_completo);
+    const updates = [];
+    const params = [];
+
+    if (nombre_completo) {
+      updates.push("nombre_completo = ?");
+      params.push(nombre_completo);
+    }
+    if (semestre) {
+      updates.push("semestre = ?");
+      params.push(semestre);
+    }
+    if (fk_carrera) {
+      updates.push("fk_carrera = ?");
+      params.push(fk_carrera);
+    }
+    if (password_hash) {
+      updates.push("password_hash = ?");
+      params.push(password_hash);
+    }
+    if (ruta_foto) {
+      updates.push("ruta_foto = ?");
+      params.push(ruta_foto);
+    }
+
+    if (updates.length > 0) {
+      params.push(id_asesor);
+      await conn.query(
+        `UPDATE usuarios SET ${updates.join(", ")} WHERE id_usuario = ?`,
+        params
+      );
+    }
+
+    // Actualizar temas si se proporcionan
+    if (temas && Array.isArray(temas)) {
+      // 1. Eliminar relaciones existentes
+      await conn.query("DELETE FROM asesores_temas WHERE fk_asesor = ?", [id_asesor]);
+
+      // 2. Insertar nuevos temas
+      for (const t of temas) {
+        // Buscar si el tema ya existe por nombre y área
+        // Primero necesitamos el ID del área.
+        // Asumimos que el frontend envía el nombre del área.
+        const [areaRows] = await conn.query(
+          "SELECT id_area FROM areas_conocimiento WHERE nombre_area = ? LIMIT 1",
+          [t.area]
+        );
+        
+        let id_area = null;
+        if (areaRows.length > 0) {
+          id_area = areaRows[0].id_area;
+        } else {
+          // Si no existe el área, podríamos crearla o saltar.
+          // Por simplicidad, saltamos si el área no es válida.
+          continue;
+        }
+
+        // Buscar o crear el tema
+        const [temaRows] = await conn.query(
+          "SELECT id_tema FROM temas WHERE nombre_tema = ? AND fk_area = ? LIMIT 1",
+          [t.topic, id_area]
+        );
+
+        let id_tema = null;
+        if (temaRows.length > 0) {
+          id_tema = temaRows[0].id_tema;
+        } else {
+          const [insertTema] = await conn.query(
+            "INSERT INTO temas (nombre_tema, fk_area) VALUES (?, ?)",
+            [t.topic, id_area]
+          );
+          id_tema = insertTema.insertId;
+        }
+
+        // Relacionar tema con asesor
+        await conn.query(
+          "INSERT INTO asesores_temas (fk_asesor, fk_tema) VALUES (?, ?)",
+          [id_asesor, id_tema]
+        );
+      }
+    }
+
+    await conn.commit();
+    return true;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
   }
-  if (semestre) {
-    updates.push("semestre = ?");
-    params.push(semestre);
-  }
-  if (fk_carrera) {
-    updates.push("fk_carrera = ?");
-    params.push(fk_carrera);
-  }
-  if (password_hash) {
-    updates.push("password_hash = ?");
-    params.push(password_hash);
-  }
-  if (ruta_foto) {
-    updates.push("ruta_foto = ?");
-    params.push(ruta_foto);
-  }
-
-  if (updates.length === 0) return false;
-
-  params.push(id_asesor);
-
-  const [result] = await mysqlPool.query(
-    `UPDATE usuarios SET ${updates.join(", ")} WHERE id_usuario = ?`,
-    params
-  );
-
-  return result.affectedRows > 0;
 }
