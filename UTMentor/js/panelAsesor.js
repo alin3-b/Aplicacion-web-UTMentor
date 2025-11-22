@@ -24,7 +24,7 @@ function toggleLoading(elementId, show = true, text = "Cargando...") {
 
 /* ========== API INTEGRATION ========= */
 const API_BASE_URL = "http://localhost:3000/api";
-const CURRENT_ASESOR_ID = 1; // En producción, esto vendría del JWT o sesión
+const CURRENT_ASESOR_ID = 11; // En producción, esto vendría del JWT o sesión
 
 /**
  * Cargar temas del asesor desde la API
@@ -147,6 +147,7 @@ const state = {
     semester: 9,
     email: "mario@utmentor.demo",
     avatar: "../imagenes/adviser1.jpg",
+    advisoriesGiven: 24,
   },
   topics: [
     { topic: "Cálculo diferencial", area: "Matemáticas" },
@@ -629,7 +630,10 @@ function loadProfile() {
   $("#pCareer").value = state.profile.career;
   $("#pSemester").value = state.profile.semester;
   $("#pEmail").value = state.profile.email;
-  $("#stars").title = `${state.profile.stars} / 5`;
+  $("#pAdvisories").value = state.profile.advisoriesGiven;
+
+  // Click en foto para cambiar
+  $("#profileAvatar").onclick = () => $("#photoInput").click();
 
   // foto
   $("#photoInput").onchange = (e) => {
@@ -641,12 +645,25 @@ function loadProfile() {
     toast("Foto actualizada");
   };
 
+  // Eliminar foto
+  const deleteBtn = $("#deletePhotoBtn");
+  if (deleteBtn) {
+    deleteBtn.onclick = async () => {
+      if (await confirmDialog("¿Eliminar foto de perfil?")) {
+        const defaultAvatar = "../imagenes/adviser1.jpg"; // O una imagen por defecto genérica
+        $("#profileAvatar").src = defaultAvatar;
+        $("#chipAvatar").src = defaultAvatar;
+        $("#photoInput").value = ""; // Limpiar input file
+        toast("Foto eliminada");
+      }
+    };
+  }
+
   $("#profileForm").onsubmit = (e) => {
     e.preventDefault();
     const name = $("#pName").value.trim();
     const career = $("#pCareer").value.trim();
     const semester = Number($("#pSemester").value);
-    const password = $("#pPassword").value;
 
     if (!name || !career || !semester) {
       return toast("Completa los campos obligatorios", "danger");
@@ -656,9 +673,7 @@ function loadProfile() {
     state.profile.semester = semester;
     $("#chipName").textContent = name;
     $("#chipCareer").textContent = `${career} · ${semester}º`;
-    if (password) toast("Contraseña actualizada", "success");
-    toast("Perfil guardado", "success");
-    $("#pPassword").value = "";
+    toast("Perfil actualizado exitosamente", "success");
   };
 }
 
