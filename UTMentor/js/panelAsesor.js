@@ -94,7 +94,7 @@ async function cargarSesionesDesdeAPI() {
     const fechaHasta = addDays(currentMonday, 6).toISOString().slice(0, 10);
 
     const response = await fetch(
-      `${API_BASE_URL}/asesores/${CURRENT_ASESOR_ID}/disponibilidades?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`
+      `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`
     );
     const result = await response.json();
 
@@ -174,48 +174,11 @@ const state = {
 };
 
 /* Genera ejemplos dentro de la semana actual */
-function seedSessions(weekStart) {
-  const d = new Date(weekStart);
-  state.sessions = [
-    {
-      id: 1,
-      title: "Cálculo diferencial",
-      mode: "virtual",
-      type: "individual",
-      area: "Matemáticas",
-      price: 200,
-      notes: "Zoom",
-      student: "Ana Pérez",
-      date: addDayTime(d, 1, "10:00", "11:00"),
-    },
-    {
-      id: 2,
-      title: "AutoCAD básico",
-      mode: "presencial",
-      type: "grupal",
-      area: "Diseño",
-      price: 250,
-      notes: "Aula B-12",
-      student: "Equipo 3",
-      date: addDayTime(d, 3, "16:00", "17:00"),
-    },
-    {
-      id: 3,
-      title: "Resistencia de materiales",
-      mode: "virtual",
-      type: "individual",
-      area: "Física",
-      price: 220,
-      notes: "Google Meet",
-      student: "Luis M.",
-      date: addDayTime(d, 4, "09:00", "10:00"),
-    },
-  ];
-}
+// function seedSessions(weekStart) { ... } (Eliminado para usar API)
 
 /* ========== FECHAS / SEMANAS ========= */
 let currentMonday = getMonday(new Date());
-seedSessions(currentMonday);
+// seedSessions(currentMonday); // Eliminamos datos de prueba para usar solo API
 
 function getMonday(date) {
   const d = new Date(date);
@@ -454,8 +417,7 @@ function preparePublishForm() {
     const mode = $("#modeSel").value;
     const type = $("#typeSel").value;
     const price = Number($("#price").value || 0);
-    const notes = $("#notes").value.trim();
-
+    
     // Validaciones mínimas
     if (!topic) {
       return toast("Indica un tema válido", "danger");
@@ -496,7 +458,7 @@ function preparePublishForm() {
 
       // Llamar a la API para crear la disponibilidad
       const response = await fetch(
-        `${API_BASE_URL}/asesores/${CURRENT_ASESOR_ID}/disponibilidades`,
+        `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades`,
         {
           method: "POST",
           headers: {

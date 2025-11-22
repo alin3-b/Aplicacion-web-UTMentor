@@ -11,6 +11,8 @@ import {
   getUserByEmail,
   getRolesByUserId,
   updateAsesorProfile,
+  createDisponibilidad,
+  getDisponibilidades,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 import minioClient, { bucketName } from "../config/minio.js";
@@ -613,6 +615,131 @@ export async function subirFotoPerfil(req, res) {
   } catch (error) {
     console.error("Error al subir foto:", error);
     res.status(500).json({ error: "Error al procesar la imagen" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/asesores/{id}/disponibilidades:
+ *   post:
+ *     summary: Crea una nueva disponibilidad para un asesor
+ *     tags: [Asesores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - fecha_inicio
+ *               - fecha_fin
+ *               - modalidad
+ *               - tipo_sesion
+ *               - precio
+ *             properties:
+ *               fecha_inicio:
+ *                 type: string
+ *                 format: date-time
+ *               fecha_fin:
+ *                 type: string
+ *                 format: date-time
+ *               modalidad:
+ *                 type: string
+ *                 enum: [presencial, virtual]
+ *               tipo_sesion:
+ *                 type: string
+ *                 enum: [grupal, individual]
+ *               fk_tema:
+ *                 type: integer
+ *                 nullable: true
+ *               precio:
+ *                 type: number
+ *               capacidad:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Disponibilidad creada
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function crearDisponibilidadController(req, res) {
+  const { id } = req.params;
+  const { fecha_inicio, fecha_fin, modalidad, tipo_sesion, fk_tema, precio, capacidad } = req.body;
+
+  try {
+    const id_disponibilidad = await createDisponibilidad({
+      fk_asesor: id,
+      fecha_inicio,
+      fecha_fin,
+      modalidad,
+      tipo_sesion,
+      fk_tema,
+      precio,
+      capacidad
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Disponibilidad creada",
+      data: {
+        id_disponibilidad,
+        fk_asesor: id,
+        fecha_inicio,
+        fecha_fin,
+        modalidad,
+        tipo_sesion,
+        fk_tema,
+        precio,
+        capacidad
+      }
+    });
+  } catch (error) {
+    console.error("Error al crear disponibilidad:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/asesores/{id}/disponibilidades:
+ *   get:
+ *     summary: Obtiene las disponibilidades de un asesor con filtros de fecha
+ *     tags: [Asesores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: fecha_desde
+ *         schema: { type: string, format: date }
+ *       - in: query
+ *         name: fecha_hasta
+ *         schema: { type: string, format: date }
+ *     responses:
+ *       200:
+ *         description: Lista de disponibilidades
+ */
+export async function listarDisponibilidadesController(req, res) {
+  const { id } = req.params;
+  const { fecha_desde, fecha_hasta } = req.query;
+
+  try {
+    const disponibilidades = await getDisponibilidades(id, { fecha_desde, fecha_hasta });
+    res.json({
+      success: true,
+      data: disponibilidades
+    });
+  } catch (error) {
+    console.error("Error al listar disponibilidades:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 
