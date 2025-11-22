@@ -350,10 +350,28 @@ function renderSessions() {
           "¿Cancelar esta sesión? El alumno será notificado."
         );
         if (!ok) return;
-        // simulación
-        state.sessions = state.sessions.filter((x) => x.id !== s.id);
-        renderSessions();
-        toast("Sesión cancelada", "danger");
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades/${s.id}`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          if (response.ok) {
+            // Actualizar estado local y UI
+            state.sessions = state.sessions.filter((x) => x.id !== s.id);
+            renderSessions();
+            toast("Sesión cancelada correctamente", "success");
+          } else {
+            const res = await response.json();
+            toast(res.error || "Error al cancelar la sesión", "danger");
+          }
+        } catch (error) {
+          console.error("Error al cancelar sesión:", error);
+          toast("Error de conexión", "danger");
+        }
       }
     );
 

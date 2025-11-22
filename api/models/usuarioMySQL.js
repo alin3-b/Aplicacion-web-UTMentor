@@ -538,3 +538,11 @@ export async function getDisponibilidades(id_asesor, filtros = {}) {
   const [rows] = await mysqlPool.query(query, params);
   return rows;
 }
+
+export async function deleteDisponibilidad(id_disponibilidad, id_asesor) {
+  const [result] = await mysqlPool.query(
+    "DELETE FROM disponibilidades WHERE id_disponibilidad = ? AND fk_asesor = ?",
+    [id_disponibilidad, id_asesor]
+  );
+  return result.affectedRows > 0;
+}
