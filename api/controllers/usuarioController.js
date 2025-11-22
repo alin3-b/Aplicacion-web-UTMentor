@@ -10,6 +10,7 @@ import {
   getUsuarioCheckByCorreo,
   getUserByEmail,
   getRolesByUserId,
+  updateAsesorProfile,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 
@@ -461,6 +462,69 @@ export async function loginUsuario(req, res) {
       success: false,
       error: "Error interno del servidor",
     });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/asesores/{id}:
+ *   put:
+ *     summary: Actualiza la información de un asesor
+ *     tags: [Asesores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre_completo:
+ *                 type: string
+ *               semestre:
+ *                 type: integer
+ *               fk_carrera:
+ *                 type: integer
+ *               password:
+ *                 type: string
+ *               ruta_foto:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Asesor actualizado correctamente
+ *       400:
+ *         description: Error en la solicitud
+ *       404:
+ *         description: Asesor no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function actualizarAsesor(req, res) {
+  const { id } = req.params;
+  const { nombre_completo, semestre, fk_carrera, password, ruta_foto } = req.body;
+
+  try {
+    const data = { nombre_completo, semestre, fk_carrera, ruta_foto };
+
+    if (password) {
+      data.password_hash = await bcrypt.hash(password, 10);
+    }
+
+    const updated = await updateAsesorProfile(id, data);
+
+    if (!updated) {
+      return res.status(404).json({ error: "Asesor no encontrado o sin cambios" });
+    }
+
+    res.json({ message: "Asesor actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar asesor:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 
