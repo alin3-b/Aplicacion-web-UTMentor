@@ -257,9 +257,25 @@ window.addEventListener("DOMContentLoaded", async () => {
     // location.href = "panelAsesorado.html";
   });
   $('[data-action="logout"]').addEventListener("click", async () => {
-    if (await confirmDialog("¿Deseas cerrar sesión?")) {
-      toast("Sesión cerrada");
-      // location.href = "iniciarSesion.html";
+    if (await confirmDialog("¿Estás seguro de cerrar sesión?")) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}/logout`, {
+          method: "POST",
+        });
+
+        if (response.ok) {
+          toast("Sesión cerrada correctamente", "success");
+          setTimeout(() => {
+            window.location.href = "principal.html";
+          }, 1000);
+        } else {
+          console.warn("Error al cerrar sesión en servidor");
+          window.location.href = "principal.html";
+        }
+      } catch (error) {
+        console.error("Error al cerrar sesión:", error);
+        window.location.href = "principal.html";
+      }
     }
   });
   $('[data-action="delete-account"]').addEventListener("click", async () => {
