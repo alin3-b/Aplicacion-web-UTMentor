@@ -630,13 +630,48 @@ function loadProfile() {
   $("#profileAvatar").onclick = () => $("#photoInput").click();
 
   // foto
-  $("#photoInput").onchange = (e) => {
+  $("#photoInput").onchange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    $("#profileAvatar").src = url;
-    $("#chipAvatar").src = url;
-    toast("Foto actualizada");
+
+    // Preview inmediato
+    const previewUrl = URL.createObjectURL(file);
+    $("#profileAvatar").src = previewUrl;
+
+    // Subir a la API
+    const formData = new FormData();
+    formData.append('foto', file);
+
+    try {
+      // Indicador visual simple (opacidad)
+      $("#profileAvatar").style.opacity = "0.5";
+      toast("Subiendo foto...", "info");
+
+      const response = await fetch(`${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/foto`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        state.profile.avatar = result.url;
+        $("#profileAvatar").src = result.url;
+        $("#chipAvatar").src = result.url;
+        toast("Foto actualizada correctamente", "success");
+      } else {
+        throw new Error(result.error || "Error al subir foto");
+      }
+    } catch (error) {
+      console.error("Error subiendo foto:", error);
+      toast("Error al subir la foto", "danger");
+      // Revertir imagen
+      $("#profileAvatar").src = state.profile.avatar;
+    } finally {
+      $("#profileAvatar").style.opacity = "1";
+      // Limpiar input para permitir subir la misma foto si se desea
+      $("#photoInput").value = "";
+    }
   };
 
   // Eliminar foto

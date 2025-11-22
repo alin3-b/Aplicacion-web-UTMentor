@@ -7,6 +7,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 import { mysqlPool, testMySQLConnection } from "./config/db.js";
+import { initMinio } from "./config/minio.js";
 
 // IMPORTAR RUTAS
 import usuarioRoutes from "./routes/usuarioRoutes.js";
@@ -60,6 +61,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // === CONEXIÓN A BASE DE DATOS ===
 await testMySQLConnection();
+
+// === INICIALIZAR MINIO ===
+await initMinio();
 
 // === RUTA RAÍZ ===
 app.get("/", (req, res) => {
