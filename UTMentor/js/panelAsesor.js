@@ -45,6 +45,7 @@ async function cargarPerfilCompletoDesdeAPI() {
       state.profile.advisoriesGiven = result.numero_sesiones;
       state.profile.avatar = result.ruta_foto || "../imagenes/adviser1.jpg";
       state.profile.stars = result.puntuacion_promedio;
+      state.profile.roles = result.roles || [];
 
       // Actualizar estado de temas
       if (result.temas && Array.isArray(result.temas)) {
@@ -61,6 +62,21 @@ async function cargarPerfilCompletoDesdeAPI() {
       $("#chipName").textContent = state.profile.name;
       $("#chipCareer").textContent = `${state.profile.career} · ${state.profile.semester}º`;
       $("#chipAvatar").src = state.profile.avatar;
+
+      // Lógica del botón de cambio de rol
+      const switchBtn = $('[data-action="switch-role"]');
+      if (switchBtn) {
+        // Solo mostrar si tiene más de un rol (ej. Asesor y Estudiante)
+        if (state.profile.roles.length > 1) {
+          switchBtn.hidden = false;
+          switchBtn.onclick = () => {
+            // Redirigir preservando el ID
+            window.location.href = `panelAsesorado.html?id=${CURRENT_ASESOR_ID}`;
+          };
+        } else {
+          switchBtn.hidden = true;
+        }
+      }
 
       // Si estamos en la vista de perfil, recargar formulario
       if ($("#view-perfil").classList.contains("is-visible")) {
@@ -162,6 +178,7 @@ const state = {
     email: "mario@utmentor.demo",
     avatar: "../imagenes/adviser1.jpg",
     advisoriesGiven: 24,
+    roles: [],
   },
   topics: [
     { topic: "Cálculo diferencial", area: "Matemáticas" },
@@ -251,11 +268,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 
   // acciones laterales
-  $('[data-action="switch-role"]').addEventListener("click", () => {
-    toast("Cambiando a panel de asesorado…");
-    // redirige en producción
-    // location.href = "panelAsesorado.html";
-  });
+  // El botón switch-role se maneja dinámicamente en cargarPerfilCompletoDesdeAPI
+  
   $('[data-action="logout"]').addEventListener("click", async () => {
     if (await confirmDialog("¿Estás seguro de cerrar sesión?")) {
       try {
@@ -264,7 +278,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (response.ok) {
-          toast("Sesión cerrada correctamente", "success");
+          toast("Sesión cerrada exitosamente", "success");
           setTimeout(() => {
             window.location.href = "principal.html";
           }, 1000);
