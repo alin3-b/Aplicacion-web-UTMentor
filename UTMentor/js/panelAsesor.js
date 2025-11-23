@@ -24,14 +24,57 @@ function toggleLoading(elementId, show = true, text = "Cargando...") {
 
 /* ========== API INTEGRATION ========= */
 const API_BASE_URL = "http://localhost:3000/api";
-const CURRENT_ASESOR_ID = 11; // En producción, esto vendría del JWT o sesión
+
+// Obtener usuario del localStorage
+const usuarioLocal = JSON.parse(localStorage.getItem("usuario") || "{}");
+const CURRENT_ASESOR_ID = usuarioLocal.id || null;
+const AUTH_TOKEN = localStorage.getItem("token");
+
+// Verificar autenticación básica
+if (!CURRENT_ASESOR_ID || !AUTH_TOKEN) {
+  window.location.href = "iniciarSesion.html";
+}
+
+/**
+ * Helper para fetch con autenticación
+ */
+async function authFetch(url, options = {}) {
+  const headers = {
+    ...options.headers,
+    "Authorization": `Bearer ${AUTH_TOKEN}`
+  };
+  
+  // Si es POST/PUT y hay body, asegurar Content-Type JSON si no es FormData
+  if (options.body && !(options.body instanceof FormData) && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const config = {
+    ...options,
+    headers
+  };
+
+  const response = await fetch(url, config);
+  
+  if (response.status === 401 || response.status === 403) {
+    // Token inválido o expirado
+    console.warn("Sesión expirada o inválida");
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("token");
+    localStorage.removeItem("isLoggedIn");
+    window.location.href = "iniciarSesion.html";
+    throw new Error("Sesión expirada");
+  }
+
+  return response;
+}
 
 /**
  * Cargar perfil completo del asesor (incluye temas) desde la API
  */
 async function cargarPerfilCompletoDesdeAPI() {
   try {
-    const response = await fetch(
+    const response = await authFetch(
       `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`
     );
     const result = await response.json();
@@ -109,7 +152,7 @@ async function cargarSesionesDesdeAPI() {
     const fechaDesde = currentMonday.toISOString().slice(0, 10);
     const fechaHasta = addDays(currentMonday, 6).toISOString().slice(0, 10);
 
-    const response = await fetch(
+    const response = await authFetch(
       `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`
     );
     const result = await response.json();
@@ -273,21 +316,30 @@ window.addEventListener("DOMContentLoaded", async () => {
   $('[data-action="logout"]').addEventListener("click", async () => {
     if (await confirmDialog("¿Estás seguro de cerrar sesión?")) {
       try {
-        const response = await fetch(`${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}/logout`, {
+        const response = await authFetch(`${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}/logout`, {
           method: "POST",
         });
 
+        // Limpiar localStorage independientemente de la respuesta del servidor
+        localStorage.removeItem("usuario");
+        localStorage.removeItem("token");
+        localStorage.removeItem("isLoggedIn");
+
         if (response.ok) {
           toast("Sesión cerrada exitosamente", "success");
-          setTimeout(() => {
-            window.location.href = "principal.html";
-          }, 1000);
         } else {
           console.warn("Error al cerrar sesión en servidor");
-          window.location.href = "principal.html";
         }
+        
+        setTimeout(() => {
+          window.location.href = "principal.html";
+        }, 1000);
+
       } catch (error) {
         console.error("Error al cerrar sesión:", error);
+        localStorage.removeItem("usuario");
+        localStorage.removeItem("token");
+        localStorage.removeItem("isLoggedIn");
         window.location.href = "principal.html";
       }
     }
@@ -297,12 +349,18 @@ window.addEventListener("DOMContentLoaded", async () => {
       await confirmDialog("Esto eliminará tu perfil y tus datos. ¿Continuar?")
     ) {
       try {
-        const response = await fetch(`${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}`, {
+        const response = await authFetch(`${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}`, {
           method: "DELETE",
         });
 
         if (response.ok) {
           toast("Perfil eliminado correctamente", "success");
+          
+          // Limpiar sesión local
+          localStorage.removeItem("usuario");
+          localStorage.removeItem("token");
+          localStorage.removeItem("isLoggedIn");
+
           // Redirigir al inicio o login después de un breve retraso
           setTimeout(() => {
             window.location.href = "iniciarSesion.html";
@@ -400,7 +458,7 @@ function renderSessions() {
         if (!ok) return;
 
         try {
-          const response = await fetch(
+          const response = await authFetch(
             `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades/${s.id}`,
             {
               method: "DELETE",
@@ -537,13 +595,10 @@ function preparePublishForm() {
       }
 
       // Llamar a la API para crear la disponibilidad
-      const response = await fetch(
+      const response = await authFetch(
         `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify(disponibilidadData),
         }
       );
@@ -689,7 +744,7 @@ function loadProfile() {
       $("#profileAvatar").style.opacity = "0.5";
       toast("Subiendo foto...", "info");
 
-      const response = await fetch(`${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/foto`, {
+      const response = await authFetch(`${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/foto`, {
         method: 'POST',
         body: formData
       });
@@ -725,11 +780,8 @@ function loadProfile() {
 
         try {
           // Actualizar en backend
-          const response = await fetch(`${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`, {
+          const response = await authFetch(`${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`, {
             method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
             body: JSON.stringify({ ruta_foto: defaultAvatar })
           });
 
@@ -789,13 +841,10 @@ function loadProfile() {
           temas: list
         };
 
-        const response = await fetch(
+        const response = await authFetch(
           `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`,
           {
             method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
             body: JSON.stringify(updateData),
           }
         );
