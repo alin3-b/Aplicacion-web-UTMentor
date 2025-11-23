@@ -11,11 +11,13 @@ import {
   getUsuarioCheckByCorreo,
   getUserByEmail,
   getRolesByUserId,
+  updateUsuarioProfile,
   updateAsesorProfile,
   createDisponibilidad,
   getDisponibilidades,
   deleteDisponibilidad,
   deleteUsuario,
+  getAsesoriasPorAsesorado,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 import minioClient, { bucketName } from "../config/minio.js";
@@ -887,6 +889,98 @@ export async function obtenerUsuarioPorId(req, res) {
     res.json(usuario);
   } catch (error) {
     console.error("Error al obtener usuario:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}:
+ *   put:
+ *     summary: Actualiza la información de un usuario (asesorado)
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre_completo:
+ *                 type: string
+ *               semestre:
+ *                 type: integer
+ *               fk_carrera:
+ *                 type: integer
+ *               password:
+ *                 type: string
+ *               ruta_foto:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado correctamente
+ *       400:
+ *         description: Error en la solicitud
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function actualizarUsuarioController(req, res) {
+  const { id } = req.params;
+  const { nombre_completo, semestre, fk_carrera, password, ruta_foto } = req.body;
+
+  try {
+    const data = { nombre_completo, semestre, fk_carrera, ruta_foto };
+
+    if (password) {
+      data.password_hash = await bcrypt.hash(password, 10);
+    }
+
+    const updated = await updateUsuarioProfile(id, data);
+
+    if (!updated) {
+      return res.status(404).json({ error: "Usuario no encontrado o sin cambios" });
+    }
+
+    res.json({ message: "Usuario actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}/asesorias:
+ *   get:
+ *     summary: Obtiene las asesorías programadas para un asesorado
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de asesorías
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function listarAsesoriasAsesorado(req, res) {
+  const { id } = req.params;
+  try {
+    const asesorias = await getAsesoriasPorAsesorado(id);
+    res.json(asesorias);
+  } catch (error) {
+    console.error("Error al obtener asesorías del asesorado:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }

@@ -371,6 +371,7 @@ export async function getUsuarioById(id) {
       u.nombre_completo,
       u.correo,
       u.semestre,
+      u.fk_carrera,
       c.nombre_carrera
     FROM usuarios u
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
@@ -393,6 +394,55 @@ export async function getRolesByUserId(idUsuario) {
 
   // Devuelve un array de IDs: [1] o [1,2]
   return rows.map(r => r.id_rol);
+}
+
+export async function updateUsuarioProfile(id_usuario, data) {
+  const { nombre_completo, semestre, fk_carrera, password_hash, ruta_foto } = data;
+
+  const conn = await mysqlPool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const updates = [];
+    const params = [];
+
+    if (nombre_completo) {
+      updates.push("nombre_completo = ?");
+      params.push(nombre_completo);
+    }
+    if (semestre) {
+      updates.push("semestre = ?");
+      params.push(semestre);
+    }
+    if (fk_carrera) {
+      updates.push("fk_carrera = ?");
+      params.push(fk_carrera);
+    }
+    if (password_hash) {
+      updates.push("password_hash = ?");
+      params.push(password_hash);
+    }
+    if (ruta_foto) {
+      updates.push("ruta_foto = ?");
+      params.push(ruta_foto);
+    }
+
+    if (updates.length > 0) {
+      params.push(id_usuario);
+      await conn.query(
+        `UPDATE usuarios SET ${updates.join(", ")} WHERE id_usuario = ?`,
+        params
+      );
+    }
+
+    await conn.commit();
+    return true;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
 }
 
 export async function updateAsesorProfile(id_asesor, data) {
@@ -570,4 +620,27 @@ export async function deleteUsuario(id_usuario) {
     [id_usuario]
   );
   return result.affectedRows > 0;
+}
+
+export async function getAsesoriasPorAsesorado(id_estudiante) {
+  const [rows] = await mysqlPool.query(`
+    SELECT 
+      i.id_inscripcion,
+      i.estado,
+      d.fecha_inicio,
+      d.fecha_fin,
+      d.modalidad,
+      d.tipo_sesion,
+      d.precio,
+      t.nombre_tema,
+      u.nombre_completo AS nombre_asesor,
+      u.ruta_foto AS foto_asesor
+    FROM inscripciones_sesion i
+    JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad
+    JOIN usuarios u ON d.fk_asesor = u.id_usuario
+    LEFT JOIN temas t ON d.fk_tema = t.id_tema
+    WHERE i.fk_asesorado = ?
+    ORDER BY d.fecha_inicio ASC
+  `, [id_estudiante]);
+  return rows;
 }

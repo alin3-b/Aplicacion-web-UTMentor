@@ -17,6 +17,8 @@ import {
   eliminarUsuarioController,
   cerrarSesion,
   obtenerUsuarioPorId,
+  actualizarUsuarioController,
+  listarAsesoriasAsesorado,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -67,6 +69,12 @@ router.get("/check-email", checkEmailController);
 
 // === OBTENER USUARIO POR ID ===
 router.get("/:id", obtenerUsuarioPorId);
+
+// === ACTUALIZAR USUARIO (ASESORADO) ===
+router.put("/:id", actualizarUsuarioController);
+
+// === LISTAR ASESORÍAS DE UN ASESORADO ===
+router.get("/:id/asesorias", listarAsesoriasAsesorado);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");

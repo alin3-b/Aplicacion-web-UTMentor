@@ -180,7 +180,7 @@ function renderSessions(){
     });
 
     li.querySelector('[data-action="cancel"]').addEventListener("click", async ()=>{
-      const ok = await confirmDialog("¿Cancelar esta sesión? El asesor será notificado.");
+      const ok = await confirmDialog("¿Estas seguro de cancelar esta asesoría?");
       if (!ok) return;
 
       // Simulación de cancelación
@@ -293,6 +293,7 @@ async function loadProfile(){
       state.profile.email = user.correo;
       state.profile.semester = user.semestre;
       state.profile.career = user.nombre_carrera || "";
+      state.profile.fk_carrera = user.fk_carrera;
       
       // Actualizar chip del header
       $("#chipName").textContent = state.profile.name;
@@ -305,18 +306,39 @@ async function loadProfile(){
 
   $("#profileAvatar").src       = state.profile.avatar;
   $("#pName").value             = state.profile.name;
-  $("#pCareer").value           = state.profile.career;
+  $("#pCareer").value           = state.profile.fk_carrera || "";
   $("#pSemester").value         = state.profile.semester;
   $("#pEmail").value            = state.profile.email;
   // $("#stars").title             = `${state.profile.stars} / 5`; // Removed as it's not in the HTML
 
-  $("#photoInput").onchange = (e)=>{
+  $("#photoInput").onchange = async (e)=>{
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    $("#profileAvatar").src = url;
-    $("#chipAvatar").src    = url;
-    toast("Foto actualizada");
+
+    const formData = new FormData();
+    formData.append("foto", file);
+
+    try {
+      toast("Subiendo foto...");
+      const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/asesores/1/foto`, {
+        method: "POST",
+        body: formData
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // data.url contiene la URL de la imagen en MinIO (o local)
+        $("#profileAvatar").src = data.url;
+        $("#chipAvatar").src    = data.url;
+        toast("Foto actualizada", "success");
+      } else {
+        const err = await res.json();
+        toast(err.error || "Error al subir foto", "danger");
+      }
+    } catch (error) {
+      console.error("Error subiendo foto:", error);
+      toast("Error de conexión", "danger");
+    }
   };
   
   const btnDelete = $("#btnDeletePhoto");
@@ -332,24 +354,57 @@ async function loadProfile(){
       };
   }
 
-  $("#profileForm").onsubmit = (e)=>{
+  $("#profileForm").onsubmit = async (e)=>{
     e.preventDefault();
     const name     = $("#pName").value.trim();
-    const career   = $("#pCareer").value.trim();
+    const careerId = Number($("#pCareer").value);
     const semester = Number($("#pSemester").value);
     const password = $("#pPassword").value;
 
-    if (!name || !career || !semester){
+    if (!name || !careerId || !semester){
       toast("Completa los campos obligatorios","danger");
       return;
     }
-    state.profile.name     = name;
-    state.profile.career   = career;
-    state.profile.semester = semester;
-    $("#chipName").textContent   = name;
-    $("#chipCareer").textContent = `${career} · ${semester}º`;
-    if (password) toast("Contraseña actualizada","success");
-    toast("Perfil guardado","success");
-    $("#pPassword").value = "";
+
+    // Preparamos el payload
+    const payload = {
+      nombre_completo: name,
+      semestre: semester,
+      fk_carrera: careerId
+    };
+    if (password) {
+      payload.password = password;
+    }
+
+    try {
+      const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        toast("Perfil actualizado correctamente", "success");
+        
+        // Obtener nombre de carrera del select para actualizar UI
+        const careerName = $("#pCareer").options[$("#pCareer").selectedIndex].text;
+
+        // Actualizar estado local y UI
+        state.profile.name = name;
+        state.profile.semester = semester;
+        state.profile.career = careerName;
+        state.profile.fk_carrera = careerId;
+        
+        $("#chipName").textContent   = name;
+        $("#chipCareer").textContent = `${careerName} · ${semester}º`;
+        $("#pPassword").value = "";
+      } else {
+        const err = await res.json();
+        toast(err.error || "Error al actualizar perfil", "danger");
+      }
+    } catch (error) {
+      console.error("Error al guardar perfil:", error);
+      toast("Error de conexión", "danger");
+    }
   };
 }
