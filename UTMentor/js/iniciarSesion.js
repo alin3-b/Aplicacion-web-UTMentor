@@ -359,7 +359,11 @@ window.addEventListener("pageshow", (event) => {
       forgotMsg.textContent = "Se ha enviado un enlace de recuperación a tu correo electrónico.";
       forgotMsg.style.color = "#16a34a"; forgotEmail.value = "";
     } else {
-      forgotEmailError.textContent = data.message || "Error al enviar el correo. Inténtalo de nuevo.";
+      if (data.suggestRegistration) {
+        forgotEmailError.innerHTML = `No existe una cuenta con ese correo electrónico. <a href="registro.html" style="color: var(--brand); text-decoration: underline;">Regístrate aquí</a>.`;
+      } else {
+        forgotEmailError.textContent = data.message || "Error al enviar el correo. Inténtalo de nuevo.";
+      }
     }
 
     forgotSubmit.disabled = false; forgotSubmit.textContent = "Recuperar contraseña";

@@ -1,6 +1,7 @@
 // api/routes/emailRoutes.js
 import express from "express";
 import { enviarCorreoRecuperacion } from "../controllers/emailSender.js";
+import { getUsuarioCheckByCorreo } from "../models/usuarioMySQL.js";
 
 const router = express.Router();
 
@@ -27,7 +28,9 @@ const router = express.Router();
  *       200:
  *         description: Correo enviado exitosamente
  *       400:
- *         description: Email no proporcionado
+ *         description: Email no proporcionado o formato inválido
+ *       404:
+ *         description: No existe una cuenta con ese correo electrónico
  *       500:
  *         description: Error al enviar el correo
  */
@@ -48,6 +51,16 @@ router.post("/recuperar-password", async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "El formato del correo electrónico no es válido",
+      });
+    }
+
+    // Verificar si el correo existe en la base de datos
+    const existeUsuario = await getUsuarioCheckByCorreo(email);
+    if (!existeUsuario) {
+      return res.status(404).json({
+        success: false,
+        message: "No existe una cuenta con ese correo electrónico",
+        suggestRegistration: true
       });
     }
 
