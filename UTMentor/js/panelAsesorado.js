@@ -283,7 +283,26 @@ function renderFavorites() {
 }
 
 /* ===== Perfil ===== */
-function loadProfile(){
+async function loadProfile(){
+  try {
+    // Consumir endpoint para usuario ID=1
+    const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1`);
+    if (res.ok) {
+      const user = await res.json();
+      state.profile.name = user.nombre_completo;
+      state.profile.email = user.correo;
+      state.profile.semester = user.semestre;
+      state.profile.career = user.nombre_carrera || "";
+      
+      // Actualizar chip del header
+      $("#chipName").textContent = state.profile.name;
+      $("#chipCareer").textContent = `${state.profile.career} · ${state.profile.semester}º`;
+    }
+  } catch (error) {
+    console.error("Error cargando perfil:", error);
+    toast("Error al cargar datos del perfil", "danger");
+  }
+
   $("#profileAvatar").src       = state.profile.avatar;
   $("#pName").value             = state.profile.name;
   $("#pCareer").value           = state.profile.career;
