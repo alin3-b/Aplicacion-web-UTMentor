@@ -363,6 +363,23 @@ export async function getUserByEmail(correo) {
   return rows[0] || null;
 }
 
+export async function getUsuarioById(id) {
+  const [rows] = await mysqlPool.query(
+    `
+    SELECT 
+      u.id_usuario,
+      u.nombre_completo,
+      u.correo,
+      u.semestre,
+      c.nombre_carrera
+    FROM usuarios u
+    LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
+    WHERE u.id_usuario = ? AND u.es_activo = TRUE
+    `,
+    [id]
+  );
+  return rows[0] || null;
+}
 
 export async function getRolesByUserId(idUsuario) {
   const [rows] = await mysqlPool.query(

@@ -16,6 +16,7 @@ import {
   eliminarDisponibilidadController,
   eliminarUsuarioController,
   cerrarSesion,
+  obtenerUsuarioPorId,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -63,6 +64,9 @@ router.get("/temas/populares", listarTemasPopulares);
 router.get("/metricas", obtenerMetricas);
 
 router.get("/check-email", checkEmailController);
+
+// === OBTENER USUARIO POR ID ===
+router.get("/:id", obtenerUsuarioPorId);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");
