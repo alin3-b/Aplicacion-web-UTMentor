@@ -32,10 +32,7 @@ const state = {
     { id: 1, tutor: "Mario Ortega", topic: "Derivadas parciales", date: "10 Oct", avatar: "../imagenes/adviser1.jpg" },
     { id: 2, tutor: "Ana Ruiz", topic: "Física I", date: "08 Oct", avatar: "../imagenes/adviser3.jpg" }
   ],
-  favorites: [
-    { id: 101, name: "Mario Ortega", career: "Ing. Mecatrónica", avatar: "../imagenes/adviser1.jpg" },
-    { id: 102, name: "Mailén Jasso", career: "Ing. Sistemas", avatar: "../imagenes/adviser3.jpg" }
-  ]
+  favorites: [] // Se llenará desde el backend
 };
 
 /* ===== Semana y helpers de fecha ===== */
@@ -155,7 +152,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
       
       if (id === "sesiones") fetchSessions(); // Recargar al volver a la vista
       if (id === "calificar") renderRatings();
-      if (id === "favoritos") renderFavorites();
+      if (id === "favoritos") fetchFavorites();
       if (id === "perfil")   loadProfile();
     });
   });
@@ -309,10 +306,8 @@ function openRatingModal(ratingItem) {
         const starsInput = dlg.querySelector('input[name="rating"]:checked');
         const stars = starsInput ? parseInt(starsInput.value) : 0;
         
-        if (stars === 0) {
-            toast("Por favor selecciona una calificación", "danger");
-            return;
-        }
+        // Si no selecciona estrellas, se envía 0.
+        // if (stars === 0) { ... } // Eliminamos la validación que impedía enviar 0.
 
         try {
             // Usamos el endpoint para calificar al asesor (busca la sesión pendiente automáticamente)
@@ -327,7 +322,9 @@ function openRatingModal(ratingItem) {
             });
 
             if (res.ok) {
-                toast("¡Gracias por tu calificación!", "success");
+                const msg = stars === 0 ? "Calificación enviada: 0 estrellas" : "¡Gracias por tu calificación!";
+                toast(msg, stars === 0 ? "info" : "success");
+                
                 // Eliminar de la lista localmente
                 state.ratings = state.ratings.filter(r => r.id !== ratingItem.id);
                 renderRatings();
@@ -344,6 +341,27 @@ function openRatingModal(ratingItem) {
 }
 
 /* ===== Favoritos ===== */
+async function fetchFavorites() {
+  try {
+    const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/favoritos`);
+    if (!res.ok) throw new Error("Error al obtener favoritos");
+    const data = await res.json();
+    
+    // Mapear datos del backend al formato del estado
+    state.favorites = data.map(f => ({
+      id: f.id_asesor,
+      name: f.nombre_completo,
+      career: f.nombre_carrera || "Sin carrera",
+      avatar: f.ruta_foto || "../imagenes/logo.png"
+    }));
+    
+    renderFavorites();
+  } catch (error) {
+    console.error("Error fetching favorites:", error);
+    toast("Error al cargar favoritos", "danger");
+  }
+}
+
 function renderFavorites() {
     const ul = $("#favoritesList");
     ul.innerHTML = "";
@@ -366,9 +384,23 @@ function renderFavorites() {
 
       li.querySelector('[data-action="remove-fav"]').onclick = async () => {
           if(await confirmDialog(`¿Eliminar a ${f.name} de favoritos?`)) {
-              state.favorites = state.favorites.filter(x => x.id !== f.id);
-              renderFavorites();
-              toast("Eliminado de favoritos");
+              try {
+                  const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/favoritos/${f.id}`, {
+                      method: "DELETE"
+                  });
+
+                  if (res.ok) {
+                      state.favorites = state.favorites.filter(x => x.id !== f.id);
+                      renderFavorites();
+                      toast("Eliminado de favoritos", "success");
+                  } else {
+                      const err = await res.json();
+                      toast(err.error || "Error al eliminar favorito", "danger");
+                  }
+              } catch (error) {
+                  console.error(error);
+                  toast("Error de conexión", "danger");
+              }
           }
       };
       ul.appendChild(li);
