@@ -27,7 +27,15 @@ const state = {
     email: "lucia@utmentor.demo",
     avatar: "../imagenes/adviser2.jpg"
   },
-  sessions: [] // se llena según semana
+  sessions: [], // se llena según semana
+  ratings: [
+    { id: 1, tutor: "Mario Ortega", topic: "Derivadas parciales", date: "10 Oct", avatar: "../imagenes/adviser1.jpg" },
+    { id: 2, tutor: "Ana Ruiz", topic: "Física I", date: "08 Oct", avatar: "../imagenes/adviser3.jpg" }
+  ],
+  favorites: [
+    { id: 101, name: "Mario Ortega", career: "Ing. Mecatrónica", avatar: "../imagenes/adviser1.jpg" },
+    { id: 102, name: "Mailén Jasso", career: "Ing. Sistemas", avatar: "../imagenes/adviser3.jpg" }
+  ]
 };
 
 /* ===== Semana y helpers de fecha ===== */
@@ -90,16 +98,23 @@ window.addEventListener("DOMContentLoaded", ()=>{
       const id = btn.dataset.view;
       $$(".view").forEach(v=>v.classList.remove("is-visible"));
       $(`#view-${id}`).classList.add("is-visible");
+      
       if (id === "sesiones") renderSessions();
+      if (id === "calificar") renderRatings();
+      if (id === "favoritos") renderFavorites();
       if (id === "perfil")   loadProfile();
     });
   });
 
-  // Acciones laterales
-  $('[data-action="switch-role"]').addEventListener("click", ()=>{
-    toast("Cambiando al panel de asesor…");
-    // location.href = "panelAsesor.html";
-  });
+  // Cambio de rol
+  const btnSwitch = $("#btnSwitchRole");
+  if(btnSwitch) {
+      btnSwitch.addEventListener("click", ()=>{
+        toast("Cambiando a vista de Asesor...");
+        setTimeout(() => location.href = "panelAsesor.html", 800);
+      });
+  }
+
   $('[data-action="logout"]').addEventListener("click", async ()=>{
     if (await confirmDialog("¿Deseas cerrar sesión?")){
       toast("Sesión cerrada");
@@ -178,6 +193,95 @@ function renderSessions(){
   });
 }
 
+/* ===== Calificaciones ===== */
+function renderRatings() {
+    const ul = $("#ratingList");
+    ul.innerHTML = "";
+    if (!state.ratings.length) {
+      ul.innerHTML = '<p class="muted">No tienes calificaciones pendientes.</p>';
+      return;
+    }
+    const tpl = $("#ratingCardTpl");
+    state.ratings.forEach(r => {
+      const li = tpl.content.firstElementChild.cloneNode(true);
+      li.querySelector('[data-slot="tutorName"]').textContent = r.tutor;
+      li.querySelector('[data-slot="topic"]').textContent = r.topic;
+      li.querySelector('[data-slot="date"]').textContent = r.date;
+      
+      const img = li.querySelector('[data-slot="avatar"]');
+      if(img) img.src = r.avatar || "../imagenes/logo.png";
+
+      // Botones
+      li.querySelector('[data-action="rate"]').onclick = () => openRatingModal(r);
+      
+      li.querySelector('[data-action="skip"]').onclick = async () => {
+          if(await confirmDialog("¿Omitir calificación? Desaparecerá de la lista.")) {
+              state.ratings = state.ratings.filter(x => x.id !== r.id);
+              renderRatings();
+              toast("Calificación omitida");
+          }
+      };
+
+      ul.appendChild(li);
+    });
+}
+
+function openRatingModal(ratingItem) {
+    const dlg = $("#ratingDlg");
+    $("#ratingTutorName").textContent = ratingItem.tutor;
+    
+    // Reset form
+    dlg.querySelector("form").reset();
+    
+    dlg.showModal();
+    
+    $("#btnSubmitRating").onclick = (e) => {
+        e.preventDefault(); // Prevent form submission
+        const starsInput = dlg.querySelector('input[name="rating"]:checked');
+        const stars = starsInput ? parseInt(starsInput.value) : 0;
+        
+        // Simular envío
+        const msg = stars === 0 ? "Calificación enviada: 0 estrellas" : "¡Gracias por tu calificación!";
+        toast(msg, stars === 0 ? "info" : "success");
+
+        state.ratings = state.ratings.filter(r => r.id !== ratingItem.id);
+        renderRatings();
+        dlg.close();
+    };
+}
+
+/* ===== Favoritos ===== */
+function renderFavorites() {
+    const ul = $("#favoritesList");
+    ul.innerHTML = "";
+    if (!state.favorites.length) {
+      ul.innerHTML = '<p class="muted">No tienes asesores favoritos.</p>';
+      return;
+    }
+    const tpl = $("#favoriteCardTpl");
+    state.favorites.forEach(f => {
+      const li = tpl.content.firstElementChild.cloneNode(true);
+      li.querySelector('[data-slot="name"]').textContent = f.name;
+      li.querySelector('[data-slot="career"]').textContent = f.career;
+      const img = li.querySelector('[data-slot="avatar"]');
+      if(img) img.src = f.avatar;
+      
+      li.querySelector('[data-action="view-profile"]').onclick = () => {
+          toast(`Navegando al perfil de ${f.name}...`);
+          // location.href = `perfilAsesor.html?id=${f.id}`;
+      };
+
+      li.querySelector('[data-action="remove-fav"]').onclick = async () => {
+          if(await confirmDialog(`¿Eliminar a ${f.name} de favoritos?`)) {
+              state.favorites = state.favorites.filter(x => x.id !== f.id);
+              renderFavorites();
+              toast("Eliminado de favoritos");
+          }
+      };
+      ul.appendChild(li);
+    });
+}
+
 /* ===== Perfil ===== */
 function loadProfile(){
   $("#profileAvatar").src       = state.profile.avatar;
@@ -185,7 +289,7 @@ function loadProfile(){
   $("#pCareer").value           = state.profile.career;
   $("#pSemester").value         = state.profile.semester;
   $("#pEmail").value            = state.profile.email;
-  $("#stars").title             = `${state.profile.stars} / 5`;
+  // $("#stars").title             = `${state.profile.stars} / 5`; // Removed as it's not in the HTML
 
   $("#photoInput").onchange = (e)=>{
     const file = e.target.files?.[0];
@@ -195,6 +299,19 @@ function loadProfile(){
     $("#chipAvatar").src    = url;
     toast("Foto actualizada");
   };
+  
+  const btnDelete = $("#btnDeletePhoto");
+  if(btnDelete) {
+      btnDelete.onclick = async (e) => {
+          e.preventDefault();
+          if(await confirmDialog("¿Eliminar tu foto de perfil?")) {
+              const defaultImg = "../imagenes/logo.png"; // Fallback image
+              $("#profileAvatar").src = defaultImg;
+              $("#chipAvatar").src = defaultImg;
+              toast("Foto eliminada");
+          }
+      };
+  }
 
   $("#profileForm").onsubmit = (e)=>{
     e.preventDefault();

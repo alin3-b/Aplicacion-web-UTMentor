@@ -8,6 +8,7 @@
   <!-- Reutiliza el tema claro del panel del asesor -->
   <link rel="preload" href="../css/panelAsesor.css" as="style">
   <link rel="stylesheet" href="../css/panelAsesor.css">
+  <link rel="stylesheet" href="../css/panelAsesorado.css">
 </head>
 <body>
   <!-- Lateral -->
@@ -20,14 +21,17 @@
       <button class="side-link is-active" data-view="sesiones">
         <span>Mis sesiones</span>
       </button>
-      <button class="side-link" href="explorar.html">
+      <button class="side-link" onclick="location.href='explorar.html'">
         <span>Explorar</span>
       </button>
-      <button class="side-link" data-view="perfil">
-        <span>Perfil</span>
+      <button class="side-link" data-view="calificar">
+        <span>Calificar asesores</span>
       </button>
-      <button class="side-link" data-action="switch-role">
-        <span>Cambiar a asesor</span>
+      <button class="side-link" data-view="favoritos">
+        <span>Asesores favoritos</span>
+      </button>
+      <button class="side-link" data-view="perfil">
+        <span>Editar perfil</span>
       </button>
     </nav>
 
@@ -48,27 +52,27 @@
         </div>
       </div>
 
-      <div class="week-controls" aria-label="Selector semanal">
-        <button class="btn ghost" id="prevWeek" aria-label="Semana anterior">←</button>
-        <div class="week-label" id="weekLabel" aria-live="polite"></div>
-        <button class="btn ghost" id="nextWeek" aria-label="Semana siguiente">→</button>
-        <button class="btn ghost" id="thisWeek">Esta semana</button>
-      </div>
+      <button class="btn ghost" id="btnSwitchRole" title="Cambiar a vista de asesor">
+        <span>Vista: Asesorado</span>
+        <span aria-hidden="true">⇄</span>
+      </button>
     </header>
 
     <!-- Vista: Mis sesiones -->
     <section class="view is-visible" id="view-sesiones" aria-labelledby="h-sesiones">
-      <div class="view-head">
-        <h2 id="h-sesiones" class="h">Mis sesiones</h2>
-        <a class="action-link" href="explorar.html">
-            <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
-                <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Explorar asesores
-        </a>
+      <div class="section-header">
+        <div class="section-info">
+          <h2 id="h-sesiones" class="h">Mis sesiones</h2>
+          <p class="muted">Aquí ves y gestionas las sesiones de <strong>la semana seleccionada</strong>.</p>
+        </div>
+        
+        <div class="week-controls" aria-label="Selector semanal">
+            <button class="btn ghost" id="prevWeek" aria-label="Semana anterior">←</button>
+            <div class="week-label" id="weekLabel" aria-live="polite"></div>
+            <button class="btn ghost" id="nextWeek" aria-label="Semana siguiente">→</button>
+            <button class="btn ghost" id="thisWeek">Esta semana</button>
+        </div>
       </div>
-      <p class="muted">Aquí ves y gestionas las sesiones de <strong>la semana seleccionada</strong>.</p>
 
       <ul class="cards" id="sessionsList" aria-live="polite"></ul>
 
@@ -101,6 +105,56 @@
       </template>
     </section>
 
+    <!-- Vista: Calificar Asesores -->
+    <section class="view" id="view-calificar" aria-labelledby="h-calificar" hidden>
+      <h2 id="h-calificar" class="h">Calificar asesores</h2>
+      <p class="muted">Asesores con los que has tenido sesiones recientemente y están pendientes de calificación.</p>
+      <ul class="cards" id="ratingList">
+        <!-- Se llenará dinámicamente -->
+      </ul>
+      <template id="ratingCardTpl">
+        <li class="card rating-card">
+            <div class="rating-avatar">
+                <img src="" alt="Avatar" data-slot="avatar">
+            </div>
+            <div class="rating-info">
+                <strong data-slot="tutorName">Nombre Asesor</strong>
+                <span data-slot="topic">Tema de la sesión</span>
+                <span class="dim" data-slot="date">Fecha</span>
+            </div>
+            <div class="rating-actions">
+                <button class="btn ghost danger" data-action="skip">Omitir</button>
+                <button class="btn primary" data-action="rate">Calificar</button>
+            </div>
+        </li>
+      </template>
+    </section>
+
+    <!-- Vista: Asesores Favoritos -->
+    <section class="view" id="view-favoritos" aria-labelledby="h-favoritos" hidden>
+      <h2 id="h-favoritos" class="h">Asesores favoritos</h2>
+      <ul class="cards" id="favoritesList">
+        <!-- Se llenará dinámicamente -->
+      </ul>
+      <template id="favoriteCardTpl">
+        <li class="card favorite-card">
+            <div class="fav-avatar">
+                <img src="" alt="Avatar" data-slot="avatar">
+            </div>
+            <div class="fav-info">
+                <strong data-slot="name">Nombre Asesor</strong>
+                <span data-slot="career">Carrera</span>
+            </div>
+            <div class="fav-actions">
+                <button class="btn ghost" data-action="view-profile">Ver perfil</button>
+                <button class="btn danger ghost" data-action="remove-fav" title="Eliminar de favoritos">
+                    Eliminar
+                </button>
+            </div>
+        </li>
+      </template>
+    </section>
+
     <!-- Vista: Perfil -->
     <section class="view" id="view-perfil" aria-labelledby="h-perfil">
       <h2 id="h-perfil" class="h">Perfil</h2>
@@ -108,47 +162,54 @@
       <div class="profile">
         <div class="profile-photo">
           <img id="profileAvatar" src="../imagenes/adviser2.jpg" alt="Foto de perfil" />
-          <label class="btn ghost mt">
-            Cargar foto
-            <input id="photoInput" type="file" accept="image/*" hidden>
-          </label>
+          <div class="mt" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+            <label class="btn ghost">
+                Cargar foto
+                <input id="photoInput" type="file" accept="image/*" hidden>
+            </label>
+            <button class="btn danger ghost" id="btnDeletePhoto" title="Eliminar foto">
+                Eliminar foto
+            </button>
+          </div>
         </div>
 
-        <form id="profileForm" class="form" novalidate>
-          <div class="grid">
+        <div class="profile-content">
+            <form id="profileForm" class="form" novalidate>
+            <div class="grid">
 
-            <label class="field">
-              <span class="label">Nombre completo</span>
-              <input id="pName" type="text" required>
-            </label>
+                <label class="field">
+                <span class="label">Nombre completo</span>
+                <input id="pName" type="text" required>
+                </label>
 
-            <label class="field">
-              <span class="label">Carrera</span>
-              <input id="pCareer" type="text" required>
-            </label>
+                <label class="field">
+                <span class="label">Carrera</span>
+                <input id="pCareer" type="text" required>
+                </label>
 
-            <label class="field">
-              <span class="label">Semestre</span>
-              <input id="pSemester" type="number" min="1" max="12" required>
-            </label>
+                <label class="field">
+                <span class="label">Semestre</span>
+                <input id="pSemester" type="number" min="1" max="12" required>
+                </label>
 
-            <label class="field">
-              <span class="label">Correo electrónico</span>
-              <input id="pEmail" type="email" disabled>
-              <small class="hint">No se puede modificar.</small>
-            </label>
+                <label class="field">
+                <span class="label">Correo electrónico</span>
+                <input id="pEmail" type="email" disabled>
+                <small class="hint">No se puede modificar.</small>
+                </label>
 
-            <label class="field">
-              <span class="label">Contraseña</span>
-              <input id="pPassword" type="password" placeholder="••••••••">
-              <small class="hint">Déjalo vacío para no cambiarla.</small>
-            </label>
-          </div>
+                <label class="field">
+                <span class="label">Contraseña</span>
+                <input id="pPassword" type="password" placeholder="••••••••">
+                <small class="hint">Déjalo vacío para no cambiarla.</small>
+                </label>
+            </div>
 
-          <div class="form-actions">
-            <button class="btn" type="submit">Guardar perfil</button>
-          </div>
-        </form>
+            <div class="form-actions">
+                <button class="btn" type="submit">Guardar perfil</button>
+            </div>
+            </form>
+        </div>
       </div>
     </section>
   </main>
@@ -161,6 +222,31 @@
       <menu>
         <button value="cancel" class="btn ghost">Cancelar</button>
         <button value="ok" class="btn danger">Confirmar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <!-- Modal de Calificación -->
+  <dialog class="modal" id="ratingDlg">
+    <form method="dialog" class="modal-form">
+      <h3 class="h">Calificar sesión</h3>
+      <p>¿Qué tal estuvo la sesión con <strong id="ratingTutorName">Asesor</strong>?</p>
+      
+      <div class="star-rating">
+        <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Excelente">★</label>
+        <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Muy bueno">★</label>
+        <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Bueno">★</label>
+        <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Regular">★</label>
+        <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Malo">★</label>
+      </div>
+
+      <p class="hint" style="color: var(--danger); margin-bottom: 1.5rem;">
+        Nota: Si envías sin seleccionar estrellas, se asignará una calificación de 0 (la peor posible).
+      </p>
+
+      <menu>
+        <button value="cancel" class="btn ghost">Cancelar</button>
+        <button value="submit" class="btn primary" id="btnSubmitRating">Enviar calificación</button>
       </menu>
     </form>
   </dialog>

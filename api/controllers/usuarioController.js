@@ -2,6 +2,7 @@
 import bcrypt from "bcryptjs";
 import {
   getUsuarios,
+  getUsuarioById,
   addUsuario,
   getAllAsesores,
   getAsesorInfo,
@@ -856,6 +857,38 @@ export async function cerrarSesion(req, res) {
   console.log(`Usuario ${id} ha cerrado sesión.`);
 
   res.json({ success: true, message: "Sesión cerrada correctamente" });
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}:
+ *   get:
+ *     summary: Obtiene información básica de un usuario (asesorado)
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Información del usuario
+ *       404:
+ *         description: Usuario no encontrado
+ */
+export async function obtenerUsuarioPorId(req, res) {
+  const { id } = req.params;
+  try {
+    const usuario = await getUsuarioById(id);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    res.json(usuario);
+  } catch (error) {
+    console.error("Error al obtener usuario:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 }
 
 
