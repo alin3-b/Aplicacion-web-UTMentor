@@ -18,6 +18,8 @@ import {
   deleteDisponibilidad,
   deleteUsuario,
   getAsesoriasPorAsesorado,
+  cancelarInscripcion,
+  crearCalificacion,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 import minioClient, { bucketName } from "../config/minio.js";
@@ -981,6 +983,105 @@ export async function listarAsesoriasAsesorado(req, res) {
     res.json(asesorias);
   } catch (error) {
     console.error("Error al obtener asesorías del asesorado:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}/asesorias/{id_asesoria}:
+ *   delete:
+ *     summary: Cancela una asesoría programada
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario (asesorado)
+ *       - in: path
+ *         name: id_asesoria
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la inscripción a cancelar
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               motivo:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Asesoría cancelada correctamente
+ *       404:
+ *         description: Asesoría no encontrada o ya cancelada
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function cancelarAsesoriaController(req, res) {
+  const { id, id_asesoria } = req.params;
+  const { motivo } = req.body;
+
+  try {
+    const success = await cancelarInscripcion(id_asesoria, id, motivo);
+    if (!success) {
+      return res.status(404).json({ error: "Asesoría no encontrada, no pertenece al usuario o ya está cancelada" });
+    }
+    res.json({ message: "Asesoría cancelada correctamente" });
+  } catch (error) {
+    console.error("Error al cancelar asesoría:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/asesorias/{id_inscripcion}/calificar:
+ *   post:
+ *     summary: Califica una asesoría completada
+ *     tags: [Asesorias]
+ *     parameters:
+ *       - in: path
+ *         name: id_inscripcion
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [puntuacion]
+ *             properties:
+ *               puntuacion:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               comentario:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Calificación guardada
+ *       500:
+ *         description: Error interno
+ */
+export async function calificarSesionController(req, res) {
+  const { id_inscripcion } = req.params;
+  const { puntuacion, comentario } = req.body;
+
+  try {
+    await crearCalificacion({ fk_inscripcion: id_inscripcion, puntuacion, comentario });
+    res.json({ message: "Calificación guardada correctamente" });
+  } catch (error) {
+    console.error("Error al calificar sesión:", error);
+    // Manejo básico de duplicados si intenta calificar 2 veces
+    if (error.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({ error: "Esta sesión ya fue calificada" });
+    }
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }

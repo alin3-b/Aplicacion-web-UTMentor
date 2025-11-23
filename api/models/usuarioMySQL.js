@@ -634,13 +634,62 @@ export async function getAsesoriasPorAsesorado(id_estudiante) {
       d.precio,
       t.nombre_tema,
       u.nombre_completo AS nombre_asesor,
-      u.ruta_foto AS foto_asesor
+      u.ruta_foto AS foto_asesor,
+      c.id_calificacion,
+      c.puntuacion
     FROM inscripciones_sesion i
     JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad
     JOIN usuarios u ON d.fk_asesor = u.id_usuario
     LEFT JOIN temas t ON d.fk_tema = t.id_tema
+    LEFT JOIN calificaciones c ON i.id_inscripcion = c.fk_inscripcion
     WHERE i.fk_asesorado = ?
     ORDER BY d.fecha_inicio ASC
   `, [id_estudiante]);
   return rows;
+}
+
+export async function crearCalificacion({ fk_inscripcion, puntuacion, comentario }) {
+  const [result] = await mysqlPool.query(
+    "INSERT INTO calificaciones (fk_inscripcion, puntuacion, comentario) VALUES (?, ?, ?)",
+    [fk_inscripcion, puntuacion, comentario]
+  );
+  return result.insertId;
+}
+
+export async function cancelarInscripcion(id_inscripcion, id_asesorado, motivo = "Cancelado por el usuario") {
+  const conn = await mysqlPool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // 1. Verificar que la inscripción existe, pertenece al usuario y no está cancelada
+    const [rows] = await conn.query(
+      "SELECT id_inscripcion FROM inscripciones_sesion WHERE id_inscripcion = ? AND fk_asesorado = ? AND estado != 'cancelada'",
+      [id_inscripcion, id_asesorado]
+    );
+
+    if (rows.length === 0) {
+      await conn.rollback();
+      return false;
+    }
+
+    // 2. Actualizar estado a 'cancelada'
+    await conn.query(
+      "UPDATE inscripciones_sesion SET estado = 'cancelada' WHERE id_inscripcion = ?",
+      [id_inscripcion]
+    );
+
+    // 3. Registrar en historial
+    await conn.query(
+      "INSERT INTO historial_cancelaciones (fk_inscripcion, fk_usuario_cancelo, motivo) VALUES (?, ?, ?)",
+      [id_inscripcion, id_asesorado, motivo]
+    );
+
+    await conn.commit();
+    return true;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
 }
