@@ -71,10 +71,10 @@ async function enviarCorreo(config) {
  */
 async function enviarCorreoRecuperacion(
   emailDestino,
-  frontendUrl = "http://localhost:3000"
+  frontendUrl = "http://localhost:8180"
 ) {
   // Construir la URL de recuperación con el email como query param
-  const urlRecuperacion = `${frontendUrl}/cambioContraseña.html?email=${encodeURIComponent(
+  const urlRecuperacion = `${frontendUrl}/cambio-contrasena?email=${encodeURIComponent(
     emailDestino
   )}`;
 
