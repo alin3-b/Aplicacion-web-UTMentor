@@ -53,7 +53,7 @@ router.post("/recuperar-password", async (req, res) => {
 
     // URL del frontend (ajustar según tu configuración)
     const frontendUrl =
-      process.env.FRONTEND_URL || "http://localhost:5500/UTMentor/html";
+      process.env.FRONTEND_URL || "http://localhost:8180";
 
     // Enviar correo de recuperación
     const resultado = await enviarCorreoRecuperacion(email, frontendUrl);

@@ -408,6 +408,7 @@ export async function loginUsuario(req, res) {
     // ===========================
     const usuario = await getUserByEmail(correo);
     if (!usuario) {
+      console.log(`[LOGIN] Usuario no encontrado: ${correo}`);
       return res.status(401).json({
         success: false,
         error: "Correo o contraseña incorrectos",
@@ -417,7 +418,11 @@ export async function loginUsuario(req, res) {
     // ===========================
     // 3. Comparar contraseña hasheada
     // ===========================
+    console.log(`[LOGIN] Comparando password para: ${correo}`);
+    console.log(`[LOGIN] Hash en BD: ${usuario.password_hash ? usuario.password_hash.substring(0, 20) : 'NULL'}...`);
+    
     const okPassword = await bcrypt.compare(password, usuario.password_hash);
+    console.log(`[LOGIN] Resultado comparación: ${okPassword}`);
 
     if (!okPassword) {
       return res.status(401).json({

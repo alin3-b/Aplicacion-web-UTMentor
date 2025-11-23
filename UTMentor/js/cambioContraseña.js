@@ -1,6 +1,8 @@
 // Utilidad: obtener query param
 const getParam = (k) => new URL(location.href).searchParams.get(k);
 
+console.log("Script cambioContraseña.js cargado");
+
 // Obtener el correo del usuario desde la URL
 const userEmail = getParam("email");
 const tokenAlert = document.getElementById("tokenAlert");
@@ -109,28 +111,28 @@ form.addEventListener("submit", async (e) => {
   const okCf = validateConfirm(true);
   if (!okPw || !okCf) return;
 
-  // Hook de API real:
-  // const res = await fetch('/api/reset-password', {
-  //   method:'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body:JSON.stringify({ email: userEmail, password: pw.value })
-  // })
-  // if (!res.ok) { ... } else { ... }
-
-  // Simulación de servidor
   submitBtn.disabled = true;
   submitBtn.textContent = "Actualizando...";
-  await new Promise((r) => setTimeout(r, 900));
 
-  // Simula errores comunes según valor:
-  if (pw.value.toLowerCase().includes("password")) {
-    globalErr.textContent =
-      "La contraseña es demasiado común. Prueba con una más segura.";
-    globalErr.style.display = "block";
-  } else if (pw.value.length > 128) {
-    globalErr.textContent = "La contraseña es demasiado larga.";
-    globalErr.style.display = "block";
-  } else {
+  try {
+    // Hook de API real:
+    const res = await fetch('/api/auth/reset-password', {
+      method:'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:JSON.stringify({ email: userEmail, password: pw.value })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      globalErr.textContent = data.error || "Error al actualizar la contraseña.";
+      globalErr.style.display = "block";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Actualizar contraseña";
+      return;
+    }
+
+    // Éxito
     globalOk.innerHTML =
       'Tu contraseña ha sido actualizada. <a class="link" href="iniciarSesion.html">Inicia sesión ahora</a>.';
     globalOk.style.display = "block";
@@ -139,7 +141,15 @@ form.addEventListener("submit", async (e) => {
     cf.value = "";
     validatePassword(false);
     validateConfirm(false);
+    
+  } catch (error) {
+    console.error(error);
+    globalErr.textContent = "Error de conexión con el servidor.";
+    globalErr.style.display = "block";
+  } finally {
+    if (submitBtn.textContent === "Actualizando...") {
+       submitBtn.disabled = false;
+       submitBtn.textContent = "Actualizar contraseña";
+    }
   }
-  submitBtn.disabled = false;
-  submitBtn.textContent = "Actualizar contraseña";
 });

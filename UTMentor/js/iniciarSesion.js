@@ -262,7 +262,7 @@ function sanitizeInput(str) {
 
     disableSubmit(true);
 
-    const { ok, data } = await apiPost("http://localhost:3000/api/usuarios/login", {
+    const { ok, data } = await apiPost("/api/usuarios/login", {
       correo: emailInput.value.trim(),
       password: passwordInput.value,
     });
@@ -275,8 +275,8 @@ function sanitizeInput(str) {
       usuario.nombre_rol = usuario.nombre_rol || usuario.roles[0];
 
       localStorage.setItem("usuario", JSON.stringify({
-        id: usuario.id,
-        nombre: usuario.nombre,
+        id: usuario.id_usuario,
+        nombre: usuario.nombre_completo,
         roles: usuario.roles
       }));
       localStorage.setItem("isLoggedIn", "true");
@@ -353,7 +353,7 @@ window.addEventListener("pageshow", (event) => {
     if (!forgotEmail.checkValidity()) { forgotEmailError.textContent = "Ingresa un correo válido."; forgotEmail.focus(); return; }
 
     forgotSubmit.disabled = true; forgotSubmit.textContent = "Enviando...";
-    const { ok, data } = await apiPost("http://localhost:3000/api/email/recuperar-password", { email });
+    const { ok, data } = await apiPost("/api/email/recuperar-password", { email });
 
     if (ok && data.success) {
       forgotMsg.textContent = "Se ha enviado un enlace de recuperación a tu correo electrónico.";
