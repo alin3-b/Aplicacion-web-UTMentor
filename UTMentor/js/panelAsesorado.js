@@ -2,6 +2,38 @@
 const $  = (sel, ctx=document) => ctx.querySelector(sel);
 const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
+// === AUTH CHECK ===
+const token = localStorage.getItem("token");
+const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+
+if (!token || !usuario) {
+  window.location.href = "iniciarSesion.html";
+}
+
+const USER_ID = usuario.id;
+
+// Helper para fetch con auth
+async function authFetch(url, options = {}) {
+  const headers = {
+    ...options.headers,
+    "Authorization": `Bearer ${token}`
+  };
+  
+  // Si es POST/PUT y hay body, asegurar Content-Type si no es FormData
+  if (options.body && !(options.body instanceof FormData) && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401 || res.status === 403) {
+    // Token expirado o inválido
+    localStorage.clear();
+    window.location.href = "iniciarSesion.html";
+    throw new Error("Sesión expirada");
+  }
+  return res;
+}
+
 const toast = (msg, type="info")=>{
   const el = $("#toast");
   el.textContent = msg;
@@ -70,7 +102,7 @@ function formatRange(s,e){
 /* Obtener sesiones desde el backend */
 async function fetchSessions() {
   try {
-    const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/asesorias`);
+    const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/asesorias`);
     if (!res.ok) throw new Error("Error al obtener sesiones");
     const data = await res.json();
 
@@ -168,13 +200,41 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
   $('[data-action="logout"]').addEventListener("click", async ()=>{
     if (await confirmDialog("¿Deseas cerrar sesión?")){
-      toast("Sesión cerrada");
-      // location.href = "iniciarSesion.html";
+      try {
+        const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/logout`, {
+          method: "POST"
+        });
+        if (res.ok) {
+          localStorage.clear(); // Limpiar storage al salir
+          toast("Sesión cerrada", "success");
+          setTimeout(() => location.href = "iniciarSesion.html", 1000);
+        } else {
+          toast("Error al cerrar sesión", "danger");
+        }
+      } catch (error) {
+        console.error(error);
+        toast("Error de conexión", "danger");
+      }
     }
   });
   $('[data-action="delete-account"]').addEventListener("click", async ()=>{
-    if (await confirmDialog("Esto eliminará tu cuenta. ¿Continuar?")){
-      toast("Perfil eliminado","danger");
+    if (await confirmDialog("Esto eliminará tu cuenta permanentemente. ¿Continuar?")){
+      try {
+        const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}`, {
+          method: "DELETE"
+        });
+        if (res.ok) {
+          localStorage.clear(); // Limpiar storage al eliminar cuenta
+          toast("Perfil eliminado", "success");
+          setTimeout(() => location.href = "iniciarSesion.html", 1500);
+        } else {
+          const err = await res.json();
+          toast(err.error || "Error al eliminar cuenta", "danger");
+        }
+      } catch (error) {
+        console.error(error);
+        toast("Error de conexión", "danger");
+      }
     }
   });
 
@@ -235,9 +295,8 @@ function renderSessions(){
       if (!ok) return;
 
       try {
-        const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/asesorias/${s.id}`, {
+        const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/asesorias/${s.id}`, {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ motivo: "Cancelado por el usuario desde el panel" })
         });
 
@@ -307,13 +366,11 @@ function openRatingModal(ratingItem) {
         const stars = starsInput ? parseInt(starsInput.value) : 0;
         
         // Si no selecciona estrellas, se envía 0.
-        // if (stars === 0) { ... } // Eliminamos la validación que impedía enviar 0.
 
         try {
             // Usamos el endpoint para calificar al asesor (busca la sesión pendiente automáticamente)
-            const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/calificar-asesor`, {
+            const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/calificar-asesor`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     id_asesor: ratingItem.advisorId,
                     puntuacion: stars
@@ -343,7 +400,7 @@ function openRatingModal(ratingItem) {
 /* ===== Favoritos ===== */
 async function fetchFavorites() {
   try {
-    const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/favoritos`);
+    const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/favoritos`);
     if (!res.ok) throw new Error("Error al obtener favoritos");
     const data = await res.json();
     
@@ -385,7 +442,7 @@ function renderFavorites() {
       li.querySelector('[data-action="remove-fav"]').onclick = async () => {
           if(await confirmDialog(`¿Eliminar a ${f.name} de favoritos?`)) {
               try {
-                  const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/favoritos/${f.id}`, {
+                  const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/favoritos/${f.id}`, {
                       method: "DELETE"
                   });
 
@@ -410,8 +467,8 @@ function renderFavorites() {
 /* ===== Perfil ===== */
 async function loadProfile(){
   try {
-    // Consumir endpoint para usuario ID=1
-    const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1`);
+    // Consumir endpoint para usuario ID dinámico
+    const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}`);
     if (res.ok) {
       const user = await res.json();
       state.profile.name = user.nombre_completo;
@@ -445,7 +502,7 @@ async function loadProfile(){
 
     try {
       toast("Subiendo foto...");
-      const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/asesores/1/foto`, {
+      const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/asesores/${USER_ID}/foto`, {
         method: "POST",
         body: formData
       });
@@ -502,9 +559,8 @@ async function loadProfile(){
     }
 
     try {
-      const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1`, {
+      const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
