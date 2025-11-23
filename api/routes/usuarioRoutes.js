@@ -19,6 +19,8 @@ import {
   obtenerUsuarioPorId,
   actualizarUsuarioController,
   listarAsesoriasAsesorado,
+  cancelarAsesoriaController,
+  calificarSesionController,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -75,6 +77,12 @@ router.put("/:id", actualizarUsuarioController);
 
 // === LISTAR ASESORÍAS DE UN ASESORADO ===
 router.get("/:id/asesorias", listarAsesoriasAsesorado);
+
+// === CANCELAR ASESORÍA DE UN ASESORADO ===
+router.delete("/:id/asesorias/:id_asesoria", cancelarAsesoriaController);
+
+// === CALIFICAR ASESORÍA ===
+router.post("/asesorias/:id_inscripcion/calificar", calificarSesionController);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");

@@ -40,7 +40,7 @@ const state = {
 
 /* ===== Semana y helpers de fecha ===== */
 let currentMonday = getMonday(new Date());
-seedSessions(currentMonday);
+// seedSessions(currentMonday); // Eliminamos datos semilla
 
 function getMonday(date){
   const d = new Date(date);
@@ -70,14 +70,66 @@ function formatRange(s,e){
   return `${day} ${pad(s.getHours())}:${pad(s.getMinutes())}–${pad(e.getHours())}:${pad(e.getMinutes())}`;
 }
 
-/* Sesiones de muestra dentro de la semana actual (asesorado) */
-function seedSessions(weekStart){
-  const d = new Date(weekStart);
-  state.sessions = [
-    {id:101, title:"Cálculo diferencial", area:"Matemáticas", mode:"virtual", type:"individual", price:200, notes:"Zoom", tutor:"Mario Ortega", date:addDayTime(d,1,"10:00","11:00")},
-    {id:102, title:"Circuitos I", area:"Electrónica", mode:"presencial", type:"grupal", price:180, notes:"Lab E-203", tutor:"Teo Trujillo", date:addDayTime(d,3,"16:00","17:30")},
-    {id:103, title:"Algoritmos", area:"Computación", mode:"virtual", type:"individual", price:220, notes:"Google Meet", tutor:"Mailén Jasso", date:addDayTime(d,5,"09:00","10:00")}
-  ];
+/* Obtener sesiones desde el backend */
+async function fetchSessions() {
+  try {
+    const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/asesorias`);
+    if (!res.ok) throw new Error("Error al obtener sesiones");
+    const data = await res.json();
+
+    const now = new Date();
+    const upcoming = [];
+    const pendingRating = [];
+
+    data.forEach(item => {
+      if (item.estado === 'cancelada') return;
+
+      const endDate = new Date(item.fecha_fin);
+      const session = {
+        id: item.id_inscripcion,
+        title: item.nombre_tema || "Asesoría",
+        area: "General",
+        mode: item.modalidad,
+        type: item.tipo_sesion,
+        price: item.precio,
+        notes: "",
+        tutor: item.nombre_asesor,
+        avatar: item.foto_asesor, // Aseguramos tener la foto para la tarjeta de calificación
+        date: {
+          start: new Date(item.fecha_inicio),
+          end: endDate
+        },
+        // Formato de fecha string para la tarjeta de calificación
+        dateStr: new Date(item.fecha_inicio).toLocaleDateString("es-MX", {day: 'numeric', month: 'short'})
+      };
+
+      // Lógica de separación
+      // Si la fecha fin es mayor a ahora, es futura (o en curso) -> Mis Sesiones
+      // Si ya pasó Y no tiene calificación -> Calificar Asesores
+      if (endDate > now) {
+        upcoming.push(session);
+      } else if (!item.id_calificacion) {
+        // Asesoría pasada sin calificar
+        // Adaptamos estructura para ratings
+        pendingRating.push({
+            id: session.id,
+            tutor: session.tutor,
+            topic: session.title,
+            date: session.dateStr,
+            avatar: session.avatar
+        });
+      }
+    });
+
+    state.sessions = upcoming;
+    state.ratings = pendingRating;
+
+    renderSessions();
+    renderRatings(); // Actualizamos también la lista de calificaciones
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
+    toast("Error al cargar sesiones", "danger");
+  }
 }
 
 /* ===== Inicio ===== */
@@ -88,7 +140,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
   $("#chipAvatar").src         = state.profile.avatar;
 
   renderWeek();
-  renderSessions();
+  fetchSessions(); // Cargar sesiones reales
 
   // Navegación por vistas
   $$(".side-link[data-view]").forEach(btn=>{
@@ -99,7 +151,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
       $$(".view").forEach(v=>v.classList.remove("is-visible"));
       $(`#view-${id}`).classList.add("is-visible");
       
-      if (id === "sesiones") renderSessions();
+      if (id === "sesiones") fetchSessions(); // Recargar al volver a la vista
       if (id === "calificar") renderRatings();
       if (id === "favoritos") renderFavorites();
       if (id === "perfil")   loadProfile();
@@ -183,10 +235,25 @@ function renderSessions(){
       const ok = await confirmDialog("¿Estas seguro de cancelar esta asesoría?");
       if (!ok) return;
 
-      // Simulación de cancelación
-      state.sessions = state.sessions.filter(x=>x.id !== s.id);
-      renderSessions();
-      toast("Sesión cancelada","danger");
+      try {
+        const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/asesorias/${s.id}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ motivo: "Cancelado por el usuario desde el panel" })
+        });
+
+        if (res.ok) {
+            state.sessions = state.sessions.filter(x=>x.id !== s.id);
+            renderSessions();
+            toast("Sesión cancelada", "success");
+        } else {
+            const err = await res.json();
+            toast(err.error || "Error al cancelar", "danger");
+        }
+      } catch (e) {
+        console.error(e);
+        toast("Error de conexión", "danger");
+      }
     });
 
     ul.appendChild(li);
@@ -235,18 +302,40 @@ function openRatingModal(ratingItem) {
     
     dlg.showModal();
     
-    $("#btnSubmitRating").onclick = (e) => {
+    $("#btnSubmitRating").onclick = async (e) => {
         e.preventDefault(); // Prevent form submission
         const starsInput = dlg.querySelector('input[name="rating"]:checked');
         const stars = starsInput ? parseInt(starsInput.value) : 0;
         
-        // Simular envío
-        const msg = stars === 0 ? "Calificación enviada: 0 estrellas" : "¡Gracias por tu calificación!";
-        toast(msg, stars === 0 ? "info" : "success");
+        if (stars === 0) {
+            toast("Por favor selecciona una calificación", "danger");
+            return;
+        }
 
-        state.ratings = state.ratings.filter(r => r.id !== ratingItem.id);
-        renderRatings();
-        dlg.close();
+        try {
+            const res = await fetch(`${API_CONFIG.baseURL}/api/asesorias/${ratingItem.id}/calificar`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    puntuacion: stars,
+                    comentario: "Calificación desde panel" // Podríamos agregar un campo de texto en el modal
+                })
+            });
+
+            if (res.ok) {
+                toast("¡Gracias por tu calificación!", "success");
+                // Eliminar de la lista localmente
+                state.ratings = state.ratings.filter(r => r.id !== ratingItem.id);
+                renderRatings();
+                dlg.close();
+            } else {
+                const err = await res.json();
+                toast(err.error || "Error al enviar calificación", "danger");
+            }
+        } catch (error) {
+            console.error(error);
+            toast("Error de conexión", "danger");
+        }
     };
 }
 
