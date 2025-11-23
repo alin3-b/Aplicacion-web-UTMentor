@@ -755,3 +755,27 @@ export async function cancelarInscripcion(id_inscripcion, id_asesorado, motivo =
     conn.release();
   }
 }
+
+export async function getFavoritosPorAsesorado(id_asesorado) {
+  const [rows] = await mysqlPool.query(`
+    SELECT 
+      u.id_usuario AS id_asesor,
+      u.nombre_completo,
+      u.ruta_foto,
+      c.nombre_carrera
+    FROM favoritos f
+    JOIN usuarios u ON f.fk_asesor = u.id_usuario
+    LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
+    WHERE f.fk_asesorado = ?
+    ORDER BY f.fecha_guardado DESC
+  `, [id_asesorado]);
+  return rows;
+}
+
+export async function eliminarFavorito(id_asesorado, id_asesor) {
+  const [result] = await mysqlPool.query(
+    "DELETE FROM favoritos WHERE fk_asesorado = ? AND fk_asesor = ?",
+    [id_asesorado, id_asesor]
+  );
+  return result.affectedRows > 0;
+}

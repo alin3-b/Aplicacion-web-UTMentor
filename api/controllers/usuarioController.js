@@ -21,6 +21,8 @@ import {
   cancelarInscripcion,
   crearCalificacion,
   getInscripcionPendienteCalificacion,
+  getFavoritosPorAsesorado,
+  eliminarFavorito,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 import minioClient, { bucketName } from "../config/minio.js";
@@ -1148,6 +1150,77 @@ export async function calificarAsesorPorUsuarioController(req, res) {
     res.json({ message: "Calificación registrada correctamente" });
   } catch (error) {
     console.error("Error al calificar asesor:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}/favoritos:
+ *   get:
+ *     summary: Obtiene los asesores favoritos de un asesorado
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del asesorado
+ *     responses:
+ *       200:
+ *         description: Lista de asesores favoritos
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function listarFavoritosAsesorado(req, res) {
+  const { id } = req.params;
+  try {
+    const favoritos = await getFavoritosPorAsesorado(id);
+    res.json(favoritos);
+  } catch (error) {
+    console.error("Error al obtener favoritos del asesorado:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}/favoritos/{id_asesor}:
+ *   delete:
+ *     summary: Elimina un asesor de los favoritos de un asesorado
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del asesorado
+ *       - in: path
+ *         name: id_asesor
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del asesor a eliminar de favoritos
+ *     responses:
+ *       200:
+ *         description: Asesor eliminado de favoritos correctamente
+ *       404:
+ *         description: El asesor no estaba en favoritos
+ *       500:
+ *         description: Error interno del servidor
+ */
+export async function eliminarFavoritoController(req, res) {
+  const { id, id_asesor } = req.params;
+  try {
+    const deleted = await eliminarFavorito(id, id_asesor);
+    if (!deleted) {
+      return res.status(404).json({ error: "El asesor no estaba en tus favoritos" });
+    }
+    res.json({ message: "Asesor eliminado de favoritos correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar favorito:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }
