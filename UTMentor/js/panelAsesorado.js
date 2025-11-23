@@ -87,6 +87,7 @@ async function fetchSessions() {
       const endDate = new Date(item.fecha_fin);
       const session = {
         id: item.id_inscripcion,
+        advisorId: item.fk_asesor,
         title: item.nombre_tema || "Asesoría",
         area: "General",
         mode: item.modalidad,
@@ -113,6 +114,7 @@ async function fetchSessions() {
         // Adaptamos estructura para ratings
         pendingRating.push({
             id: session.id,
+            advisorId: session.advisorId,
             tutor: session.tutor,
             topic: session.title,
             date: session.dateStr,
@@ -313,12 +315,14 @@ function openRatingModal(ratingItem) {
         }
 
         try {
-            const res = await fetch(`${API_CONFIG.baseURL}/api/asesorias/${ratingItem.id}/calificar`, {
+            // Usamos el endpoint para calificar al asesor (busca la sesión pendiente automáticamente)
+            const res = await fetch(`${API_CONFIG.baseURL}/api/usuarios/1/calificar-asesor`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    puntuacion: stars,
-                    comentario: "Calificación desde panel" // Podríamos agregar un campo de texto en el modal
+                    id_asesor: ratingItem.advisorId,
+                    puntuacion: stars
+                    // comentario omitido según requerimiento
                 })
             });
 

@@ -20,6 +20,7 @@ import {
   getAsesoriasPorAsesorado,
   cancelarInscripcion,
   crearCalificacion,
+  getInscripcionPendienteCalificacion,
 } from "../models/usuarioMySQL.js";
 import { generarToken } from "../utils/jwt.js";
 import minioClient, { bucketName } from "../config/minio.js";
@@ -1082,6 +1083,71 @@ export async function calificarSesionController(req, res) {
     if (error.code === 'ER_DUP_ENTRY') {
         return res.status(400).json({ error: "Esta sesión ya fue calificada" });
     }
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+/**
+ * @openapi
+ * /api/usuarios/{id}/calificar-asesor:
+ *   post:
+ *     summary: Califica al asesor especificado (busca la última sesión pendiente)
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del asesorado
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [id_asesor, puntuacion]
+ *             properties:
+ *               id_asesor:
+ *                 type: integer
+ *               puntuacion:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               comentario:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Calificación registrada
+ *       404:
+ *         description: No hay sesiones pendientes para calificar con este asesor
+ *       500:
+ *         description: Error interno
+ */
+export async function calificarAsesorPorUsuarioController(req, res) {
+  const { id } = req.params; // id_asesorado
+  const { id_asesor, puntuacion, comentario } = req.body;
+
+  if (!id_asesor || !puntuacion) {
+    return res.status(400).json({ error: "Faltan datos (id_asesor, puntuacion)" });
+  }
+
+  try {
+    // Buscar la última sesión completada y sin calificar entre este usuario y el asesor
+    const inscripcion = await getInscripcionPendienteCalificacion(id, id_asesor);
+    
+    if (!inscripcion) {
+      return res.status(404).json({ error: "No tienes sesiones pendientes de calificar con este asesor" });
+    }
+
+    await crearCalificacion({ 
+      fk_inscripcion: inscripcion.id_inscripcion, 
+      puntuacion, 
+      comentario 
+    });
+
+    res.json({ message: "Calificación registrada correctamente" });
+  } catch (error) {
+    console.error("Error al calificar asesor:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }

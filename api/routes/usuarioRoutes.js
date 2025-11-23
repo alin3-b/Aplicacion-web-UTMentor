@@ -21,6 +21,7 @@ import {
   listarAsesoriasAsesorado,
   cancelarAsesoriaController,
   calificarSesionController,
+  calificarAsesorPorUsuarioController,
 } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -83,6 +84,9 @@ router.delete("/:id/asesorias/:id_asesoria", cancelarAsesoriaController);
 
 // === CALIFICAR ASESORÍA ===
 router.post("/asesorias/:id_inscripcion/calificar", calificarSesionController);
+
+// === CALIFICAR ASESOR POR USUARIO (BUSCA SESIÓN PENDIENTE) ===
+router.post("/:id/calificar-asesor", calificarAsesorPorUsuarioController);
 
 // Mensaje de confirmación (igual que tu profe)
 console.log("Rutas de usuarios cargadas");

@@ -632,6 +632,7 @@ export async function getAsesoriasPorAsesorado(id_estudiante) {
       d.modalidad,
       d.tipo_sesion,
       d.precio,
+      d.fk_asesor,
       t.nombre_tema,
       u.nombre_completo AS nombre_asesor,
       u.ruta_foto AS foto_asesor,
@@ -649,11 +650,72 @@ export async function getAsesoriasPorAsesorado(id_estudiante) {
 }
 
 export async function crearCalificacion({ fk_inscripcion, puntuacion, comentario }) {
-  const [result] = await mysqlPool.query(
-    "INSERT INTO calificaciones (fk_inscripcion, puntuacion, comentario) VALUES (?, ?, ?)",
-    [fk_inscripcion, puntuacion, comentario]
-  );
-  return result.insertId;
+  const conn = await mysqlPool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // 1. Insertar calificación
+    const [result] = await conn.query(
+      "INSERT INTO calificaciones (fk_inscripcion, puntuacion, comentario) VALUES (?, ?, ?)",
+      [fk_inscripcion, puntuacion, comentario]
+    );
+
+    // 2. Obtener el asesor asociado a la inscripción
+    const [rows] = await conn.query(`
+      SELECT d.fk_asesor 
+      FROM inscripciones_sesion i
+      JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad
+      WHERE i.id_inscripcion = ?
+    `, [fk_inscripcion]);
+
+    if (rows.length > 0) {
+      const id_asesor = rows[0].fk_asesor;
+
+      // 3. Recalcular promedio y conteo
+      const [stats] = await conn.query(`
+        SELECT 
+          COUNT(c.id_calificacion) as conteo,
+          AVG(c.puntuacion) as promedio
+        FROM calificaciones c
+        JOIN inscripciones_sesion i ON c.fk_inscripcion = i.id_inscripcion
+        JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad
+        WHERE d.fk_asesor = ?
+      `, [id_asesor]);
+
+      const nuevoConteo = stats[0].conteo || 0;
+      const nuevoPromedio = stats[0].promedio || 0;
+
+      // 4. Actualizar perfil del asesor
+      await conn.query(
+        "UPDATE perfiles_asesores SET conteo_asesorias = ?, calificacion_promedio = ? WHERE id_asesor = ?",
+        [nuevoConteo, nuevoPromedio, id_asesor]
+      );
+    }
+
+    await conn.commit();
+    return result.insertId;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
+
+export async function getInscripcionPendienteCalificacion(id_asesorado, id_asesor) {
+  const [rows] = await mysqlPool.query(`
+    SELECT i.id_inscripcion 
+    FROM inscripciones_sesion i
+    JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad
+    LEFT JOIN calificaciones c ON i.id_inscripcion = c.fk_inscripcion
+    WHERE i.fk_asesorado = ? 
+      AND d.fk_asesor = ?
+      AND i.estado = 'completada'
+      AND c.id_calificacion IS NULL
+    ORDER BY d.fecha_inicio DESC
+    LIMIT 1
+  `, [id_asesorado, id_asesor]);
+  return rows[0] || null;
 }
 
 export async function cancelarInscripcion(id_inscripcion, id_asesorado, motivo = "Cancelado por el usuario") {
