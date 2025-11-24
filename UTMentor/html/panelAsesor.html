@@ -4,8 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Panel de Asesor · UTMentor</title>
-    <link rel="preload" href="../css/panelAsesor.css" as="style">
-    <link rel="stylesheet" href="../css/panelAsesor.css">
+  <!-- Estilos de Explorar (primero para que sean sobrescritos por el panel) -->
+  <link rel="stylesheet" href="../css/explorar.css">
+
+  <!-- Reutiliza el tema claro del panel del asesor -->
+  <link rel="preload" href="../css/panelAsesor.css" as="style">
+  <link rel="stylesheet" href="../css/panelAsesor.css">
+  <link rel="stylesheet" href="../css/panelAsesorado.css">
   </head>
   <body>
     <!-- Barra lateral -->

@@ -127,22 +127,31 @@ img {
   background: transparent;
   border: 0;
   color: var(--muted);
-  text-align: left;
+  text-align: center;
   cursor: pointer;
-  padding: 8px 10px;
+  padding: 10px;
   border-radius: 8px;
+  transition: all .2s ease;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
 }
 
 .link:hover {
-  background: var(--hover)
+  background: var(--hover);
+  color: var(--text);
 }
 
 .link-danger {
-  color: #ef4444
+  color: var(--danger);
+  opacity: 0.9;
 }
 
 .link-danger:hover {
-  background: rgba(239, 68, 68, .08)
+  background: rgba(225, 29, 72, 0.12);
+  opacity: 1;
 }
 
 /* Topbar (superior) */
