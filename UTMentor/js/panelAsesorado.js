@@ -59,7 +59,7 @@ const state = {
     career: "Ingeniería en Computación",
     semester: 5,
     email: "lucia@utmentor.demo",
-    avatar: "../imagenes/adviser2.jpg"
+    avatar: usuario.ruta_foto || "../imagenes/adviser2.jpg"
   },
   sessions: [], // se llena según semana
   ratings: [
@@ -491,6 +491,17 @@ async function loadProfile(){
       // Actualizar chip del header
       $("#chipName").textContent = state.profile.name;
       $("#chipCareer").textContent = `${state.profile.career} · ${state.profile.semester}º`;
+      
+      // Actualizar avatar desde la respuesta del backend
+      if (user.ruta_foto) {
+        state.profile.avatar = user.ruta_foto;
+      }
+
+      // Sincronizar localStorage
+      const localUser = JSON.parse(localStorage.getItem("usuario") || "{}");
+      localUser.ruta_foto = state.profile.avatar;
+      localUser.nombre_completo = state.profile.name;
+      localStorage.setItem("usuario", JSON.stringify(localUser));
     }
   } catch (error) {
     console.error("Error cargando perfil:", error);
@@ -524,6 +535,12 @@ async function loadProfile(){
         // data.url contiene la URL de la imagen en MinIO (o local)
         $("#profileAvatar").src = data.url;
         $("#chipAvatar").src    = data.url;
+
+        // Actualizar localStorage
+        const localUser = JSON.parse(localStorage.getItem("usuario") || "{}");
+        localUser.ruta_foto = data.url;
+        localStorage.setItem("usuario", JSON.stringify(localUser));
+
         toast("Foto actualizada", "success");
       } else {
         const err = await res.json();
@@ -543,6 +560,12 @@ async function loadProfile(){
               const defaultImg = "../imagenes/logo.png"; // Fallback image
               $("#profileAvatar").src = defaultImg;
               $("#chipAvatar").src = defaultImg;
+
+              // Actualizar localStorage
+              const localUser = JSON.parse(localStorage.getItem("usuario") || "{}");
+              localUser.ruta_foto = defaultImg;
+              localStorage.setItem("usuario", JSON.stringify(localUser));
+
               toast("Foto eliminada");
           }
       };

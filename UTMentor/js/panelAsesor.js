@@ -90,6 +90,12 @@ async function cargarPerfilCompletoDesdeAPI() {
       state.profile.stars = result.puntuacion_promedio;
       state.profile.roles = result.roles || [];
 
+      // Actualizar localStorage para mantener sincronía
+      const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+      usuario.ruta_foto = state.profile.avatar;
+      usuario.nombre_completo = state.profile.name; // También actualizamos nombre por si acaso
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+
       // Actualizar estado de temas
       if (result.temas && Array.isArray(result.temas)) {
         state.topics = result.temas.map((t) => ({
@@ -219,7 +225,7 @@ const state = {
     career: "Ingeniería Civil",
     semester: 9,
     email: "mario@utmentor.demo",
-    avatar: "../imagenes/adviser1.jpg",
+    avatar: usuarioLocal.ruta_foto || "../imagenes/adviser1.jpg",
     advisoriesGiven: 24,
     roles: [],
   },
@@ -755,6 +761,12 @@ function loadProfile() {
         state.profile.avatar = result.url;
         $("#profileAvatar").src = result.url;
         $("#chipAvatar").src = result.url;
+
+        // Actualizar localStorage
+        const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+        usuario.ruta_foto = result.url;
+        localStorage.setItem("usuario", JSON.stringify(usuario));
+
         toast("Foto actualizada correctamente", "success");
       } else {
         throw new Error(result.error || "Error al subir foto");
@@ -791,6 +803,12 @@ function loadProfile() {
             $("#profileAvatar").src = defaultAvatar;
             $("#chipAvatar").src = defaultAvatar;
             $("#photoInput").value = ""; // Limpiar input file
+
+            // Actualizar localStorage
+            const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+            usuario.ruta_foto = defaultAvatar;
+            localStorage.setItem("usuario", JSON.stringify(usuario));
+
             toast("Foto eliminada correctamente");
           } else {
             const res = await response.json();
