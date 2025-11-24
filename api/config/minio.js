@@ -34,22 +34,22 @@ export async function initMinio() {
     if (!exists) {
       await minioClient.makeBucket(bucketName, 'us-east-1');
       console.log(`Bucket ${bucketName} creado.`);
-      
-      // Política pública para lectura
-      const policy = {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: { AWS: ["*"] },
-            Action: ["s3:GetObject"],
-            Resource: [`arn:aws:s3:::${bucketName}/*`],
-          },
-        ],
-      };
-      await minioClient.setBucketPolicy(bucketName, JSON.stringify(policy));
-      console.log(`Política pública aplicada a ${bucketName}.`);
     }
+    
+    // Asegurar que la política pública siempre se aplique (incluso si el bucket ya existía)
+    const policy = {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Effect: "Allow",
+          Principal: { AWS: ["*"] },
+          Action: ["s3:GetObject"],
+          Resource: [`arn:aws:s3:::${bucketName}/*`],
+        },
+      ],
+    };
+    await minioClient.setBucketPolicy(bucketName, JSON.stringify(policy));
+    console.log(`Política pública aplicada/verificada en ${bucketName}.`);
   } catch (err) {
     console.error('Error inicializando MinIO:', err);
   }
