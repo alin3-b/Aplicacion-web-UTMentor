@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es" class="no-js">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Asesor · Perfil público · UTMentor</title>
+  <link rel="icon" href="../imagenes/favicon.ico" type="image/x-icon">
+  <link rel="preload" href="../css/panelPublicoAsesor.css" as="style">
+  <link rel="stylesheet" href="../css/panelPublicoAsesor.css">
+</head>
+
+<body>
+
+  <!-- NAV compacto (opcional) -->
+  <header class="nav-wrap">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo.png" alt="UTMentor logo">
+      </a>
+      <div class="panel">
+        <a class="link" href="explorar.html">Explorar</a>
+        <a class="link" href="iniciarSesion.html">Iniciar sesión</a>
+        <a class="link cta" href="registro.html">Registrarse</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="profile">
+      <div class="profile__header" style="display: flex; align-items: center; gap: 1.2rem;">
+        <img class="profile__avatar" src="../imagenes/adviser3.jpg" alt="Foto del asesor">
+
+        <div class="profile__meta" style="flex: 1;">
+          <h1 class="profile__name">Asad Velasco Sanchez.</h1>
+          <p class="profile__career">Ingeniería en Mecatrónica · 5°/1-B</p>
+          <a class="profile__mail" href="mailto:asadves@gmail.com">asadves@gmail.com</a>
+          <p id="profileDescription" class="profile__description muted"></p>
+        </div>
+
+        <a href="#" id="btnFavorito" class="favorite-link">
+          <img src="../imagenes/save.png" alt="Guardar"> Guardar a mis profesores
+        </a>
+      </div>
+
+
+      <div class="profile__grid">
+        <!-- Calificaciones -->
+        <aside class="rating-card">
+          <div class="rating-card__head">
+            <h3 class="eyebrow">Calificaciones</h3>
+            <span class="badge">5</span>
+            <span class="muted">50+ clases</span>
+          </div>
+          <div class="rating-card__stars" aria-label="4.0 de 5">
+            <span class="rating">4.0</span>
+            <div class="stars" aria-hidden="true">★★★★☆</div>
+          </div>
+
+          <div id="profileTopics" class="profile__topics">
+            <h3 class="eyebrow">Temas a enseñar</h3>
+            <ul>
+              <li>gramática</li>
+              <li>speaking</li>
+              <li>passive voice</li>
+            </ul>
+          </div>
+        </aside>
+
+        <!-- Agenda pública (semana) -->
+        <section class="agenda">
+          <div class="agenda__head">
+            <h3 class="eyebrow">Disponibilidad</h3>
+            <div class="agenda__nav">
+              <button class="icon-btn" id="prevWeek" aria-label="Semana anterior">‹</button>
+              <div class="agenda__range" id="weekLabel">17–23 oct 2025</div>
+              <button class="icon-btn" id="nextWeek" aria-label="Siguiente semana">›</button>
+            </div>
+          </div>
+
+          <div class="agenda__grid" id="agendaGrid" aria-live="polite">
+            <!-- Se llena por JS. Cada columna = día. Cada .session-item = slot -->
+          </div>
+
+          <div class="agenda__help muted">
+            Selecciona un horario para continuar con tu reserva.
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal reservar -->
+  <div id="bookModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card" role="document">
+      <button class="modal__close" data-close aria-label="Cerrar">✕</button>
+
+      <h2 class="modal__title">Reservar asesoría</h2>
+      <p class="modal__subtitle" id="slotSummary">Selecciona un horario</p>
+
+      <form class="modal__form" id="bookForm" novalidate>
+        <!-- Asesor -->
+        <div class="f-field">
+          <span class="f-label">Asesor</span>
+          <span id="modalAsesor" class="f-info"></span>
+        </div>
+
+        <!-- Tema editable -->
+        <div class="f-field" id="temaDiv" style="display:none;">
+          <span class="f-label">Tema</span>
+          <select class="f-input" id="temaSelect" name="tema" required>
+            <!-- Se carga dinámicamente -->
+          </select>
+        </div>
+
+        <!-- Tema fijo -->
+        <div class="f-field" id="temaFijoDiv" style="display:none;">
+          <span class="f-label">Tema</span>
+          <span id="temaFijo" class="f-info"></span>
+        </div>
+
+        <!-- Área -->
+        <div class="f-field">
+          <span class="f-label">Área</span>
+          <span id="modalArea" class="f-info"></span>
+        </div>
+
+        <!-- Modalidad editable -->
+        <div class="f-field" id="modalidadDiv" style="display:none;">
+          <span class="f-label">Modalidad</span>
+          <select class="f-input" id="modalidadSelect" name="modalidad" required>
+            <option value="Virtual">Virtual</option>
+            <option value="Presencial">Presencial</option>
+          </select>
+        </div>
+
+        <!-- Fecha y hora -->
+        <div class="f-field">
+          <span class="f-label">Fecha y hora</span>
+          <span id="modalFecha" class="f-info"></span>
+        </div>
+
+        <!-- Tipo de sesión -->
+        <div class="f-field">
+          <span class="f-label">Tipo de sesión</span>
+          <span id="modalTipo" class="f-info"></span>
+        </div>
+
+        <!-- Capacidad (solo si es grupo) -->
+        <div class="f-field" id="capacidadDiv" style="display:none;">
+          <span class="f-label">Capacidad</span>
+          <span id="modalCapacidad" class="f-info"></span>
+        </div>
+
+        <!-- Precio -->
+        <div class="f-field">
+          <span class="f-label">Precio</span>
+          <span id="modalPrecio" class="f-info"></span>
+        </div>
+
+        <!-- Acciones -->
+        <div class="modal__actions">
+          <button class="btn outline" type="button" data-close>Cancelar</button>
+          <button class="btn primary" type="submit">Agendar asesoría</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Modal guardar asesor (usuario no autenticado) -->
+  <div id="saveAsesorModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card" role="document">
+      <button class="modal__close" data-close aria-label="Cerrar">✕</button>
+      <h2>Inicia sesión para guardar un asesor</h2>
+      <p>Debes iniciar sesión o registrarte para poder guardar asesores favoritos.</p>
+      <div class="modal__actions">
+        <button id="goLogin" class="btn primary">Iniciar sesión</button>
+        <button id="goRegister" class="btn outline">Registrarse</button>
+        <button id="closeSaveModal" class="btn" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal usuario no autenticado al intentar agendar -->
+  <div id="loginToBookModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card" role="document">
+      <button class="modal__close" data-close aria-label="Cerrar">✕</button>
+      <h2>Inicia sesión para agendar</h2>
+      <p>Debes iniciar sesión o registrarte para poder reservar una asesoría.</p>
+      <div class="modal__actions">
+        <button id="loginBookBtn" class="btn primary">Iniciar sesión</button>
+        <button id="registerBookBtn" class="btn outline">Registrarse</button>
+        <button id="closeLoginBookModal" class="btn" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+      <nav class="site-footer__links" aria-label="Legal">
+        <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/panelPublicoAsesor.js" defer></script>
+</body>
+
+</html>
