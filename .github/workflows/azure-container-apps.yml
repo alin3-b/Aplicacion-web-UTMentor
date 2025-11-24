@@ -1,0 +1,68 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY_NAME: utmentorregistryy
+  RESOURCE_GROUP: utmentor-mx
+  CONTAINER_APP_NAME: utmentor-app
+  CONTAINER_APP_ENV: utmentor-env
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Log in to Azure Container Registry
+      run: |
+        az acr login --name ${{ env.REGISTRY_NAME }}
+
+    - name: Build and push API image
+      run: |
+        docker build -t ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-api:${{ github.sha }} \
+          -t ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-api:latest \
+          --target production \
+          ./api
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-api:${{ github.sha }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-api:latest
+
+    - name: Build and push Web image
+      run: |
+        docker build -t ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-web:${{ github.sha }} \
+          -t ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-web:latest \
+          -f Dockerfile.web .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-web:${{ github.sha }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-web:latest
+
+    - name: Deploy to Azure Container Apps
+      run: |
+        # Actualizar la API
+        az containerapp update \
+          --name ${{ env.CONTAINER_APP_NAME }}-api \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --image ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-api:${{ github.sha }}
+
+        # Actualizar el Web
+        az containerapp update \
+          --name ${{ env.CONTAINER_APP_NAME }}-web \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --image ${{ env.REGISTRY_NAME }}.azurecr.io/utmentor-web:${{ github.sha }}
+
+    - name: Azure logout
+      run: |
+        az logout
