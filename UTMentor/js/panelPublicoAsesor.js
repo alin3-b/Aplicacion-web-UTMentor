@@ -496,9 +496,26 @@ function startOfWeek(d) {
 }
 
 // =========================
+// Helpers UI
+// =========================
+function checkSessionUI() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const panel = document.querySelector(".nav .panel");
+    if (panel) {
+      // Reemplazar botones de login/registro por "Volver al panel"
+      panel.innerHTML = `
+        <a class="link" href="panelAsesorado.html#explorar">Volver a Explorar</a>
+      `;
+    }
+  }
+}
+
+// =========================
 // Inicialización
 // =========================
 async function init() {
+  checkSessionUI();
   asesorId = getIdFromUrl();
   if (!asesorId) {
     showErrorMessage('Falta el ID del asesor.');

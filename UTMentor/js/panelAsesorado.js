@@ -174,6 +174,15 @@ window.addEventListener("DOMContentLoaded", ()=>{
   renderWeek();
   fetchSessions(); // Cargar sesiones reales
 
+  // Si venimos de "Volver a Explorar", activar esa vista
+  if (window.location.hash === "#explorar") {
+    const btnExplorar = $('.side-link[data-view="explorar"]');
+    if (btnExplorar) {
+      // Pequeño delay para asegurar que todo cargó
+      setTimeout(() => btnExplorar.click(), 100);
+    }
+  }
+
   // Navegación por vistas
   $$(".side-link[data-view]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
@@ -470,7 +479,7 @@ function renderFavorites() {
 async function loadProfile(){
   try {
     // Consumir endpoint para usuario ID dinámico
-    const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}?t=${Date.now()}`);
+    const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}`);
     if (res.ok) {
       const user = await res.json();
       state.profile.name = user.nombre_completo;
@@ -478,26 +487,6 @@ async function loadProfile(){
       state.profile.semester = user.semestre;
       state.profile.career = user.nombre_carrera || "";
       state.profile.fk_carrera = user.fk_carrera;
-      
-      let avatar = user.ruta_foto;
-
-      // Si no hay foto en el perfil de usuario básico, intentamos buscar en el perfil de asesor
-      // (útil para usuarios híbridos donde la foto se guarda en la tabla de asesores)
-      if (!avatar) {
-        try {
-           const resAsesor = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/asesores/${USER_ID}`);
-           if (resAsesor.ok) {
-             const asesorData = await resAsesor.json();
-             if (asesorData.ruta_foto) {
-               avatar = asesorData.ruta_foto;
-             }
-           }
-        } catch (e) {
-          // Ignorar error, probablemente no es asesor
-        }
-      }
-
-      state.profile.avatar = avatar || "../imagenes/logo.png";
       
       // Actualizar chip del header
       $("#chipName").textContent = state.profile.name;
