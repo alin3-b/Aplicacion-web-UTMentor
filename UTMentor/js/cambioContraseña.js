@@ -90,7 +90,7 @@ pw.addEventListener("input", () => {
 cf.addEventListener("input", () => validateConfirm(false));
 
 // Mostrar/ocultar contraseña
-document.querySelectorAll(".eye").forEach((btn) => {
+document.querySelectorAll(".toggle-pw").forEach((btn) => {
   btn.addEventListener("click", () => {
     const targetId = btn.getAttribute("data-toggle");
     const input = document.getElementById(targetId);

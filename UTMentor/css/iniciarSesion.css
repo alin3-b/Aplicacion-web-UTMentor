@@ -801,3 +801,78 @@ body {
   margin-bottom: 1rem;
   text-align: center;
 }
+
+/* ================================
+   Estilos para validación de contraseña (cambioContraseña.html)
+   ================================ */
+.checks {
+  margin: 0.5rem 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.checks li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.2s ease;
+}
+
+.checks .dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  font-size: 0.7rem;
+  background: rgba(15, 23, 42, 0.1);
+  color: transparent;
+  transition: all 0.2s ease;
+}
+
+/* Estado válido */
+.checks li.ok {
+  color: #fff;
+  font-weight: 500;
+}
+.checks li.ok .dot {
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a; /* success color */
+}
+.checks li.ok .dot::before {
+  content: "✓";
+}
+
+/* Estado inválido (opcional, por defecto es gris/neutro hasta que se valida) */
+.checks li.bad .dot {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+.checks li.bad .dot::before {
+  content: "×";
+}
+
+/* Alertas específicas */
+.alert {
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  display: none; /* oculto por defecto */
+}
+
+.alert.ok {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.alert.err {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
