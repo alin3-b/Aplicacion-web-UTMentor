@@ -33,7 +33,7 @@ export async function initMinio() {
     const exists = await minioClient.bucketExists(bucketName);
     if (!exists) {
       await minioClient.makeBucket(bucketName, 'us-east-1');
-      console.log(`Bucket ${bucketName} creado.`);
+      console.log(`✅ Bucket ${bucketName} creado.`);
       
       // Política pública para lectura
       const policy = {
@@ -48,10 +48,13 @@ export async function initMinio() {
         ],
       };
       await minioClient.setBucketPolicy(bucketName, JSON.stringify(policy));
-      console.log(`Política pública aplicada a ${bucketName}.`);
+      console.log(`✅ Política pública aplicada a ${bucketName}.`);
+    } else {
+      console.log(`✅ Bucket ${bucketName} ya existe.`);
     }
   } catch (err) {
-    console.error('Error inicializando MinIO:', err);
+    console.error('❌ Error inicializando MinIO:', err.message);
+    throw err; // Propagar el error para manejo en server.js
   }
 }
 
