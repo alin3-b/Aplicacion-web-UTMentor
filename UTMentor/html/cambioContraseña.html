@@ -4,132 +4,74 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Restablecer contraseña · UTMentor</title>
-  <link rel="icon" href="/imagenes/favicon.ico" type="image/x-icon">
-  <style>
-    :root{
-      --brand:#5b68ff;
-      --brand-2:#19c0ff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --ring:rgba(91,104,255,.35);
-      --ok:#16a34a;
-      --bad:#ef4444;
-      --warn:#f59e0b;
-      --radius:14px;
-      --shadow:0 12px 32px rgba(2,6,23,.10);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;background:
-      radial-gradient(circle at 20% 5%, rgba(91,104,255,.08), transparent 40%),
-      radial-gradient(circle at 90% 90%, rgba(25,192,255,.10), transparent 50%),
-      linear-gradient(#ffffff,#f6fbff);
-      min-height:100vh;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans";
-      color:var(--text);
-      display:flex;align-items:center;justify-content:center;padding:32px
-    }
-    .shell{width:100%;max-width:520px}
-    .card{
-      background:var(--card);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:24px 22px
-    }
-    h1{margin:4px 0 6px;font-size:1.6rem}
-    p.sub{margin:0 0 16px;color:var(--muted)}
-    .form{display:flex;flex-direction:column;gap:14px}
-    .field{position:relative}
-    .label{display:block;font-size:.9rem;margin:0 0 6px;color:var(--muted)}
-    .input{
-      width:100%;padding:.9rem 2.6rem .9rem .9rem;background:#fff;border:1px solid #e2e8f0;
-      border-radius:12px;font-size:1rem;color:var(--text);outline:0;box-shadow:0 1px 2px rgba(2,6,23,.04)
-    }
-    .input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--ring)}
-    .eye{
-      position:absolute;right:.5rem;top:2.1rem;width:36px;height:36px;border:0;background:transparent;
-      cursor:pointer;border-radius:8px;color:var(--muted)
-    }
-    .eye:hover{background:#f1f5f9;color:#334155}
-    .eye::before{
-      content:"";display:block;margin:10px auto 0;width:18px;height:12px;border:2px solid currentColor;border-radius:999px;position:relative
-    }
-    .eye::after{
-      content:"";position:absolute;top:18px;left:50%;width:5px;height:5px;background:currentColor;border-radius:50%;transform:translateX(-50%)
-    }
-    .error{color:var(--bad);font-size:.85rem;margin:6px 0 0;min-height:1.2em}
-    .hint{font-size:.85rem;color:var(--muted);margin:2px 0 0}
-    .checks{margin:6px 0 0;padding-left:0;list-style:none;display:grid;gap:4px}
-    .checks li{display:flex;align-items:center;gap:.55rem;font-size:.9rem}
-    .checks .dot{width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;font-size:.8rem}
-    .ok .dot{background:rgba(22,163,74,.1);color:var(--ok)}
-    .bad .dot{background:rgba(239,68,68,.1);color:var(--bad)}
-    .btn{
-      border:0;border-radius:12px;padding:.9rem 1rem;font-weight:700;cursor:pointer;
-      background:linear-gradient(90deg,var(--brand),var(--brand-2));color:#fff;box-shadow:0 10px 22px rgba(2,6,23,.16)
-    }
-    .btn:disabled{filter:grayscale(1) brightness(.95);cursor:not-allowed}
-    .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:8px}
-    .link{color:var(--brand);text-decoration:none;font-weight:600}
-    .alert{
-      border-radius:12px;padding:12px 14px;margin:6px 0 0;font-size:.95rem;display:none
-    }
-    .alert.ok{background:rgba(22,163,74,.08);color:#065f46;display:block}
-    .alert.err{background:rgba(239,68,68,.08);color:#7f1d1d;display:block}
-    .token-alert{margin-bottom:12px}
-    footer{margin-top:16px;text-align:center;color:var(--muted);font-size:.85rem}
-  </style>
+  <link rel="icon" href="../imagenes/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/iniciarSesion.css">
 </head>
-<body>
-  <div class="shell">
-    <div class="card" id="card">
-      <h1>Restablecer contraseña</h1>
-      <p class="sub">Crea una nueva contraseña para tu cuenta.</p>
+<body class="auth-body">
+  <!-- NAV FIJO -->
+  <header class="nav-wrap" role="banner">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo-hero.png" alt="UTMentor" />
+      </a>
+    </nav>
+  </header>
+
+  <main class="login-main" role="main">
+    <div class="login-panel">
+      <h1 class="login-title">Restablecer contraseña</h1>
+      <p class="login-sub">Crea una nueva contraseña para tu cuenta.</p>
 
       <!-- Alerta de token -->
-      <div id="tokenAlert" class="alert err token-alert" role="alert" aria-live="assertive"></div>
+      <div id="tokenAlert" class="auth-error" role="alert" aria-live="assertive"></div>
 
-      <form id="resetForm" class="form" novalidate>
-        <div class="field">
-          <label class="label" for="password">Nueva contraseña</label>
-          <input id="password" name="password" type="password" class="input"
-                 placeholder="••••••••" autocomplete="new-password" required
+      <form id="resetForm" class="login-form" novalidate>
+        <!-- Nueva contraseña -->
+        <label class="input-group password-group">
+          <input id="password" name="password" type="password" 
+                 placeholder="Nueva contraseña" autocomplete="new-password" required
                  aria-describedby="pwError pwHelp">
-          <button type="button" class="eye" data-toggle="password" aria-label="Mostrar u ocultar contraseña"></button>
-          <p id="pwError" class="error" role="alert" aria-live="polite"></p>
-          <ul id="pwHelp" class="checks" aria-live="polite">
-            <li id="cLen" class="bad"><span class="dot">•</span> Mínimo 8 caracteres</li>
-            <li id="cUp"  class="bad"><span class="dot">•</span> Al menos 1 mayúscula</li>
-            <li id="cLow" class="bad"><span class="dot">•</span> Al menos 1 minúscula</li>
-            <li id="cNum" class="bad"><span class="dot">•</span> Al menos 1 número</li>
-            <li id="cSpec" class="bad"><span class="dot">•</span> Al menos 1 carácter especial (!@#$...)</li>
-          </ul>
-        </div>
+          <button type="button" class="toggle-pw" data-toggle="password" aria-label="Mostrar u ocultar contraseña">
+            <span class="pw-eye" aria-hidden="true"></span>
+          </button>
+          <p id="pwError" class="input-error" role="alert" aria-live="polite"></p>
+        </label>
+        
+        <!-- Requisitos -->
+        <ul id="pwHelp" class="checks" aria-live="polite">
+          <li id="cLen" class="bad"><span class="dot">•</span> Mínimo 8 caracteres</li>
+          <li id="cUp"  class="bad"><span class="dot">•</span> Al menos 1 mayúscula</li>
+          <li id="cLow" class="bad"><span class="dot">•</span> Al menos 1 minúscula</li>
+          <li id="cNum" class="bad"><span class="dot">•</span> Al menos 1 número</li>
+          <li id="cSpec" class="bad"><span class="dot">•</span> Al menos 1 carácter especial (!@#$...)</li>
+        </ul>
 
-        <div class="field">
-          <label class="label" for="confirm">Confirmar contraseña</label>
-          <input id="confirm" name="confirm" type="password" class="input"
-                 placeholder="••••••••" autocomplete="new-password" required
+        <!-- Confirmar contraseña -->
+        <label class="input-group password-group">
+          <input id="confirm" name="confirm" type="password" 
+                 placeholder="Confirmar contraseña" autocomplete="new-password" required
                  aria-describedby="cfError">
-          <button type="button" class="eye" data-toggle="confirm" aria-label="Mostrar u ocultar confirmación"></button>
-          <p id="cfError" class="error" role="alert" aria-live="polite"></p>
-        </div>
+          <button type="button" class="toggle-pw" data-toggle="confirm" aria-label="Mostrar u ocultar confirmación">
+            <span class="pw-eye" aria-hidden="true"></span>
+          </button>
+          <p id="cfError" class="input-error" role="alert" aria-live="polite"></p>
+        </label>
 
-        <button id="submitBtn" class="btn" type="submit">Restablecer contraseña</button>
+        <button id="submitBtn" class="btn-login" type="submit">Restablecer contraseña</button>
 
         <!-- Mensajes globales -->
         <div id="globalOk" class="alert ok" role="status" aria-live="polite"></div>
         <div id="globalErr" class="alert err" role="alert" aria-live="assertive"></div>
-
-        <div class="row">
-          <span></span>
-          <a class="link" href="iniciarSesion.html">Volver a iniciar sesión</a>
-        </div>
       </form>
     </div>
-    <footer>© 2025 UTMentor</footer>
-  </div>
+  </main>
 
-  <script src="/js/cambioContraseña.js"></script>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="../js/cambioContraseña.js"></script>
 </body>
 </html>
