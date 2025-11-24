@@ -9,6 +9,7 @@
   <link rel="preload" href="../css/panelAsesor.css" as="style">
   <link rel="stylesheet" href="../css/panelAsesor.css">
   <link rel="stylesheet" href="../css/panelAsesorado.css">
+  <link rel="stylesheet" href="../css/explorar.css">
 </head>
 <body>
   <!-- Lateral -->
@@ -21,7 +22,7 @@
       <button class="side-link is-active" data-view="sesiones">
         <span>Mis sesiones</span>
       </button>
-      <button class="side-link" onclick="location.href='explorar.html'">
+      <button class="side-link" data-view="explorar">
         <span>Explorar</span>
       </button>
       <button class="side-link" data-view="calificar">
@@ -103,6 +104,175 @@
           </div>
         </li>
       </template>
+    </section>
+
+    <!-- Vista: Explorar -->
+    <section class="view" id="view-explorar" aria-labelledby="h-explorar" hidden>
+      <h2 id="h-explorar" class="h visually-hidden">Explorar asesores</h2>
+      
+      <section class="explorar-layout">
+        <!-- FILTROS LATERALES -->
+        <aside class="filtros-card" aria-labelledby="filtros-heading">
+          <h2 id="filtros-heading" class="filtros-titulo">Filtros</h2>
+          <p class="filtros-hint" id="filtrosOpc">
+            Todos los campos son <strong>opcionales</strong>. Usa uno o varios para afinar los resultados.
+          </p>
+
+          <!-- Nombre del asesor -->
+          <div class="filtro-bloque">
+            <label for="filtro-asesor" class="filtro-label">Nombre del asesor/a</label>
+            <input id="filtro-asesor" class="filtro-input" type="text" placeholder="Ej. María Olguín, Luis Javier..."
+              autocomplete="off" />
+              <div class="input-error-msg" id="error-asesor"></div>
+          </div>
+
+          <!-- Tema -->
+          <div class="filtro-bloque">
+            <label for="filtro-tema" class="filtro-label">Tema</label>
+            <input id="filtro-tema" class="filtro-input" type="text"
+              placeholder="Ej. Métodos de integración" autocomplete="off" />
+              <div class="input-error-msg" id="error-tema"></div>
+          </div>
+
+          <!-- Disponibilidad -->
+          <div class="filtro-bloque">
+            <span class="filtro-label">Disponibilidad</span>
+
+            <div class="filtro-inline">
+              <div class="filtro-sub">
+                <label for="filtro-dia" class="sub-label">Día</label>
+                <div class="select-wrap">
+                  <select id="filtro-dia" class="filtro-select" aria-describedby="hint-dia">
+                    <option value="">Cualquiera</option>
+                    <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+                    <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+                  </select>
+                  <span class="select-arrow" aria-hidden="true">▼</span>
+                </div>
+              </div>
+
+              <div class="filtro-sub">
+                <label class="sub-label" for="filtro-hora-desde">Desde</label>
+                <input id="filtro-hora-desde" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" aria-describedby="hint-desde">
+                <small id="hint-desde" class="filtro-hint">Ej.: 09:00 </small>
+              </div>
+
+              <div class="filtro-sub">
+                <label class="sub-label" for="filtro-hora-hasta">Hasta</label>
+                <input id="filtro-hora-hasta" class="filtro-time" type="time" min="06:00" max="22:00" step="1800" aria-describedby="hint-hasta">
+                <small id="hint-hasta" class="filtro-hint">Ej.: 13:30  </small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carrera -->
+          <div class="filtro-bloque">
+            <label for="filtro-carrera" class="filtro-label">Carrera</label>
+            <div class="select-wrap">
+              <select id="filtro-carrera" class="filtro-select">
+                <option value="">Cualquiera</option>
+                <option>Ingeniería Civil</option>
+                <option>Ingeniería en Alimentos</option>
+                <option>Ingeniería en Computación</option>
+                <option>Ingeniería en Diseño</option>
+                <option>Ingeniería en Electrónica</option>
+                <option>Ingeniería en Física Aplicada</option>
+                <option>Ingeniería Industrial</option>
+                <option>Ingeniería en Mecánica Automotriz</option>
+                <option>Ingeniería en Mecatrónica</option>
+                <option>Ingeniería Química en Procesos Sostenibles</option>
+                <option>Licenciatura en Ciencias Empresariales</option>
+                <option>Licenciatura en Matemáticas Aplicadas</option>
+                <option>Licenciatura en Estudios Mexicanos modalidad virtual</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">▼</span>
+            </div>
+          </div>
+
+          <!-- Área de conocimiento (NUEVO) -->
+          <div class="filtro-bloque">
+            <label for="filtro-area" class="filtro-label">Área de conocimiento</label>
+            <div class="select-wrap">
+              <select id="filtro-area" class="filtro-select">
+                <option value="">Cualquiera</option>
+                <option>Matemáticas</option>
+                <option>Programación</option>
+                <option>Ingeniería</option>
+                <option>Idiomas</option>
+                <option>Física</option>
+                <option>Química</option>
+                <option>Biología y Biotecnología</option>
+                <option>Ciencias Sociales</option>
+                <option>Negocios/Administración</option>
+                <option>Diseño y Artes Gráficas</option>
+                <option>Humanidades y Ética</option>
+                <option>Sostenibilidad/Ambiente</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">▼</span>
+            </div>
+          </div>
+
+          <button class="btn-buscar" id="btn-buscar" type="button">
+            <span class="btn-buscar__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="icon-search" width="20" height="20">
+                <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+                <line x1="16.5" y1="16.5" x2="21" y2="21"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="btn-buscar__label">Buscar asesores</span>
+          </button>
+
+          <button class="btn-limpiar" id="btn-limpiar" type="button" style="display:none;">
+            <span class="btn-limpiar__icon" aria-hidden="true">
+            </span>
+            <span class="btn-limpiar__label">Limpiar filtros</span>
+          </button>
+          
+        </aside>
+
+        <!-- RESULTADOS -->
+        <section class="resultados-area" aria-labelledby="resultados-heading">
+          <div class="resultados-header">
+            <h2 id="resultados-heading" class="resultados-titulo">Asesores disponibles</h2>
+          </div>
+        
+          <!-- Banner info -->
+          <div class="alerta-resultados" role="status">
+            <span class="alerta-icon" aria-hidden="true">ⓘ</span>
+            <span class="alerta-texto">
+              No hay resultados con tu disponibilidad actual,
+              sin embargo encontramos para ti algunos asesores disponibles en esta semana.
+            </span>
+          </div>
+          
+        
+          <!-- Lista de asesores (vacía al cargar, será llenada por JS) -->
+          <ul class="cards-lista" id="lista-asesores">
+            <!-- Aquí el JS insertará los <li> dinámicamente -->
+          </ul>
+        
+          <!-- Paginación -->
+          <div class="resultados-footer">
+            <nav class="paginacion" aria-label="Paginación de resultados">
+              <button class="page-btn prev" type="button" aria-label="Página anterior" data-page="prev" disabled>
+                ‹
+              </button>
+              <ul class="page-list" role="list">
+                <li><button class="page-number is-active" type="button" data-page="1" aria-current="page">1</button></li>
+                <li><button class="page-number" type="button" data-page="2">2</button></li>
+                <li><button class="page-number" type="button" data-page="3">3</button></li>
+                <li><span class="page-ellipsis" aria-hidden="true">…</span></li>
+                <li><button class="page-number" type="button" data-page="10">10</button></li>
+              </ul>
+              <button class="page-btn next" type="button" aria-label="Página siguiente" data-page="next">
+                ›
+              </button>
+            </nav>
+          </div>
+        </section>
+        
+      </section>
     </section>
 
     <!-- Vista: Calificar Asesores -->
@@ -267,6 +437,6 @@
   </dialog>
 
   <script src="../js/config.js"></script>
-  <script src="../js/panelAsesorado.js" defer></script>
+  <script type="module" src="../js/panelAsesorado.js" defer></script>
 </body>
 </html>
