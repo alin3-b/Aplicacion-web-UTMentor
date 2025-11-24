@@ -19,39 +19,23 @@ export const mysqlPool = mysql.createPool({
 
 // Verificación de conexión MySQL
 export async function testMySQLConnection() {
-  const maxRetries = 5;
-  const delayMs = 2000;
-  
-  console.log("🔍 Verificando conexión a MySQL...");
-  console.log("   Host:", process.env.MYSQL_HOST);
-  console.log("   Port:", process.env.MYSQL_PORT || 3306);
-  console.log("   Database:", process.env.MYSQL_DATABASE);
-  console.log("   User:", process.env.MYSQL_USER);
-  
+  const maxRetries = 10;
+  const delayMs = 1000;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`   Intento ${attempt}/${maxRetries}...`);
       const conn = await mysqlPool.getConnection();
       await conn.ping();
       conn.release();
-      console.log("✅ Conectado a MySQL exitosamente");
+      console.log("✅ Conectado a MySQL");
       return;
     } catch (error) {
       console.error(
-        `❌ Intento ${attempt}/${maxRetries} falló:`,
+        `❌ Intento ${attempt}/${maxRetries} - Error conectando a MySQL:`,
         error.message
       );
-      console.error("   Código:", error.code);
-      console.error("   errno:", error.errno);
-      
       if (attempt === maxRetries) {
-        console.error("\n❌ ERROR CRÍTICO: No se pudo conectar a MySQL después de varios intentos.");
-        console.error("\nPosibles causas:");
-        console.error("1. El servidor MySQL no está disponible");
-        console.error("2. Credenciales incorrectas");
-        console.error("3. Firewall bloqueando la conexión");
-        console.error("4. Variables de entorno no configuradas correctamente\n");
-        throw error;
+        console.error("No se pudo conectar a MySQL después de varios intentos.");
+        process.exit(1);
       }
       await new Promise((res) => setTimeout(res, delayMs));
     }
