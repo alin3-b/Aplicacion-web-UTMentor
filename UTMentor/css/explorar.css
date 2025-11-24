@@ -36,6 +36,9 @@ body{
   background:var(--bg);
   line-height:1.45;
   font-weight: 400;
+}
+
+body.public-explorar {
   padding-top: calc(var(--nav-h) + 12px);
 }
 

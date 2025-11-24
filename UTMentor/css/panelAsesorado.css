@@ -14,6 +14,8 @@
     --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
 }
 
+/* Reset body padding from explorar.css - handled by class scoping now */
+
 /* === HEADER & CONTROLS === */
 .section-header {
     display: flex;
