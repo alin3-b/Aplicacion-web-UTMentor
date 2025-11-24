@@ -30,7 +30,7 @@ export async function testMySQLConnection() {
       return;
     } catch (error) {
       console.error(
-        `❌ Intento ${attempt}/${maxRetries} - Error conectando a MySQL:`,
+        `❌ Intento ${attempt}/${maxRetries} - Error conectando a MySQL en ${process.env.MYSQL_HOST || "mysql"}:`,
         error.message
       );
       if (attempt === maxRetries) {

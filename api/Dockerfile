@@ -28,8 +28,9 @@ CMD ["npm", "run", "dev"]
 # Fase producción
 # ==============================
 FROM base AS production
+ENV NODE_ENV=production
 # Instalar solo dependencias necesarias para producción
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 COPY . .
 
 # Exponer puerto
