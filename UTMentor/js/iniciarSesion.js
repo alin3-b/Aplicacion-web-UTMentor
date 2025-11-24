@@ -360,7 +360,7 @@ window.addEventListener("pageshow", (event) => {
       forgotMsg.style.color = "#16a34a"; forgotEmail.value = "";
     } else {
       if (data.suggestRegistration) {
-        forgotEmailError.innerHTML = `No existe una cuenta con ese correo electrónico. <a href="registro.html" style="color: var(--brand); text-decoration: underline;">Regístrate aquí</a>.`;
+        forgotEmailError.innerHTML = `No existe una cuenta con este correo electrónico. <a href="registro.html" style="color: var(--brand); text-decoration: underline;">Regístrate aquí</a>.`;
       } else {
         forgotEmailError.textContent = data.message || "Error al enviar el correo. Inténtalo de nuevo.";
       }
