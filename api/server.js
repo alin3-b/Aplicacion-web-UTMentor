@@ -6,6 +6,11 @@ import Stripe from "stripe";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
+console.log("🚀 Iniciando aplicación UTmentor API...");
+console.log("📅 Timestamp:", new Date().toISOString());
+console.log("🖥️  Node version:", process.version);
+console.log("📂 Working directory:", process.cwd());
+
 import { mysqlPool, testMySQLConnection } from "./config/db.js";
 import { initMinio } from "./config/minio.js";
 
@@ -17,9 +22,31 @@ import authTestRoutes from "./routes/authTestRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
 
 dotenv.config();
+console.log("✅ Variables de entorno cargadas");
+
+// Validar variables críticas
+const requiredEnvVars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE', 'JWT_SECRET'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+if (missingVars.length > 0) {
+    console.error("❌ ERROR: Faltan variables de entorno críticas:");
+    missingVars.forEach(varName => console.error(`   - ${varName}`));
+    console.error("\n⚠️  La aplicación continuará pero puede fallar.\n");
+}
 
 const app = express();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+console.log("✅ Express app creada");
+
+let stripe;
+try {
+    if (process.env.STRIPE_SECRET_KEY) {
+        stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+        console.log("✅ Stripe inicializado");
+    } else {
+        console.warn("⚠️  STRIPE_SECRET_KEY no configurado");
+    }
+} catch (error) {
+    console.error("❌ Error inicializando Stripe:", error.message);
+}
 
 // === MIDDLEWARES – deben ir antes de las rutas ===
 // Configurar CORS para aceptar Authorization header en preflight y exponerlo en respuestas si es necesario.
@@ -96,6 +123,11 @@ app.get("/", (req, res) => {
     <p><strong>Puerto:</strong> ${process.env.PORT || 3000}</p>
     <p><a href="/api-docs">Documentación Swagger</a></p>
     `);
+});
+
+// === READINESS PROBE (para Azure Container Apps) ===
+app.get("/ready", (req, res) => {
+    res.status(200).json({ status: "ready", timestamp: new Date().toISOString() });
 });
 
 // === HEALTH CHECK ===
