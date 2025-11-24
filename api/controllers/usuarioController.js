@@ -613,15 +613,9 @@ export async function subirFotoPerfil(req, res) {
       { 'Content-Type': req.file.mimetype }
     );
 
-    // Construir URL pública
-    // Asumiendo que el bucket es público o usamos presigned URLs.
-    // Si usamos localhost para desarrollo, la URL debe ser accesible desde el navegador.
-    // process.env.MINIO_ENDPOINT suele ser interno (minio:9000).
-    // Para el navegador necesitamos localhost:9000.
-    
-    // Una opción es usar una variable de entorno para la URL pública base.
-    const publicHost = process.env.MINIO_PUBLIC_HOST || 'http://localhost:9000';
-    const url = `${publicHost}/${bucketName}/${fileName}`;
+    // Construir URL relativa para que funcione a través del proxy Nginx
+    // Esto evita problemas de CORS y de localhost vs IP pública
+    const url = `/${bucketName}/${fileName}`;
 
     // Actualizar BD
     await updateAsesorProfile(id, { ruta_foto: url });
