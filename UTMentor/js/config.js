@@ -8,6 +8,7 @@ const API_CONFIG = {
     asesores: "/api/usuarios/asesores",
     recuperarPassword: "/api/email/recuperar-password",
     pagos: "/api/pagos",
+    generarDescripcionAsesor: "/api/ia/generarDescripcionAsesor",
   },
 };
 

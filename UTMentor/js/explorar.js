@@ -33,7 +33,6 @@ function validarHora(str = "") {
 // =====================
 document.documentElement.classList.remove('no-js');
 
-
 // =====================
 // MENÚ MÓVIL
 // =====================
@@ -60,7 +59,6 @@ document.documentElement.classList.remove('no-js');
   });
 })();
 
-
 // =====================
 // FILTROS ROBUSTOS
 // =====================
@@ -85,7 +83,6 @@ document.documentElement.classList.remove('no-js');
   if (asesorInput && errorAsesor) {
     validarInputTexto(asesorInput, errorAsesor, "Nombre");
   }
-
 
   // Detectar si hay filtros activos
   function hayFiltros() {
@@ -238,7 +235,6 @@ document.documentElement.classList.remove('no-js');
   }
 })();
 
-
 // =====================
 // PAGINACIÓN + RENDER
 // =====================
@@ -327,7 +323,7 @@ function formatDisponibilidad(disponibilidades) {
     dias.add(nombresDias[fecha.getDay()]);
   });
 
-  return Array.from(dias).slice(0, 3).join(" · ") || "Próximamente";
+  return Array.from(dias).slice(0, 4).join(" · ") || "Próximamente";
 }
 
 function renderPage() {

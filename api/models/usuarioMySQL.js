@@ -91,7 +91,7 @@ export async function getAllAsesores(filtros = {}) {
     FROM usuarios u
     INNER JOIN perfiles_asesores pa ON u.id_usuario = pa.id_asesor
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
-    LEFT JOIN disponibilidades d ON d.fk_asesor = u.id_usuario
+    LEFT JOIN disponibilidades d ON d.fk_asesor = u.id_usuario AND d.es_disponible = 1
     LEFT JOIN temas t ON d.fk_tema = t.id_tema
     LEFT JOIN areas_conocimiento a ON t.fk_area = a.id_area
     WHERE ${conditions.join(" AND ")}

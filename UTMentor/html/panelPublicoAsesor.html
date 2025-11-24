@@ -26,25 +26,21 @@
 
   <main class="page">
     <section class="profile">
-      <div class="profile__header">
+      <div class="profile__header" style="display: flex; align-items: center; gap: 1.2rem;">
         <img class="profile__avatar" src="../imagenes/adviser3.jpg" alt="Foto del asesor">
-        <div class="profile__meta">
+
+        <div class="profile__meta" style="flex: 1;">
           <h1 class="profile__name">Asad Velasco Sanchez.</h1>
           <p class="profile__career">Ingeniería en Mecatrónica · 5°/1-B</p>
           <a class="profile__mail" href="mailto:asadves@gmail.com">asadves@gmail.com</a>
-
-          <div id="profileTopics" class="profile__topics">
-            <h3 class="eyebrow">Temas a enseñar</h3>
-            <ul>
-              <li>gramática</li>
-              <li>speaking</li>
-              <li>passive voice</li>
-            </ul>
-          </div>
-
-          <button id="btnReservar" class="btn primary">Reservar asesoría</button>
+          <p id="profileDescription" class="profile__description muted"></p>
         </div>
+
+        <a href="#" id="btnFavorito" class="favorite-link">
+          <img src="../imagenes/save.png" alt="Guardar"> Guardar a mis profesores
+        </a>
       </div>
+
 
       <div class="profile__grid">
         <!-- Calificaciones -->
@@ -59,21 +55,13 @@
             <div class="stars" aria-hidden="true">★★★★☆</div>
           </div>
 
-          <div class="reviews">
-            <article class="review">
-              <div class="review__avatar">👤</div>
-              <div class="review__body">
-                <h4>Julio Cesar A.</h4>
-                <p>Excelente, explica con ejemplos y paciencia.</p>
-              </div>
-            </article>
-            <article class="review">
-              <div class="review__avatar">👤</div>
-              <div class="review__body">
-                <h4>Francisco Vázquez P.</h4>
-                <p>Muy claro y ordenado, lo recomiendo.</p>
-              </div>
-            </article>
+          <div id="profileTopics" class="profile__topics">
+            <h3 class="eyebrow">Temas a enseñar</h3>
+            <ul>
+              <li>gramática</li>
+              <li>speaking</li>
+              <li>passive voice</li>
+            </ul>
           </div>
         </aside>
 
@@ -110,33 +98,100 @@
       <p class="modal__subtitle" id="slotSummary">Selecciona un horario</p>
 
       <form class="modal__form" id="bookForm" novalidate>
-        <label class="f-field">
-          <span class="f-label">Tema</span>
-          <select class="f-input" id="sessionTema" name="tema" required>
-            <!-- Se carga desde #profileTopics vía JS -->
-          </select>
-        </label>
-
-        <div class="grid-2">
-          <label class="f-field">
-            <span class="f-label">Tipo</span>
-            <select class="f-input" id="sessionTipo" name="tipo">
-              <option>1:1</option>
-              <option>Grupo</option>
-            </select>
-          </label>
-
-          <label id="maxPeopleDiv" class="f-field" style="display:none;">
-            <span class="f-label">Capacidad (grupo)</span>
-            <input class="f-input" type="number" min="2" max="10" value="5" name="capacidad">
-          </label>
+        <!-- Asesor -->
+        <div class="f-field">
+          <span class="f-label">Asesor</span>
+          <span id="modalAsesor" class="f-info"></span>
         </div>
 
+        <!-- Tema editable -->
+        <div class="f-field" id="temaDiv" style="display:none;">
+          <span class="f-label">Tema</span>
+          <select class="f-input" id="temaSelect" name="tema" required>
+            <!-- Se carga dinámicamente -->
+          </select>
+        </div>
+
+        <!-- Tema fijo -->
+        <div class="f-field" id="temaFijoDiv" style="display:none;">
+          <span class="f-label">Tema</span>
+          <span id="temaFijo" class="f-info"></span>
+        </div>
+
+        <!-- Área -->
+        <div class="f-field">
+          <span class="f-label">Área</span>
+          <span id="modalArea" class="f-info"></span>
+        </div>
+
+        <!-- Modalidad editable -->
+        <div class="f-field" id="modalidadDiv" style="display:none;">
+          <span class="f-label">Modalidad</span>
+          <select class="f-input" id="modalidadSelect" name="modalidad" required>
+            <option value="Virtual">Virtual</option>
+            <option value="Presencial">Presencial</option>
+          </select>
+        </div>
+
+        <!-- Fecha y hora -->
+        <div class="f-field">
+          <span class="f-label">Fecha y hora</span>
+          <span id="modalFecha" class="f-info"></span>
+        </div>
+
+        <!-- Tipo de sesión -->
+        <div class="f-field">
+          <span class="f-label">Tipo de sesión</span>
+          <span id="modalTipo" class="f-info"></span>
+        </div>
+
+        <!-- Capacidad (solo si es grupo) -->
+        <div class="f-field" id="capacidadDiv" style="display:none;">
+          <span class="f-label">Capacidad</span>
+          <span id="modalCapacidad" class="f-info"></span>
+        </div>
+
+        <!-- Precio -->
+        <div class="f-field">
+          <span class="f-label">Precio</span>
+          <span id="modalPrecio" class="f-info"></span>
+        </div>
+
+        <!-- Acciones -->
         <div class="modal__actions">
           <button class="btn outline" type="button" data-close>Cancelar</button>
-          <button class="btn primary" type="submit">Confirmar reserva</button>
+          <button class="btn primary" type="submit">Agendar asesoría</button>
         </div>
       </form>
+    </div>
+  </div>
+  <!-- Modal guardar asesor (usuario no autenticado) -->
+  <div id="saveAsesorModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card" role="document">
+      <button class="modal__close" data-close aria-label="Cerrar">✕</button>
+      <h2>Inicia sesión para guardar un asesor</h2>
+      <p>Debes iniciar sesión o registrarte para poder guardar asesores favoritos.</p>
+      <div class="modal__actions">
+        <button id="goLogin" class="btn primary">Iniciar sesión</button>
+        <button id="goRegister" class="btn outline">Registrarse</button>
+        <button id="closeSaveModal" class="btn" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal usuario no autenticado al intentar agendar -->
+  <div id="loginToBookModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card" role="document">
+      <button class="modal__close" data-close aria-label="Cerrar">✕</button>
+      <h2>Inicia sesión para agendar</h2>
+      <p>Debes iniciar sesión o registrarte para poder reservar una asesoría.</p>
+      <div class="modal__actions">
+        <button id="loginBookBtn" class="btn primary">Iniciar sesión</button>
+        <button id="registerBookBtn" class="btn outline">Registrarse</button>
+        <button id="closeLoginBookModal" class="btn" type="button">Cancelar</button>
+      </div>
     </div>
   </div>
 
@@ -149,6 +204,7 @@
     </div>
   </footer>
 
-  <script src="../js/panelPublicoAsesor.js" defer></script>
+  <script type="module" src="../js/panelPublicoAsesor.js" defer></script>
 </body>
+
 </html>

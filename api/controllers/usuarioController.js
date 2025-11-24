@@ -11,6 +11,7 @@ import {
   getUsuarioCheckByCorreo,
   getUserByEmail,
   getRolesByUserId,
+  getUsuarioById,
   updateUsuarioProfile,
   updateAsesorProfile,
   createDisponibilidad,

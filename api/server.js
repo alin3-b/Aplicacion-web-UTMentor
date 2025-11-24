@@ -15,6 +15,9 @@ import paymentsRoutes from "./routes/paymentsRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import authTestRoutes from "./routes/authTestRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
+import favoritosRoutes from "./routes/favoritosRoutes.js";
+import asesoriasRoutes from "./routes/asesoriasRoutes.js";
+import iaRoutes from "./routes/ia.js";
 
 dotenv.config();
 
@@ -43,6 +46,11 @@ app.use("/api/pagos", paymentsRoutes);
 // RUTAS DE EMAIL (RECUPERACIÓN DE CONTRASEÑA)  👇
 app.use("/api/email", emailRoutes);
 
+app.use("/api/favoritos", favoritosRoutes);
+
+app.use("/api/asesorias", asesoriasRoutes);
+
+app.use("/api/ia", iaRoutes);
 // === SWAGGER ===
 const swaggerOptions = {
     definition: {

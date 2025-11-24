@@ -202,7 +202,12 @@ async function cargarAsesoresPopulares() {
       return;
     }
 
-    const asesoresOrdenados = asesores.sort((a, b) => b.puntuacion_promedio - a.puntuacion_promedio || b.numero_sesiones - a.numero_sesiones);
+    // Ordenar: primero por número de sesiones (descendente), luego por puntuación promedio (descendente)
+    const asesoresOrdenados = asesores.sort((a, b) => 
+      b.numero_sesiones - a.numero_sesiones || 
+      b.puntuacion_promedio - a.puntuacion_promedio
+    );
+
     const asesoresTop = asesoresOrdenados.slice(0, 5);
     track.innerHTML = asesoresTop.map((asesor, index) => crearAsesorCard(asesor, index)).join("");
     inicializarCarruselAsesores();
