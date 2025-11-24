@@ -75,7 +75,7 @@ async function authFetch(url, options = {}) {
 async function cargarPerfilCompletoDesdeAPI() {
   try {
     const response = await authFetch(
-      `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`
+      `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}?t=${Date.now()}`
     );
     const result = await response.json();
 
