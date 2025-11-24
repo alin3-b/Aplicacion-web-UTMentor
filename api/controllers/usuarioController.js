@@ -2,7 +2,6 @@
 import bcrypt from "bcryptjs";
 import {
   getUsuarios,
-  getUsuarioById,
   addUsuario,
   getAllAsesores,
   getAsesorInfo,
