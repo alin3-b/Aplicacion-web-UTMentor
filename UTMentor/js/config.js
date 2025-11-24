@@ -1,6 +1,6 @@
 // Configuración global de la API
 const API_CONFIG = {
-  baseURL: "http://localhost:3000",
+  baseURL: "",
   endpoints: {
     login: "/api/usuarios/login",
     register: "/api/usuarios",

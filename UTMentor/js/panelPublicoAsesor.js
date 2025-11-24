@@ -1,6 +1,6 @@
 /* Panel público de asesor — carga perfil, disponibilidad semanal y reserva */
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "";
 
 const fmtDay = new Intl.DateTimeFormat('es-MX', { weekday: 'short', day: '2-digit' });
 const agendaGrid = document.getElementById('agendaGrid');
