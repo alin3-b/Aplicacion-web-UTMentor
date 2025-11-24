@@ -1,4 +1,6 @@
 /* ===== Utilities (mismas del panel del asesor) ===== */
+import { obtenerAsesores } from "./services/asesorService.js";
+
 const $  = (sel, ctx=document) => ctx.querySelector(sel);
 const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
@@ -167,6 +169,7 @@ async function fetchSessions() {
 window.addEventListener("DOMContentLoaded", ()=>{
   // Cargar perfil inmediatamente para mostrar datos reales
   loadProfile();
+  initExplorarView();
 
   renderWeek();
   fetchSessions(); // Cargar sesiones reales
@@ -588,4 +591,209 @@ async function loadProfile(){
       toast("Error de conexión", "danger");
     }
   };
+}
+
+/* ===== Vista Explorar ===== */
+let exploreState = {
+  asesores: [],
+  currentPage: 1,
+  perPage: 6,
+  totalPages: 1
+};
+
+function initExplorarView() {
+  const view = $("#view-explorar");
+  if (!view) return;
+
+  const temaInput = view.querySelector('#filtro-tema');
+  const asesorInput = view.querySelector('#filtro-asesor');
+  const carreraSel = view.querySelector('#filtro-carrera');
+  const diaSel = view.querySelector('#filtro-dia');
+  const desdeTime = view.querySelector('#filtro-hora-desde');
+  const hastaTime = view.querySelector('#filtro-hora-hasta');
+  const areaSel = view.querySelector('#filtro-area');
+  const buscarBtn = view.querySelector('#btn-buscar');
+  const limpiarBtn = view.querySelector('#btn-limpiar');
+  const listaAsesoresEl = view.querySelector("#lista-asesores");
+
+  // Cargar asesores iniciales
+  cargarAsesores();
+
+  // Event listeners
+  buscarBtn?.addEventListener('click', async () => {
+    const filtros = {
+      tema: temaInput?.value.trim() || '',
+      asesor: asesorInput?.value.trim() || '',
+      carrera: carreraSel?.value || '',
+      dia: diaSel?.value || '',
+      desde: desdeTime?.value || '',
+      hasta: hastaTime?.value || '',
+      area: areaSel?.value || ''
+    };
+    
+    try {
+      const resp = await obtenerAsesores(filtros);
+      if (Array.isArray(resp)) {
+        exploreState.asesores = resp;
+      } else if (Array.isArray(resp.asesores)) {
+        exploreState.asesores = resp.asesores;
+      } else {
+        exploreState.asesores = [];
+      }
+      exploreState.currentPage = 1;
+      renderExplorePage();
+      if(limpiarBtn) limpiarBtn.style.display = "inline-flex";
+    } catch (error) {
+      console.error("Error buscando asesores:", error);
+      toast("Error al buscar asesores", "danger");
+    }
+  });
+
+  limpiarBtn?.addEventListener('click', () => {
+    if (temaInput) temaInput.value = "";
+    if (asesorInput) asesorInput.value = "";
+    if (carreraSel) carreraSel.selectedIndex = 0;
+    if (diaSel) diaSel.selectedIndex = 0;
+    if (areaSel) areaSel.selectedIndex = 0;
+    if (desdeTime) desdeTime.value = "";
+    if (hastaTime) hastaTime.value = "";
+    limpiarBtn.style.display = "none";
+    cargarAsesores();
+  });
+
+  // Paginación
+  view.addEventListener('click', (e) => {
+    if (e.target.matches('.page-btn.prev')) gotoExplorePage(exploreState.currentPage - 1);
+    else if (e.target.matches('.page-btn.next')) gotoExplorePage(exploreState.currentPage + 1);
+    else if (e.target.matches('.page-number')) {
+      const n = Number(e.target.dataset.page);
+      if (Number.isFinite(n)) gotoExplorePage(n);
+    }
+  });
+
+  async function cargarAsesores() {
+    try {
+      exploreState.asesores = await obtenerAsesores();
+      exploreState.currentPage = 1;
+      renderExplorePage();
+    } catch (error) {
+      console.error("Error cargando asesores:", error);
+      if(listaAsesoresEl) listaAsesoresEl.innerHTML = `<li style="padding:2rem;text-align:center;">Error al cargar asesores</li>`;
+    }
+  }
+
+  function renderExplorePage() {
+    if (!listaAsesoresEl) return;
+    
+    const alerta = view.querySelector(".alerta-resultados");
+    exploreState.totalPages = Math.ceil(exploreState.asesores.length / exploreState.perPage);
+
+    if (exploreState.asesores.length === 0) {
+      listaAsesoresEl.innerHTML = "";
+      if (alerta) {
+        alerta.style.display = "flex";
+        alerta.querySelector(".alerta-texto").textContent = "No se encontraron asesores.";
+      }
+      updateExplorePagination();
+      return;
+    }
+
+    if (alerta) alerta.style.display = "none";
+
+    const start = (exploreState.currentPage - 1) * exploreState.perPage;
+    const end = start + exploreState.perPage;
+    const pageAsesores = exploreState.asesores.slice(start, end);
+
+    listaAsesoresEl.innerHTML = pageAsesores.map(crearAsesorCard).join("");
+    updateExplorePagination();
+  }
+
+  function updateExplorePagination() {
+    const pag = view.querySelector('.paginacion');
+    if (!pag) return;
+
+    const btnPrev = pag.querySelector('.page-btn.prev');
+    const btnNext = pag.querySelector('.page-btn.next');
+    const pageList = pag.querySelector('.page-list');
+
+    if (btnPrev) btnPrev.disabled = exploreState.currentPage <= 1;
+    if (btnNext) btnNext.disabled = exploreState.currentPage >= exploreState.totalPages;
+
+    if (pageList) {
+      pageList.innerHTML = "";
+      for (let i = 1; i <= exploreState.totalPages; i++) {
+        if (exploreState.totalPages > 10 && Math.abs(i - exploreState.currentPage) > 2 && i !== 1 && i !== exploreState.totalPages) continue;
+        
+        const isCurrent = i === exploreState.currentPage;
+        pageList.innerHTML += `
+          <li><button class="page-number ${isCurrent ? 'is-active' : ''}" 
+            data-page="${i}" ${isCurrent ? 'aria-current="page"' : ''}>${i}</button></li>`;
+      }
+    }
+  }
+
+  function gotoExplorePage(n) {
+    exploreState.currentPage = Math.min(Math.max(1, n), exploreState.totalPages);
+    renderExplorePage();
+  }
+
+  function safe(str) {
+    return String(str || "").replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function crearAsesorCard(asesor) {
+    const rating = parseFloat(asesor.puntuacion_promedio) || 0;
+    const sesiones = asesor.numero_sesiones || 0;
+    const sesionesTexto = sesiones >= 10 ? `${sesiones}+` : sesiones;
+    const disponibilidad = formatDisponibilidad(asesor.disponibilidades);
+    const avatar = asesor.ruta_foto || "../imagenes/logo.png"; 
+
+    const entero = Math.floor(rating);
+    let starsHtml = "";
+    for (let i = 0; i < 5; i++) starsHtml += i < entero ? "★" : "☆";
+
+    return `
+      <li class="asesor-card">
+        <div class="asesor-card-main">
+          <img class="asesor-avatar" src="${safe(avatar)}" alt="${safe(asesor.nombre_completo)}" />
+          <div class="asesor-info">
+            <div class="asesor-headerline">
+              <span class="asesor-nombre">${safe(asesor.nombre_completo)}</span>
+            </div>
+            <div class="asesor-detalle">
+              <span class="asesor-carrera">${safe(asesor.nombre_carrera || "Sin carrera")}</span>
+              <span class="asesor-bullet">·</span>
+              <span class="asesor-semestre">${safe(asesor.semestre || "-")}º</span>
+            </div>
+            <div class="asesor-stats">
+              <span class="asesor-sesiones">${sesionesTexto} sesiones completadas</span>
+            </div>
+          </div>
+          <div class="asesor-extra">
+            <div class="asesor-rating">
+              <div class="stars" aria-label="${rating} de 5">${starsHtml}</div>
+              <div class="asesor-submeta">
+                <span>${rating.toFixed(1)} / 5</span>
+              </div>
+              <div class="asesor-availability">
+                <span>${safe(disponibilidad)}</span>
+              </div>
+            </div>
+            <a class="btn-perfil" href="panelPublicoAsesor.html?id=${asesor.id_usuario}">Ver perfil</a>
+          </div>
+        </div>
+      </li>
+    `;
+  }
+
+  function formatDisponibilidad(disponibilidades) {
+    if (!disponibilidades || disponibilidades.length === 0) return "Sin disponibilidad";
+    const nombresDias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+    const dias = new Set();
+    disponibilidades.forEach(d => {
+      const fecha = new Date(d.fecha_inicio);
+      dias.add(nombresDias[fecha.getDay()]);
+    });
+    return Array.from(dias).slice(0, 3).join(" · ") || "Próximamente";
+  }
 }
