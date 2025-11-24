@@ -60,7 +60,15 @@ export async function listarAsesoriasPorAsesor(req, res) {
  */
 export async function agendarAsesoria(req, res) {
     try {
-        const fk_asesorado = req.user.id; // viene de JWT
+        // authMiddleware pone el usuario en req.usuario
+        const usuario = req.usuario || req.user;
+        // El payload del token tiene id_usuario, no id
+        const userId = usuario?.id_usuario || usuario?.id;
+
+        if (!userId) {
+            return res.status(401).json({ ok: false, mensaje: "Usuario no autenticado" });
+        }
+        const fk_asesorado = userId; 
         const { fk_disponibilidad } = req.body;
 
         if (!fk_disponibilidad) {

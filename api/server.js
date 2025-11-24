@@ -17,6 +17,7 @@ import authTestRoutes from "./routes/authTestRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
 import favoritosRoutes from "./routes/favoritosRoutes.js";
 import asesoriasRoutes from "./routes/asesoriasRoutes.js";
+import inscripcionesRoutes from "./routes/inscripcionesRoutes.js";
 import iaRoutes from "./routes/ia.js";
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.use("/api/email", emailRoutes);
 app.use("/api/favoritos", favoritosRoutes);
 
 app.use("/api/asesorias", asesoriasRoutes);
+app.use("/api/inscripciones", inscripcionesRoutes);
 
 app.use("/api/ia", iaRoutes);
 // === SWAGGER ===

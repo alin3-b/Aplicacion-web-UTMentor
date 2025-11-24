@@ -1,5 +1,7 @@
 /* Panel público de asesor — carga perfil, disponibilidad semanal y reserva */
 
+const API_BASE_URL = "http://localhost:3000";
+
 const fmtDay = new Intl.DateTimeFormat('es-MX', { weekday: 'short', day: '2-digit' });
 const agendaGrid = document.getElementById('agendaGrid');
 const weekLabel = document.getElementById('weekLabel');
@@ -60,7 +62,7 @@ function utcToMexicoLocal(utcIsoString) {
 // =========================
 async function fetchPerfilAsesor(id) {
   try {
-    const res = await fetch(`/api/usuarios/asesores/${id}`);
+    const res = await fetch(`${API_BASE_URL}/api/usuarios/asesores/${id}`);
     if (res.status === 404) { showErrorMessage('Asesor no encontrado.'); return null; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
@@ -76,7 +78,7 @@ async function fetchPerfilAsesor(id) {
 // ===========================
 async function fetchAsesorias(id) {
   try {
-    const res = await fetch(`/api/asesorias/asesor/${id}`);
+    const res = await fetch(`${API_BASE_URL}/api/asesorias/asesor/${id}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return data.asesorias || [];
@@ -108,7 +110,7 @@ async function generarYMostrarDescripcion(data) {
   try {
     const temasTexto = temasDelPerfil.map(t => t.nombre_tema);
 
-    const response = await fetch("/api/ia/generarDescripcionAsesor", {
+    const response = await fetch(`${API_BASE_URL}/api/ia/generarDescripcionAsesor`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -449,7 +451,7 @@ bookForm.addEventListener('submit', async e => {
   };
 
   try {
-    const res = await fetch('/api/inscripciones', {
+    const res = await fetch(`${API_BASE_URL}/api/inscripciones`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -554,15 +556,30 @@ btnFavorito.addEventListener('click', async () => {
     return;
   }
 
+  let userId;
   try {
-    const res = await fetch('/api/favoritos', {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (usuario && usuario.id) {
+      userId = usuario.id;
+    }
+  } catch (e) {
+    console.error("Error parsing user data", e);
+  }
+
+  if (!userId) {
+    alert("Error: No se pudo identificar al usuario. Por favor inicia sesión nuevamente.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/favoritos`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        fk_asesorado: Number(localStorage.getItem('userId')), // asumiendo que guardas el ID del usuario
+        fk_asesorado: Number(userId),
         fk_asesor: Number(asesorId)
       })
     });
