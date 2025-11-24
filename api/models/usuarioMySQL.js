@@ -372,6 +372,7 @@ export async function getUsuarioById(id) {
       u.correo,
       u.semestre,
       u.fk_carrera,
+      u.ruta_foto,
       c.nombre_carrera
     FROM usuarios u
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
