@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: utmentor-app-api # Ensure this App Service is configured as "Code" (Node.js), NOT "Docker Container"
+  AZURE_WEBAPP_NAME: utmentor-app-api-v1 # Ensure this App Service is configured as "Code" (Node.js), NOT "Docker Container"
   NODE_VERSION: '24.x'
 
 jobs:
