@@ -267,6 +267,9 @@ document.getElementById("formRegistro").addEventListener("submit", async (e) => 
     const usuario = loginRes.data.usuario;
     usuario.roles = usuario.roles.map(r => r === 1 ? "Asesor" : r === 2 ? "Asesorado" : "Usuario");
     usuario.nombre_rol = usuario.nombre_rol || usuario.roles[0];
+    
+    // Asignar id para compatibilidad con paneles
+    usuario.id = usuario.id_usuario;
 
     localStorage.setItem("usuario", JSON.stringify(usuario));
     localStorage.setItem("isLoggedIn", "true");
