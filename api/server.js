@@ -70,10 +70,32 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // === CONEXIÓN A BASE DE DATOS ===
-await testMySQLConnection();
+console.log("🔄 Iniciando conexión a MySQL...");
+console.log("📋 Variables de entorno:");
+console.log("   - MYSQL_HOST:", process.env.MYSQL_HOST || "mysql (default)");
+console.log("   - MYSQL_PORT:", process.env.MYSQL_PORT || "3306 (default)");
+console.log("   - MYSQL_DATABASE:", process.env.MYSQL_DATABASE || "utmentor (default)");
+console.log("   - MYSQL_USER:", process.env.MYSQL_USER || "root (default)");
+
+try {
+    await testMySQLConnection();
+} catch (error) {
+    console.error("❌ Error crítico: No se pudo conectar a MySQL");
+    console.error("   Detalles:", error.message);
+    process.exit(1);
+}
 
 // === INICIALIZAR MINIO ===
-await initMinio();
+console.log("🔄 Iniciando conexión a MinIO...");
+console.log("   - MINIO_ENDPOINT:", process.env.MINIO_ENDPOINT || "localhost (default)");
+try {
+    await initMinio();
+    console.log("✅ MinIO inicializado correctamente");
+} catch (error) {
+    console.warn("⚠️  Advertencia: MinIO no está disponible");
+    console.warn("   Las funciones de almacenamiento de archivos no estarán disponibles");
+    console.warn("   Detalles:", error.message);
+}
 
 // === RUTA RAÍZ ===
 app.get("/", (req, res) => {
@@ -98,14 +120,24 @@ app.get("/health", async (req, res) => {
         services: {
             mysql: mysqlOk ? "connected" : "disconnected",
         },
+        environment: {
+            nodeEnv: process.env.NODE_ENV || "development",
+            port: process.env.PORT || 3000,
+            mysqlHost: process.env.MYSQL_HOST || "mysql",
+        },
         timestamp: new Date().toISOString(),
     });
 });
 
 // === INICIAR SERVIDOR ===
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en puerto ${PORT}`);
-    console.log(`http://localhost:${PORT}/`);
-    console.log(`Documentación: http://localhost:${PORT}/api-docs`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log("=".repeat(60));
+    console.log("🚀 SERVIDOR INICIADO CORRECTAMENTE");
+    console.log("=".repeat(60));
+    console.log(`📍 Puerto: ${PORT}`);
+    console.log(`🌐 URL: http://localhost:${PORT}/`);
+    console.log(`📚 Documentación: http://localhost:${PORT}/api-docs`);
+    console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
+    console.log("=".repeat(60));
 });
