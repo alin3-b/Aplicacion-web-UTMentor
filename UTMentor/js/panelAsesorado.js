@@ -165,10 +165,8 @@ async function fetchSessions() {
 
 /* ===== Inicio ===== */
 window.addEventListener("DOMContentLoaded", ()=>{
-  // Chip superior
-  $("#chipName").textContent   = state.profile.name;
-  $("#chipCareer").textContent = `${state.profile.career} · ${state.profile.semester}º`;
-  $("#chipAvatar").src         = state.profile.avatar;
+  // Cargar perfil inmediatamente para mostrar datos reales
+  loadProfile();
 
   renderWeek();
   fetchSessions(); // Cargar sesiones reales
@@ -487,6 +485,7 @@ async function loadProfile(){
   }
 
   $("#profileAvatar").src       = state.profile.avatar;
+  $("#chipAvatar").src          = state.profile.avatar;
   $("#pName").value             = state.profile.name;
   $("#pCareer").value           = state.profile.fk_carrera || "";
   $("#pSemester").value         = state.profile.semester;
