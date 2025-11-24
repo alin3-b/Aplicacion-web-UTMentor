@@ -1,0 +1,43 @@
+name: Deploy API (Direct Code)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'api/**'
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: utmentor-app-api # Ensure this App Service is configured as "Code" (Node.js), NOT "Docker Container"
+  NODE_VERSION: '24.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Install dependencies
+      working-directory: ./api
+      run: |
+        npm ci --omit=dev
+        # If you had a build script (e.g., for TypeScript), you would run it here:
+        # npm run build --if-present
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        package: ./api
