@@ -134,7 +134,7 @@ form.addEventListener("submit", async (e) => {
 
     // Éxito
     globalOk.innerHTML =
-      'Tu contraseña ha sido actualizada. <a class="link" href="iniciarSesion.html">Inicia sesión ahora</a>.';
+      'Tu contraseña ha sido actualizada exitosamente. <a class="link" href="iniciarSesion.html">Inicia sesión ahora</a>.';
     globalOk.style.display = "block";
     // Limpia campos
     pw.value = "";
@@ -144,7 +144,7 @@ form.addEventListener("submit", async (e) => {
     
   } catch (error) {
     console.error(error);
-    globalErr.textContent = "Error de conexión con el servidor.";
+    globalErr.textContent = "No se pudo enviar el correo. Intenta nuevamente en unos minutos.";
     globalErr.style.display = "block";
   } finally {
     if (submitBtn.textContent === "Actualizando...") {

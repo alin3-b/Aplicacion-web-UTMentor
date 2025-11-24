@@ -764,3 +764,40 @@ body {
 .btn-login{
   margin-top: .8rem;
 }
+
+/* ================================
+   Estilos para el modal de recuperación
+   ================================ */
+.auth-field {
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  border-radius: 12px;
+  font-size: 1rem;
+  color: var(--text);
+  background: #f8fafc;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--brand);
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--ring), 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.auth-input::placeholder {
+  color: #94a3b8;
+}
+
+.auth-meta {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
