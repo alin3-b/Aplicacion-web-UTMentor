@@ -202,16 +202,17 @@ window.addEventListener("DOMContentLoaded", ()=>{
         const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/logout`, {
           method: "POST"
         });
-        if (res.ok) {
-          localStorage.clear(); // Limpiar storage al salir
-          toast("Sesión cerrada", "success");
-          setTimeout(() => location.href = "iniciarSesion.html", 1000);
-        } else {
-          toast("Error al cerrar sesión", "danger");
-        }
+        
+        // Limpiar sesión local independientemente de la respuesta del servidor
+        localStorage.clear();
+        toast("Sesión cerrada", "success");
+        setTimeout(() => location.href = "iniciarSesion.html", 1000);
+
       } catch (error) {
         console.error(error);
-        toast("Error de conexión", "danger");
+        // Forzar salida en caso de error de red
+        localStorage.clear();
+        window.location.href = "iniciarSesion.html";
       }
     }
   });
