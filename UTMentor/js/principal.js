@@ -57,11 +57,11 @@ document.documentElement.classList.remove("no-js");
 
 // ---------------- TESTIMONIOS ----------------
 const testimonials = [
-  { img: "../imagenes/testimony1.jpg", quote: "“Agendé cálculo en minutos y pasé mi extraordinario. La asesoría fue directa, clara y sin vueltas.”", author: "— Andrea M., Ingeniería Industrial", alt: "Andrea M." },
-  { img: "../imagenes/testimony2.jpg", quote: "“Me gustó que el asesor ya tenía reseñas y horario claro.”", author: "— Luis R., Ingeniería en Física Aplicada", alt: "Luis R." },
-  { img: "../imagenes/testimony3.jpg", quote: "“Confirmaron por correo en menos de un día. Muy serio todo.”", author: "— Pablo S., Ingeniería Mecánica Automotriz", alt: "Pablo S." },
-  { img: "../imagenes/testimony4.jpg", quote: "“Doy asesorías de programación y mi reputación me trae más alumnos.”", author: "— Sofía G., Asesora en Programación Modular", alt: "Sofía G." },
-  { img: "../imagenes/testimony5.jpg", quote: "“Funciona presencial o por videollamada, eso me salvó.”", author: "— Miriam A., Ingeniería Civil", alt: "Miriam A." },
+  { img: "../imagenes/testimony1.jpeg", quote: "“Agendé cálculo en minutos y pasé mi extraordinario. La asesoría fue directa, clara y sin vueltas.”", author: "— Yoleth V., Ingeniería Industrial", alt: "Yoleth V." },
+  { img: "../imagenes/testimony2.jpeg", quote: "“Me gustó que el asesor ya tenía reseñas y horario claro.”", author: "— Robert H., Ingeniería en Computación", alt: "Robert H." },
+  { img: "../imagenes/testimony3.jpeg", quote: "“Confirmaron por correo en menos de un día. Muy serio todo.”", author: "— Javier S., Ingeniería Mecánica Automotriz", alt: "Javier S." },
+  { img: "../imagenes/testimony4.jpeg", quote: "“Doy asesorías de programación y mi reputación me trae más alumnos.”", author: "— Zuri C., Asesora en Programación Modular", alt: "Zuri C." },
+  { img: "../imagenes/testimony5.jpeg", quote: "“Funciona presencial o por videollamada, eso me salvó.”", author: "— Frida M., Ingeniería Civil", alt: "Frida M." },
 ];
 
 let currentTestimonial = 0;
@@ -144,7 +144,7 @@ function generarEstrellas(calificacion) {
 }
 
 function crearAsesorCard(asesor, index) {
-  const imagenAsesor = advisorImages[index % advisorImages.length];
+  const imagenAsesor = asesor.ruta_foto || "../imagenes/profilepicture.jpg";
   const partesNombre = asesor.nombre_completo.trim().split(" ");
   const primerNombre = partesNombre[0] || "";
   const primeraLetraApellido = partesNombre[1] ? partesNombre[1][0] + "." : "";
@@ -160,7 +160,7 @@ function crearAsesorCard(asesor, index) {
       <div class="advisorCard__rowTop">
         <div class="advisorCard__profile">
           <div class="advisorCard__avatar">
-            <img src="${imagenAsesor}" alt="${nombreCorto}" />
+            <img src="${imagenAsesor}" alt="${nombreCorto}" onerror="this.onerror=null; this.src='../imagenes/profilepicture.jpg';" />
           </div>
           <div class="advisorCard__info">
             <div class="advisorCard__name">${nombreCorto}</div>
