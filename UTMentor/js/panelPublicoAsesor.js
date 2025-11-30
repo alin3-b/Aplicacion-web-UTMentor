@@ -149,6 +149,16 @@ async function generarYMostrarDescripcion(data) {
 function renderPerfil(data) {
   if (!data) return;
 
+  // Actualizar foto de perfil
+  const avatarImg = document.querySelector('.profile__avatar');
+  if (avatarImg) {
+    avatarImg.src = data.ruta_foto || '../imagenes/profilepicture.jpg';
+    avatarImg.onerror = () => {
+      avatarImg.onerror = null;
+      avatarImg.src = '../imagenes/profilepicture.jpg';
+    };
+  }
+
   profileNameEl.textContent = safeText(data.nombre_completo || 'Asesor');
   profileCareerEl.textContent = safeText(
     data.nombre_carrera
