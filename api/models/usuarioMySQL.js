@@ -616,11 +616,38 @@ export async function deleteDisponibilidad(id_disponibilidad, id_asesor) {
 }
 
 export async function deleteUsuario(id_usuario) {
-  const [result] = await mysqlPool.query(
-    "UPDATE usuarios SET es_activo = FALSE WHERE id_usuario = ?",
-    [id_usuario]
-  );
-  return result.affectedRows > 0;
+  const conn = await mysqlPool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // 1. Eliminar foto de perfil si existe
+    const [usuario] = await conn.query(
+      "SELECT ruta_foto FROM usuarios WHERE id_usuario = ?",
+      [id_usuario]
+    );
+
+    // 2. Eliminar usuario (las foreign keys con CASCADE se encargan del resto)
+    // Esto eliminará automáticamente:
+    // - perfiles_asesores (y cascadeará a disponibilidades, asesores_temas)
+    // - inscripciones_sesion (y cascadeará a calificaciones)
+    // - favoritos (tanto si es asesor como asesorado)
+    // - tokens_recuperacion
+    // - usuario_rol
+    // El historial_cancelaciones mantendrá los registros pero con fk_usuario_cancelo = NULL
+    const [result] = await conn.query(
+      "DELETE FROM usuarios WHERE id_usuario = ?",
+      [id_usuario]
+    );
+
+    await conn.commit();
+    return result.affectedRows > 0;
+  } catch (error) {
+    await conn.rollback();
+    console.error("Error al eliminar usuario:", error);
+    throw error;
+  } finally {
+    conn.release();
+  }
 }
 
 export async function getAsesoriasPorAsesorado(id_estudiante) {
