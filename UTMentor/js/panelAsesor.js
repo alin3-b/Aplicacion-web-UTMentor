@@ -86,7 +86,7 @@ async function cargarPerfilCompletoDesdeAPI() {
       state.profile.semester = result.semestre;
       state.profile.email = result.correo_contacto;
       state.profile.advisoriesGiven = result.numero_sesiones;
-      state.profile.avatar = result.ruta_foto || "../imagenes/adviser1.jpg";
+      state.profile.avatar = result.ruta_foto || "../imagenes/profilepicture.jpg";
       state.profile.stars = result.puntuacion_promedio;
       state.profile.roles = result.roles || [];
 
@@ -110,7 +110,9 @@ async function cargarPerfilCompletoDesdeAPI() {
       // Actualizar UI del header
       $("#chipName").textContent = state.profile.name;
       $("#chipCareer").textContent = `${state.profile.career} · ${state.profile.semester}º`;
-      $("#chipAvatar").src = state.profile.avatar;
+      const chipAvatar = $("#chipAvatar");
+      chipAvatar.src = state.profile.avatar;
+      chipAvatar.onerror = () => { chipAvatar.onerror = null; chipAvatar.src = "../imagenes/profilepicture.jpg"; };
 
       // Lógica del botón de cambio de rol
       const switchBtn = $('[data-action="switch-role"]');
@@ -294,7 +296,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   $(
     "#chipCareer"
   ).textContent = `${state.profile.career} · ${state.profile.semester}º`;
-  $("#chipAvatar").src = state.profile.avatar;
+  const chipAvatarInit = $("#chipAvatar");
+  chipAvatarInit.src = state.profile.avatar;
+  chipAvatarInit.onerror = () => { chipAvatarInit.onerror = null; chipAvatarInit.src = "../imagenes/profilepicture.jpg"; };
 
   // top bar week label
   renderWeek();
@@ -722,7 +726,9 @@ function renderTopics() {
 
 /* ========== PERFIL ========= */
 function loadProfile() {
-  $("#profileAvatar").src = state.profile.avatar;
+  const profileAvatar = $("#profileAvatar");
+  profileAvatar.src = state.profile.avatar;
+  profileAvatar.onerror = () => { profileAvatar.onerror = null; profileAvatar.src = "../imagenes/profilepicture.jpg"; };
   $("#pName").value = state.profile.name;
   $("#pCareer").value = state.profile.career;
   $("#pSemester").value = state.profile.semester;

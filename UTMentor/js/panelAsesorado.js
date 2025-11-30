@@ -59,7 +59,7 @@ const state = {
     career: "Ingeniería en Computación",
     semester: 5,
     email: "lucia@utmentor.demo",
-    avatar: usuario.ruta_foto || "../imagenes/adviser2.jpg"
+    avatar: usuario.ruta_foto || "../imagenes/profilepicture.jpg"
   },
   sessions: [], // se llena según semana
   ratings: [
@@ -496,6 +496,8 @@ async function loadProfile(){
       // Actualizar avatar desde la respuesta del backend
       if (user.ruta_foto) {
         state.profile.avatar = user.ruta_foto;
+      } else {
+        state.profile.avatar = "../imagenes/profilepicture.jpg";
       }
 
       // Sincronizar localStorage
@@ -509,8 +511,14 @@ async function loadProfile(){
     toast("Error al cargar datos del perfil", "danger");
   }
 
-  $("#profileAvatar").src       = state.profile.avatar;
-  $("#chipAvatar").src          = state.profile.avatar;
+  const profileAvatar = $("#profileAvatar");
+  profileAvatar.src = state.profile.avatar;
+  profileAvatar.onerror = () => { profileAvatar.onerror = null; profileAvatar.src = "../imagenes/profilepicture.jpg"; };
+  
+  const chipAvatar = $("#chipAvatar");
+  chipAvatar.src = state.profile.avatar;
+  chipAvatar.onerror = () => { chipAvatar.onerror = null; chipAvatar.src = "../imagenes/profilepicture.jpg"; };
+  
   $("#pName").value             = state.profile.name;
   $("#pCareer").value           = state.profile.fk_carrera || "";
   $("#pSemester").value         = state.profile.semester;
@@ -534,8 +542,13 @@ async function loadProfile(){
       if (res.ok) {
         const data = await res.json();
         // data.url contiene la URL de la imagen en MinIO (o local)
-        $("#profileAvatar").src = data.url;
-        $("#chipAvatar").src    = data.url;
+        const profileAvatarUpload = $("#profileAvatar");
+        profileAvatarUpload.src = data.url;
+        profileAvatarUpload.onerror = () => { profileAvatarUpload.onerror = null; profileAvatarUpload.src = "../imagenes/profilepicture.jpg"; };
+        
+        const chipAvatarUpload = $("#chipAvatar");
+        chipAvatarUpload.src = data.url;
+        chipAvatarUpload.onerror = () => { chipAvatarUpload.onerror = null; chipAvatarUpload.src = "../imagenes/profilepicture.jpg"; };
 
         // Actualizar localStorage
         const localUser = JSON.parse(localStorage.getItem("usuario") || "{}");
@@ -558,7 +571,7 @@ async function loadProfile(){
       btnDelete.onclick = async (e) => {
           e.preventDefault();
           if(await confirmDialog("¿Eliminar tu foto de perfil?")) {
-              const defaultImg = "../imagenes/logo.png"; // Fallback image
+              const defaultImg = "../imagenes/profilepicture.jpg"; // Fallback image
               $("#profileAvatar").src = defaultImg;
               $("#chipAvatar").src = defaultImg;
 
