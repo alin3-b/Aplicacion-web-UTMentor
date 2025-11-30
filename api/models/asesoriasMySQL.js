@@ -49,6 +49,27 @@ export async function existeInscripcion(fk_disponibilidad, fk_asesorado) {
  * Crea una inscripción
  */
 export async function crearInscripcion(fk_disponibilidad, fk_asesorado) {
+    // 1. Verificar cupo
+    const [rows] = await mysqlPool.query(
+        `SELECT d.capacidad, COUNT(i.id_inscripcion) as ocupados
+         FROM disponibilidades d
+         LEFT JOIN inscripciones_sesion i ON i.fk_disponibilidad = d.id_disponibilidad 
+                                         AND i.estado != 'cancelada'
+         WHERE d.id_disponibilidad = ?
+         GROUP BY d.id_disponibilidad`,
+        [fk_disponibilidad]
+    );
+
+    if (rows.length === 0) {
+        throw new Error("La disponibilidad no existe");
+    }
+
+    const { capacidad, ocupados } = rows[0];
+    if (ocupados >= capacidad) {
+        throw new Error("El cupo para esta sesión está lleno");
+    }
+
+    // 2. Insertar
     const [result] = await mysqlPool.query(
         `INSERT INTO inscripciones_sesion (fk_disponibilidad, fk_asesorado)
          VALUES (?, ?)`,

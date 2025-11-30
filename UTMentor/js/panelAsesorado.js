@@ -379,11 +379,10 @@ function openRatingModal(ratingItem) {
         // Si no selecciona estrellas, se envía 0.
 
         try {
-            // Usamos el endpoint para calificar al asesor (busca la sesión pendiente automáticamente)
-            const res = await authFetch(`${API_CONFIG.baseURL}/api/usuarios/${USER_ID}/calificar-asesor`, {
+            // Usamos el endpoint específico para calificar la sesión por su ID
+            const res = await authFetch(`${API_CONFIG.baseURL}/api/asesorias/${ratingItem.id}/calificar`, {
                 method: "POST",
                 body: JSON.stringify({
-                    id_asesor: ratingItem.advisorId,
                     puntuacion: stars
                     // comentario omitido según requerimiento
                 })
@@ -393,8 +392,8 @@ function openRatingModal(ratingItem) {
                 const msg = stars === 0 ? "Calificación enviada: 0 estrellas" : "¡Gracias por tu calificación!";
                 toast(msg, stars === 0 ? "info" : "success");
                 
-                // Eliminar de la lista localmente
-                state.ratings = state.ratings.filter(r => r.id !== ratingItem.id);
+                // Eliminar de la lista localmente para que desaparezca la card inmediatamente
+                state.ratings = state.ratings.filter(r => String(r.id) !== String(ratingItem.id));
                 renderRatings();
                 dlg.close();
             } else {
