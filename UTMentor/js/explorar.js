@@ -261,7 +261,8 @@ function generarEstrellas(calificacion) {
 }
 
 function crearAsesorCard(asesor, index) {
-  const imagenAsesor = advisorImages[index % advisorImages.length];
+  // Usar ruta_foto si existe, de lo contrario usar profilepicture.jpg
+  const imagenAsesor = asesor.ruta_foto || "../imagenes/profilepicture.jpg";
   const nombreCorto = sanitizeText(asesor.nombre_completo.trim());
   const rating = parseFloat(asesor.puntuacion_promedio) || 0;
   const sesiones = asesor.numero_sesiones || 0;
@@ -280,7 +281,7 @@ function crearAsesorCard(asesor, index) {
   return `
     <li class="asesor-card">
       <div class="asesor-card-main">
-        <img class="asesor-avatar" src="${imagenAsesor}" alt="${nombreCorto}" />
+        <img class="asesor-avatar" src="${imagenAsesor}" alt="${nombreCorto}" onerror="this.onerror=null; this.src='../imagenes/profilepicture.jpg';" />
         <div class="asesor-info">
           <div class="asesor-headerline">
             <span class="asesor-nombre">${nombreCorto}</span>
