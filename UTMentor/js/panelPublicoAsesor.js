@@ -505,9 +505,20 @@ function checkSessionUI() {
   if (token) {
     const panel = document.querySelector(".nav .panel");
     if (panel) {
+      const params = new URLSearchParams(window.location.search);
+      const from = params.get('from');
+      
+      let backLinkText = "Volver a Explorar";
+      let backLinkHref = "panelAsesorado.html#explorar";
+
+      if (from === 'favoritos') {
+        backLinkText = "Volver a mis asesores";
+        backLinkHref = "panelAsesorado.html#favoritos";
+      }
+
       // Reemplazar botones de login/registro por "Volver al panel"
       panel.innerHTML = `
-        <a class="link" href="panelAsesorado.html#explorar">Volver a Explorar</a>
+        <a class="link" href="${backLinkHref}">${backLinkText}</a>
       `;
     }
   }
@@ -530,6 +541,15 @@ async function init() {
 
   const asesorias = await fetchAsesorias(asesorId);
   prepararHorarios(asesorias);
+
+  // Deshabilitar click en el logo
+  const brandLink = document.querySelector('.brand');
+  if (brandLink) {
+    brandLink.addEventListener('click', (e) => {
+      e.preventDefault();
+    });
+    brandLink.style.cursor = 'default';
+  }
 }
 
 init();
