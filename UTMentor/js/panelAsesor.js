@@ -32,8 +32,17 @@ const AUTH_TOKEN = localStorage.getItem("token");
 
 // Verificar autenticación básica
 if (!CURRENT_ASESOR_ID || !AUTH_TOKEN) {
-  window.location.href = "iniciarSesion.html";
+  location.replace("iniciarSesion.html");
 }
+
+// Verificar autenticación al enfocar la página (ej: al regresar con flecha atrás)
+window.addEventListener("pageshow", (event) => {
+  const token = localStorage.getItem("token");
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+  if (!token || !usuario) {
+    location.replace("iniciarSesion.html");
+  }
+});
 
 /**
  * Helper para fetch con autenticación
@@ -342,7 +351,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
         
         setTimeout(() => {
-          window.location.href = "principal.html";
+          location.replace("principal.html");
         }, 1000);
 
       } catch (error) {
@@ -350,7 +359,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         localStorage.removeItem("usuario");
         localStorage.removeItem("token");
         localStorage.removeItem("isLoggedIn");
-        window.location.href = "principal.html";
+        location.replace("principal.html");
       }
     }
   });
@@ -373,7 +382,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
           // Redirigir al inicio o login después de un breve retraso
           setTimeout(() => {
-            window.location.href = "iniciarSesion.html";
+            location.replace("iniciarSesion.html");
           }, 1500);
         } else {
           const res = await response.json();

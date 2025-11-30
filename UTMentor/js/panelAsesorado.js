@@ -9,10 +9,20 @@ const token = localStorage.getItem("token");
 const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
 
 if (!token || !usuario) {
-  window.location.href = "iniciarSesion.html";
+  location.replace("iniciarSesion.html");
 }
 
 const USER_ID = usuario.id;
+
+// Verificar autenticación al enfocar la página (ej: al regresar con flecha atrás)
+window.addEventListener("pageshow", (event) => {
+  // Verificar si la página se cargó desde caché
+  const token = localStorage.getItem("token");
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+  if (!token || !usuario) {
+    location.replace("iniciarSesion.html");
+  }
+});
 
 // Helper para fetch con auth
 async function authFetch(url, options = {}) {
@@ -30,7 +40,7 @@ async function authFetch(url, options = {}) {
   if (res.status === 401 || res.status === 403) {
     // Token expirado o inválido
     localStorage.clear();
-    window.location.href = "iniciarSesion.html";
+    location.replace("iniciarSesion.html");
     throw new Error("Sesión expirada");
   }
   return res;
@@ -220,13 +230,13 @@ window.addEventListener("DOMContentLoaded", ()=>{
         // Limpiar sesión local independientemente de la respuesta del servidor
         localStorage.clear();
         toast("Sesión cerrada", "success");
-        setTimeout(() => location.href = "iniciarSesion.html", 1000);
+        setTimeout(() => location.replace("iniciarSesion.html"), 1000);
 
       } catch (error) {
         console.error(error);
         // Forzar salida en caso de error de red
         localStorage.clear();
-        window.location.href = "iniciarSesion.html";
+        location.replace("iniciarSesion.html");
       }
     }
   });
@@ -239,7 +249,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
         if (res.ok) {
           localStorage.clear(); // Limpiar storage al eliminar cuenta
           toast("Perfil eliminado", "success");
-          setTimeout(() => location.href = "iniciarSesion.html", 1500);
+          setTimeout(() => location.replace("iniciarSesion.html"), 1500);
         } else {
           const err = await res.json();
           toast(err.error || "Error al eliminar cuenta", "danger");
