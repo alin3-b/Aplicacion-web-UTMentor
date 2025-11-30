@@ -445,8 +445,7 @@ function renderFavorites() {
       if(img) img.src = f.avatar;
       
       li.querySelector('[data-action="view-profile"]').onclick = () => {
-          toast(`Navegando al perfil de ${f.name}...`);
-          // location.href = `perfilAsesor.html?id=${f.id}`;
+          location.href = `panelPublicoAsesor.html?id=${f.id}`;
       };
 
       li.querySelector('[data-action="remove-fav"]').onclick = async () => {
