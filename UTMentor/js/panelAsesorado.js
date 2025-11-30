@@ -347,7 +347,10 @@ function renderRatings() {
       li.querySelector('[data-slot="date"]').textContent = r.date;
       
       const img = li.querySelector('[data-slot="avatar"]');
-      if(img) img.src = r.avatar || "../imagenes/logo.png";
+      if(img) {
+        img.src = r.avatar || "../imagenes/profilepicture.jpg";
+        img.onerror = () => { img.onerror = null; img.src = "../imagenes/profilepicture.jpg"; };
+      }
 
       // Botones
       li.querySelector('[data-action="rate"]').onclick = () => openRatingModal(r);
@@ -421,7 +424,7 @@ async function fetchFavorites() {
       id: f.id_asesor,
       name: f.nombre_completo,
       career: f.nombre_carrera || "Sin carrera",
-      avatar: f.ruta_foto || "../imagenes/logo.png"
+      avatar: f.ruta_foto || "../imagenes/profilepicture.jpg"
     }));
     
     renderFavorites();
@@ -444,7 +447,10 @@ function renderFavorites() {
       li.querySelector('[data-slot="name"]').textContent = f.name;
       li.querySelector('[data-slot="career"]').textContent = f.career;
       const img = li.querySelector('[data-slot="avatar"]');
-      if(img) img.src = f.avatar;
+      if(img) {
+        img.src = f.avatar;
+        img.onerror = () => { img.onerror = null; img.src = "../imagenes/profilepicture.jpg"; };
+      }
       
       li.querySelector('[data-action="view-profile"]').onclick = () => {
           // Redirigir con parámetro de origen
@@ -792,7 +798,7 @@ function initExplorarView() {
     const sesiones = asesor.numero_sesiones || 0;
     const sesionesTexto = sesiones >= 10 ? `${sesiones}+` : sesiones;
     const disponibilidad = formatDisponibilidad(asesor.disponibilidades);
-    const avatar = asesor.ruta_foto || "../imagenes/logo.png"; 
+    const avatar = asesor.ruta_foto || "../imagenes/profilepicture.jpg"; 
 
     const entero = Math.floor(rating);
     let starsHtml = "";
@@ -801,7 +807,7 @@ function initExplorarView() {
     return `
       <li class="asesor-card">
         <div class="asesor-card-main">
-          <img class="asesor-avatar" src="${safe(avatar)}" alt="${safe(asesor.nombre_completo)}" />
+          <img class="asesor-avatar" src="${safe(avatar)}" alt="${safe(asesor.nombre_completo)}" onerror="this.onerror=null; this.src='../imagenes/profilepicture.jpg';" />
           <div class="asesor-info">
             <div class="asesor-headerline">
               <span class="asesor-nombre">${safe(asesor.nombre_completo)}</span>
