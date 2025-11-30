@@ -49,6 +49,8 @@ services:
         condition: service_started
     env_file:
       - .env
+    environment:
+      - PORT=3000
     ports:
       - "3000:3000"
     volumes:
@@ -56,7 +58,6 @@ services:
       - /usr/src/app/node_modules
     networks:
       - services_net
-    profiles: ["dev", "prod"]
 
   web:
     image: nginx:alpine
