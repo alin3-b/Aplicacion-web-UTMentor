@@ -291,7 +291,7 @@ body {
 =========================================================== */
 .auth-body {
   position: relative; /* NECESARIO para que ::before funcione */
-  background-image: url("../imagenes/stdio.jpg");
+  background-image: url("../imagenes/stdio.jpeg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

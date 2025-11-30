@@ -391,7 +391,7 @@ body{
 
 @media (min-width: 861px){
 
-.hero{ background-image: url("../imagenes/hero-desktop.jpg"); }
+.hero{ background-image: url("../imagenes/hero-desktop.jpeg"); }
 }
 /* capa oscura para legibilidad */
 .hero::before{

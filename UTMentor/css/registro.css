@@ -84,7 +84,7 @@ img{ max-width:100%; display:block; }
 =========================================================== */
 .auth-body{
   position:relative;
-  background-image:url("../imagenes/stdio.jpg");
+  background-image:url("../imagenes/stdio.jpeg");
   background-size:cover;
   background-position:center;
   background-attachment:fixed;
