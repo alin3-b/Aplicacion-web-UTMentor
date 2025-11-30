@@ -25,6 +25,12 @@ function toggleLoading(elementId, show = true, text = "Cargando...") {
 /* ========== API INTEGRATION ========= */
 const API_BASE_URL = "/api";
 
+// Verificar si la cuenta fue eliminada
+if (sessionStorage.getItem("accountDeleted") === "true") {
+  sessionStorage.removeItem("accountDeleted");
+  location.replace("iniciarSesion.html");
+}
+
 // Obtener usuario del localStorage
 const usuarioLocal = JSON.parse(localStorage.getItem("usuario") || "{}");
 const CURRENT_ASESOR_ID = usuarioLocal.id || null;
@@ -37,6 +43,19 @@ if (!CURRENT_ASESOR_ID || !AUTH_TOKEN) {
 
 // Verificar autenticación al enfocar la página (ej: al regresar con flecha atrás)
 window.addEventListener("pageshow", (event) => {
+  // Si la página se cargó desde caché (persisted=true), verificar autenticación
+  if (event.persisted || performance.navigation.type === 2) {
+    const token = localStorage.getItem("token");
+    const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+    if (!token || !usuario) {
+      // Forzar recarga para evitar estados inconsistentes
+      location.replace("iniciarSesion.html");
+    }
+  }
+});
+
+// Verificación adicional cuando la ventana recupera el foco
+window.addEventListener("focus", () => {
   const token = localStorage.getItem("token");
   const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
   if (!token || !usuario) {
@@ -374,6 +393,9 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         if (response.ok) {
           toast("Perfil eliminado correctamente", "success");
+          
+          // Marcar que la cuenta fue eliminada antes de limpiar
+          sessionStorage.setItem("accountDeleted", "true");
           
           // Limpiar sesión local
           localStorage.removeItem("usuario");
