@@ -3,7 +3,8 @@ import {
     getAsesoriasByAsesor,
     existeInscripcion,
     crearInscripcion,
-    getInscripcion
+    getInscripcion,
+    crearCalificacion
 } from "../models/asesoriasMySQL.js";
 
 /**
@@ -114,6 +115,69 @@ export async function agendarAsesoria(req, res) {
 
     } catch (error) {
         console.error("Error al agendar asesoría:", error);
+        res.status(500).json({ ok: false, mensaje: "Error interno del servidor" });
+    }
+}
+
+/**
+ * @openapi
+ * /api/asesorias/{id_inscripcion}/calificar:
+ *   post:
+ *     summary: Califica una asesoría completada
+ *     tags: [Asesorías]
+ *     parameters:
+ *       - in: path
+ *         name: id_inscripcion
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - puntuacion
+ *             properties:
+ *               puntuacion:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               comentario:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Calificación creada
+ */
+export async function calificarAsesoria(req, res) {
+    try {
+        const { id_inscripcion } = req.params;
+        const { puntuacion, comentario } = req.body;
+
+        if (!id_inscripcion || !puntuacion) {
+            return res.status(400).json({ ok: false, mensaje: "Faltan datos requeridos" });
+        }
+
+        // Validar que la inscripción exista
+        const inscripcion = await getInscripcion(id_inscripcion);
+        if (!inscripcion) {
+            return res.status(404).json({ ok: false, mensaje: "Inscripción no encontrada" });
+        }
+
+        // Crear calificación
+        await crearCalificacion(id_inscripcion, puntuacion, comentario);
+
+        res.status(201).json({
+            ok: true,
+            mensaje: "Calificación registrada correctamente"
+        });
+
+    } catch (error) {
+        console.error("Error al calificar asesoría:", error);
+        if (error.code === 'ER_DUP_ENTRY') {
+             return res.status(409).json({ ok: false, mensaje: "Ya has calificado esta asesoría" });
+        }
         res.status(500).json({ ok: false, mensaje: "Error interno del servidor" });
     }
 }

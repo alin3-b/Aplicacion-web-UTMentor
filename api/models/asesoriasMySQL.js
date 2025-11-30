@@ -106,3 +106,48 @@ export async function getInscripcion(id) {
 
     return rows[0] || null;
 }
+
+/**
+ * Crea una calificación para una inscripción y actualiza el promedio del asesor
+ */
+export async function crearCalificacion(fk_inscripcion, puntuacion, comentario) {
+    // 1. Insertar calificación
+    const [result] = await mysqlPool.query(
+        `INSERT INTO calificaciones (fk_inscripcion, puntuacion, comentario)
+         VALUES (?, ?, ?)`,
+        [fk_inscripcion, puntuacion, comentario]
+    );
+    
+    // 2. Obtener id_asesor para actualizar su promedio
+    const [rows] = await mysqlPool.query(`
+        SELECT d.fk_asesor 
+        FROM inscripciones_sesion i
+        JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
+        WHERE i.id_inscripcion = ?
+    `, [fk_inscripcion]);
+    
+    if (rows.length > 0) {
+        const id_asesor = rows[0].fk_asesor;
+        await actualizarPromedioAsesor(id_asesor);
+    }
+
+    return result.insertId;
+}
+
+async function actualizarPromedioAsesor(id_asesor) {
+    const [rows] = await mysqlPool.query(`
+        SELECT AVG(c.puntuacion) as promedio
+        FROM calificaciones c
+        JOIN inscripciones_sesion i ON i.id_inscripcion = c.fk_inscripcion
+        JOIN disponibilidades d ON d.id_disponibilidad = i.fk_disponibilidad
+        WHERE d.fk_asesor = ?
+    `, [id_asesor]);
+
+    const promedio = rows[0].promedio || 0;
+
+    await mysqlPool.query(`
+        UPDATE perfiles_asesores
+        SET calificacion_promedio = ?
+        WHERE id_asesor = ?
+    `, [promedio, id_asesor]);
+}
