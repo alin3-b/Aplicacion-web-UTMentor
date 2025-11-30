@@ -445,7 +445,8 @@ function renderFavorites() {
       if(img) img.src = f.avatar;
       
       li.querySelector('[data-action="view-profile"]').onclick = () => {
-          location.href = `panelPublicoAsesor.html?id=${f.id}&from=favoritos`;
+          // Redirigir con parámetro de origen
+          window.location.href = `panelPublicoAsesor.html?id=${f.id}&from=favoritos`;
       };
 
       li.querySelector('[data-action="remove-fav"]').onclick = async () => {

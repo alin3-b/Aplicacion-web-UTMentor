@@ -508,6 +508,8 @@ function checkSessionUI() {
       const params = new URLSearchParams(window.location.search);
       const from = params.get('from');
       
+      console.log("Param from:", from); // Debug
+
       let backLinkText = "Volver a explorar";
       let backLinkHref = "panelAsesorado.html#explorar";
 
