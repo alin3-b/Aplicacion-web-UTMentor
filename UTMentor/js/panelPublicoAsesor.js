@@ -508,7 +508,7 @@ function checkSessionUI() {
       const params = new URLSearchParams(window.location.search);
       const from = params.get('from');
       
-      let backLinkText = "Volver a Explorar";
+      let backLinkText = "Volver a explorar";
       let backLinkHref = "panelAsesorado.html#explorar";
 
       if (from === 'favoritos') {
