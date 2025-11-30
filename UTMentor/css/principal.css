@@ -312,7 +312,7 @@ body{
   min-height: clamp(520px, 70vh, 760px);
   display: flex;
   align-items: center;
-  background-image: url("../imagenes/hero-mobile.jpeg");
+  background-image: url("../imagenes/hero-mobile.jpg");
   background-size: cover;
   background-position: center;
   color: #fff;
@@ -391,7 +391,7 @@ body{
 
 @media (min-width: 861px){
 
-.hero{ background-image: url("../imagenes/hero-desktop.jpeg"); }
+.hero{ background-image: url("../imagenes/hero-desktop.jpg"); }
 }
 /* capa oscura para legibilidad */
 .hero::before{
