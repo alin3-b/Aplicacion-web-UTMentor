@@ -174,12 +174,14 @@ window.addEventListener("DOMContentLoaded", ()=>{
   renderWeek();
   fetchSessions(); // Cargar sesiones reales
 
-  // Si venimos de "Volver a Explorar", activar esa vista
-  if (window.location.hash === "#explorar") {
-    const btnExplorar = $('.side-link[data-view="explorar"]');
-    if (btnExplorar) {
+  // Si venimos de "Volver a Explorar" o "Favoritos", activar esa vista
+  const hash = window.location.hash;
+  if (hash === "#explorar" || hash === "#favoritos") {
+    const viewId = hash.replace("#", "");
+    const btn = $(`.side-link[data-view="${viewId}"]`);
+    if (btn) {
       // Pequeño delay para asegurar que todo cargó
-      setTimeout(() => btnExplorar.click(), 100);
+      setTimeout(() => btn.click(), 100);
     }
   }
 
