@@ -69,6 +69,8 @@ export async function getAllAsesores(filtros = {}) {
     SELECT 
       u.id_usuario,
       u.nombre_completo,
+      u.ruta_foto,
+      u.semestre,
       c.nombre_carrera,
       COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones,
       COALESCE(pa.calificacion_promedio, 0.0) AS puntuacion_promedio,
@@ -108,13 +110,15 @@ export async function getAllAsesores(filtros = {}) {
     const {
       id_disponibilidad, fecha_inicio, fecha_fin, modalidad, tipo_sesion,
       nombre_tema, nombre_area, precio, capacidad, es_disponible, inscritos,
-      id_usuario, nombre_completo, nombre_carrera, numero_sesiones, puntuacion_promedio, correo_contacto
+      id_usuario, nombre_completo, ruta_foto, semestre, nombre_carrera, numero_sesiones, puntuacion_promedio, correo_contacto
     } = row;
 
     if (!asesoresMap.has(id_usuario)) {
       asesoresMap.set(id_usuario, {
         id_usuario,
         nombre_completo,
+        ruta_foto,
+        semestre,
         nombre_carrera,
         numero_sesiones,
         puntuacion_promedio,
