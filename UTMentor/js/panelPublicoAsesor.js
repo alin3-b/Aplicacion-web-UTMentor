@@ -554,13 +554,22 @@ async function init() {
   const asesorias = await fetchAsesorias(asesorId);
   prepararHorarios(asesorias);
 
-  // Deshabilitar click en el logo
+  // Controlar comportamiento del logo según origen
   const brandLink = document.querySelector('.brand');
   if (brandLink) {
-    brandLink.addEventListener('click', (e) => {
-      e.preventDefault();
-    });
-    brandLink.style.cursor = 'default';
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from');
+    const token = localStorage.getItem("token");
+    
+    // Si viene de favoritos o explorar del panel (con sesión) → deshabilitar
+    if (token && (from === 'favoritos' || from === 'explorar')) {
+      brandLink.addEventListener('click', (e) => {
+        e.preventDefault();
+      });
+      brandLink.style.cursor = 'default';
+    }
+    // Si viene de explorar público o principal (sin 'from' o sin token) → permitir ir a inicio
+    // No hacemos nada, el href ya está configurado en el HTML
   }
 }
 
