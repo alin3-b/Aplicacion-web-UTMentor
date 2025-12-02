@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.2
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: mysql:3306
--- Tiempo de generación: 18-11-2025 a las 17:35:23
+-- Tiempo de generación: 02-12-2025 a las 03:41:33
 -- Versión del servidor: 8.4.7
--- Versión de PHP: 8.2.28
+-- Versión de PHP: 8.3.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `areas_conocimiento` (
   `id_area` int NOT NULL,
-  `nombre_area` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL
+  `nombre_area` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -80,7 +80,16 @@ INSERT INTO `asesores_temas` (`fk_asesor`, `fk_tema`) VALUES
 (16, 12),
 (18, 13),
 (19, 14),
-(12, 15);
+(12, 15),
+(64, 16),
+(71, 16),
+(71, 17),
+(76, 18),
+(76, 19),
+(76, 20),
+(76, 21),
+(84, 22),
+(84, 23);
 
 -- --------------------------------------------------------
 
@@ -92,9 +101,9 @@ CREATE TABLE `calificaciones` (
   `id_calificacion` int NOT NULL,
   `fk_inscripcion` int NOT NULL,
   `puntuacion` int NOT NULL,
-  `comentario` text COLLATE utf8mb4_unicode_ci,
+  `comentario` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `fecha_calificacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `calificaciones`
@@ -123,7 +132,10 @@ INSERT INTO `calificaciones` (`id_calificacion`, `fk_inscripcion`, `puntuacion`,
 (20, 32, 4, 'La sesión de Ética en IA fue interesante, pero abstracta.', '2025-11-16 06:32:55'),
 (21, 33, 5, 'Mecánica de Fluidos por Fernando, muy bien.', '2025-11-16 06:33:00'),
 (22, 34, 5, 'Gran manejo de los conceptos de Mecánica de Fluidos.', '2025-11-16 06:33:05'),
-(23, 35, 4, 'Buenos tips para Emprendimiento, el precio es justo.', '2025-11-16 06:33:10');
+(23, 35, 4, 'Buenos tips para Emprendimiento, el precio es justo.', '2025-11-16 06:33:10'),
+(24, 42, 5, NULL, '2025-11-30 05:18:07'),
+(25, 44, 5, NULL, '2025-11-30 05:18:24'),
+(26, 45, 5, NULL, '2025-11-30 06:03:54');
 
 -- --------------------------------------------------------
 
@@ -133,7 +145,7 @@ INSERT INTO `calificaciones` (`id_calificacion`, `fk_inscripcion`, `puntuacion`,
 
 CREATE TABLE `carreras` (
   `id_carrera` int NOT NULL,
-  `nombre_carrera` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL
+  `nombre_carrera` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -166,44 +178,55 @@ CREATE TABLE `disponibilidades` (
   `fk_asesor` int NOT NULL,
   `fecha_inicio` datetime NOT NULL,
   `fecha_fin` datetime NOT NULL,
-  `modalidad` enum('presencial','virtual') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tipo_sesion` enum('grupal','individual') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `modalidad` enum('presencial','virtual') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo_sesion` enum('grupal','individual') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fk_tema` int DEFAULT NULL,
   `precio` decimal(10,2) NOT NULL,
   `capacidad` int DEFAULT '1',
   `es_disponible` tinyint(1) DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `disponibilidades`
 --
 
 INSERT INTO `disponibilidades` (`id_disponibilidad`, `fk_asesor`, `fecha_inicio`, `fecha_fin`, `modalidad`, `tipo_sesion`, `fk_tema`, `precio`, `capacidad`, `es_disponible`) VALUES
-(1, 11, '2025-11-20 10:00:00', '2025-11-20 11:00:00', 'virtual', 'individual', 4, 250.00, 1, 1),
-(2, 11, '2025-11-22 15:00:00', '2025-11-22 16:30:00', 'presencial', 'grupal', 5, 180.00, 4, 1),
-(3, 11, '2025-11-25 09:00:00', '2025-11-25 10:00:00', 'virtual', 'individual', 6, 300.00, 1, 1),
-(4, 12, '2025-11-21 14:00:00', '2025-11-21 15:30:00', 'presencial', 'grupal', 15, 200.00, 5, 1),
-(5, 12, '2025-11-24 11:00:00', '2025-11-24 12:00:00', 'virtual', 'individual', 9, 280.00, 1, 1),
-(6, 13, '2025-11-19 16:00:00', '2025-11-19 17:00:00', 'virtual', 'individual', 2, 220.00, 1, 1),
-(7, 13, '2025-11-23 10:00:00', '2025-11-23 11:30:00', 'presencial', 'grupal', 1, 150.00, 3, 1),
-(8, 13, '2025-11-26 13:00:00', '2025-11-26 14:00:00', 'virtual', 'individual', 3, 240.00, 1, 1),
-(9, 14, '2025-11-20 17:00:00', '2025-11-20 18:00:00', 'virtual', 'individual', 10, 180.00, 1, 1),
-(10, 14, '2025-11-27 09:00:00', '2025-11-27 10:30:00', 'presencial', 'grupal', 10, 120.00, 4, 1),
-(11, 15, '2025-11-21 09:00:00', '2025-11-21 10:00:00', 'presencial', 'individual', 7, 320.00, 1, 1),
-(12, 16, '2025-11-22 11:00:00', '2025-11-22 12:00:00', 'virtual', 'individual', 12, 290.00, 1, 1),
-(13, 17, '2025-11-25 14:00:00', '2025-11-25 15:00:00', 'presencial', 'individual', 8, 310.00, 1, 1),
-(14, 18, '2025-11-24 16:00:00', '2025-11-24 17:00:00', 'virtual', 'individual', 13, 200.00, 1, 1),
-(15, 19, '2025-11-26 17:00:00', '2025-11-26 18:30:00', 'presencial', 'grupal', 14, 190.00, 6, 1),
-(16, 11, '2025-11-28 11:00:00', '2025-11-28 12:00:00', 'virtual', 'individual', 5, 260.00, 1, 1),
-(17, 13, '2025-11-29 14:00:00', '2025-11-29 15:30:00', 'presencial', 'grupal', 3, 160.00, 5, 1),
-(18, 12, '2025-11-30 09:00:00', '2025-11-30 10:00:00', 'virtual', 'individual', 9, 290.00, 1, 1),
-(19, 15, '2025-12-01 16:00:00', '2025-12-01 17:00:00', 'presencial', 'individual', 7, 300.00, 1, 1),
+(1, 11, '2025-12-04 10:00:00', '2025-12-04 11:00:00', 'virtual', 'individual', 4, 150.00, 1, 1),
+(2, 11, '2025-12-06 15:00:00', '2025-12-06 16:30:00', 'presencial', 'grupal', 5, 180.00, 4, 1),
+(3, 11, '2025-12-05 09:00:00', '2025-12-05 10:00:00', 'virtual', 'individual', 6, 50.00, 1, 1),
+(4, 12, '2025-12-04 14:00:00', '2025-12-04 15:30:00', 'presencial', 'grupal', 15, 100.00, 5, 1),
+(5, 12, '2025-12-08 11:00:00', '2025-12-08 12:00:00', 'virtual', 'individual', 9, 80.00, 1, 1),
+(6, 13, '2025-12-08 16:00:00', '2025-12-08 17:00:00', 'virtual', 'individual', 2, 20.00, 1, 1),
+(7, 13, '2025-12-07 10:00:00', '2025-12-07 11:30:00', 'presencial', 'grupal', 1, 100.00, 3, 1),
+(8, 13, '2025-12-03 13:00:00', '2025-12-03 14:00:00', 'virtual', 'individual', 3, 140.00, 1, 1),
+(9, 14, '2025-12-05 17:00:00', '2025-12-05 18:00:00', 'virtual', 'individual', 10, 180.00, 1, 1),
+(10, 14, '2025-12-09 09:00:00', '2025-12-09 10:30:00', 'presencial', 'grupal', 10, 120.00, 4, 1),
+(11, 15, '2025-12-04 09:00:00', '2025-12-04 10:00:00', 'presencial', 'individual', 7, 30.00, 1, 1),
+(12, 16, '2025-12-04 11:00:00', '2025-12-04 12:00:00', 'virtual', 'individual', 12, 90.00, 1, 1),
+(13, 17, '2025-12-06 14:00:00', '2025-12-06 15:00:00', 'presencial', 'individual', 8, 110.00, 1, 1),
+(14, 18, '2025-12-05 16:00:00', '2025-12-05 17:00:00', 'virtual', 'individual', 13, 100.00, 1, 1),
+(15, 19, '2025-12-08 17:00:00', '2025-12-08 18:30:00', 'presencial', 'grupal', 14, 190.00, 6, 1),
+(16, 11, '2025-12-08 11:00:00', '2025-12-08 12:00:00', 'virtual', 'individual', 5, 60.00, 1, 1),
+(17, 13, '2025-12-07 14:00:00', '2025-12-07 15:30:00', 'presencial', 'grupal', 3, 160.00, 5, 1),
+(18, 12, '2025-12-05 09:00:00', '2025-12-05 10:00:00', 'virtual', 'individual', 9, 90.00, 1, 1),
+(19, 15, '2025-12-01 16:00:00', '2025-12-01 17:00:00', 'presencial', 'individual', 7, 300.00, 1, 0),
 (20, 14, '2025-12-02 10:00:00', '2025-12-02 11:30:00', 'virtual', 'grupal', 10, 130.00, 3, 1),
 (21, 16, '2025-12-03 15:00:00', '2025-12-03 16:00:00', 'presencial', 'individual', 12, 270.00, 1, 1),
 (22, 18, '2025-12-04 17:00:00', '2025-12-04 18:00:00', 'virtual', 'individual', 13, 210.00, 1, 1),
 (23, 17, '2025-12-05 08:00:00', '2025-12-05 09:30:00', 'presencial', 'grupal', 8, 170.00, 4, 1),
 (24, 19, '2025-12-06 12:00:00', '2025-12-06 13:00:00', 'virtual', 'individual', 14, 220.00, 1, 1),
-(25, 20, '2025-12-07 14:00:00', '2025-12-07 15:00:00', 'virtual', 'individual', 11, 240.00, 1, 1);
+(25, 20, '2025-12-07 14:00:00', '2025-12-07 15:00:00', 'virtual', 'individual', 11, 240.00, 1, 1),
+(26, 11, '2025-11-28 05:05:11', '2025-11-28 06:05:11', 'virtual', 'individual', 1, 250.00, 1, 0),
+(27, 13, '2025-11-25 05:05:11', '2025-11-25 06:05:11', 'presencial', 'individual', 2, 220.00, 1, 0),
+(28, 11, '2025-11-28 05:06:26', '2025-11-28 06:06:26', 'virtual', 'individual', 1, 250.00, 1, 0),
+(29, 13, '2025-11-25 05:06:26', '2025-11-25 06:06:26', 'presencial', 'individual', 2, 220.00, 1, 0),
+(31, 48, '2025-11-30 05:45:00', '2025-11-30 05:50:00', 'virtual', 'individual', NULL, 1.00, 1, 0),
+(32, 60, '2025-11-25 01:00:00', '2025-11-25 02:00:00', 'presencial', 'individual', NULL, 50.00, 1, 0),
+(33, 60, '2025-11-25 16:00:00', '2025-11-25 18:00:00', 'presencial', 'individual', NULL, 50.00, 1, 0),
+(34, 64, '2025-11-24 23:00:00', '2025-11-25 00:00:00', 'virtual', 'individual', NULL, 10.00, 1, 0),
+(35, 67, '2025-12-01 00:00:00', '2025-12-01 01:00:00', 'virtual', 'individual', NULL, 20.00, 1, 0),
+(36, 76, '2025-12-02 18:00:00', '2025-12-02 19:00:00', 'presencial', 'individual', NULL, 60.00, 1, 1),
+(37, 84, '2025-12-02 16:00:00', '2025-12-02 17:00:00', 'presencial', 'individual', NULL, 100.00, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -242,7 +265,10 @@ INSERT INTO `favoritos` (`id_favorito`, `fk_asesorado`, `fk_asesor`, `fecha_guar
 (17, 29, 14, '2025-11-16 06:34:15'),
 (18, 31, 16, '2025-11-16 06:34:20'),
 (19, 34, 17, '2025-11-16 06:34:25'),
-(20, 38, 15, '2025-11-16 06:34:30');
+(20, 38, 15, '2025-11-16 06:34:30'),
+(21, 47, 13, '2025-11-30 03:18:18'),
+(22, 76, 14, '2025-12-01 04:30:27'),
+(23, 76, 13, '2025-12-01 04:32:48');
 
 -- --------------------------------------------------------
 
@@ -254,7 +280,7 @@ CREATE TABLE `historial_cancelaciones` (
   `id_cancelacion` int NOT NULL,
   `fk_inscripcion` int NOT NULL,
   `fk_usuario_cancelo` int DEFAULT NULL,
-  `motivo` text COLLATE utf8mb4_unicode_ci,
+  `motivo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `fecha_cancelacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -265,7 +291,8 @@ CREATE TABLE `historial_cancelaciones` (
 INSERT INTO `historial_cancelaciones` (`id_cancelacion`, `fk_inscripcion`, `fk_usuario_cancelo`, `motivo`, `fecha_cancelacion`) VALUES
 (1, 18, 8, 'Conflicto de horario', '2025-11-15 03:21:47'),
 (2, 19, 9, 'Emergencia personal', '2025-11-15 03:21:47'),
-(3, 20, 10, 'Cambio de tema de interés', '2025-11-15 03:21:47');
+(3, 20, 10, 'Cambio de tema de interés', '2025-11-15 03:21:47'),
+(4, 47, 84, 'Cancelado por el usuario desde el panel', '2025-12-02 03:33:33');
 
 -- --------------------------------------------------------
 
@@ -278,7 +305,7 @@ CREATE TABLE `inscripciones_sesion` (
   `fk_disponibilidad` int NOT NULL,
   `fk_asesorado` int NOT NULL,
   `fecha_reserva` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `estado` enum('pendiente','completada','cancelada') COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente'
+  `estado` enum('pendiente','completada','cancelada') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -325,7 +352,17 @@ INSERT INTO `inscripciones_sesion` (`id_inscripcion`, `fk_disponibilidad`, `fk_a
 (37, 17, 37, '2025-11-16 06:31:20', 'pendiente'),
 (38, 18, 38, '2025-11-16 06:31:25', 'pendiente'),
 (39, 20, 39, '2025-11-16 06:31:30', 'pendiente'),
-(40, 25, 40, '2025-11-16 06:31:35', 'pendiente');
+(40, 25, 40, '2025-11-16 06:31:35', 'pendiente'),
+(41, 26, 47, '2025-11-27 05:05:11', 'completada'),
+(42, 27, 47, '2025-11-24 05:05:11', 'completada'),
+(43, 28, 47, '2025-11-27 05:06:26', 'completada'),
+(44, 29, 47, '2025-11-24 05:06:26', 'completada'),
+(45, 31, 47, '2025-11-30 05:41:35', 'pendiente'),
+(46, 36, 79, '2025-12-01 22:01:26', 'pendiente'),
+(47, 7, 84, '2025-12-02 03:29:50', 'cancelada'),
+(48, 17, 84, '2025-12-02 03:29:55', 'pendiente'),
+(49, 2, 84, '2025-12-02 03:37:23', 'pendiente'),
+(50, 37, 76, '2025-12-02 03:40:57', 'pendiente');
 
 -- --------------------------------------------------------
 
@@ -337,7 +374,7 @@ CREATE TABLE `perfiles_asesores` (
   `id_asesor` int NOT NULL,
   `conteo_asesorias` int DEFAULT '0',
   `calificacion_promedio` decimal(2,1) DEFAULT '0.0' COMMENT 'Calificacion promedio redondeada a un decimal (0.0 a 5.0)'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `perfiles_asesores`
@@ -346,14 +383,33 @@ CREATE TABLE `perfiles_asesores` (
 INSERT INTO `perfiles_asesores` (`id_asesor`, `conteo_asesorias`, `calificacion_promedio`) VALUES
 (11, 5, 4.6),
 (12, 0, 0.0),
-(13, 6, 4.7),
+(13, 6, 4.8),
 (14, 6, 3.7),
 (15, 2, 2.0),
 (16, 2, 5.0),
 (17, 3, 3.3),
 (18, 1, 4.0),
 (19, 1, 4.0),
-(20, 0, 0.0);
+(20, 0, 0.0),
+(47, 0, 0.0),
+(48, 0, 5.0),
+(49, 0, 0.0),
+(50, 0, 0.0),
+(58, 0, 0.0),
+(60, 0, 0.0),
+(61, 0, 0.0),
+(64, 0, 0.0),
+(65, 0, 0.0),
+(66, 0, 0.0),
+(67, 0, 0.0),
+(71, 0, 0.0),
+(74, 0, 0.0),
+(76, 0, 0.0),
+(77, 0, 0.0),
+(78, 0, 0.0),
+(79, 0, 0.0),
+(80, 0, 0.0),
+(84, 0, 0.0);
 
 -- --------------------------------------------------------
 
@@ -363,7 +419,7 @@ INSERT INTO `perfiles_asesores` (`id_asesor`, `conteo_asesorias`, `calificacion_
 
 CREATE TABLE `roles` (
   `id_rol` int NOT NULL,
-  `nombre_rol` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL
+  `nombre_rol` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -382,7 +438,7 @@ INSERT INTO `roles` (`id_rol`, `nombre_rol`) VALUES
 
 CREATE TABLE `temas` (
   `id_tema` int NOT NULL,
-  `nombre_tema` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_tema` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fk_area` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -391,21 +447,29 @@ CREATE TABLE `temas` (
 --
 
 INSERT INTO `temas` (`id_tema`, `nombre_tema`, `fk_area`) VALUES
-(1, 'Álgebra Lineal', 1),
-(2, 'Cálculo Diferencial', 1),
-(3, 'Cálculo Integral', 1),
-(4, 'Python Básico', 2),
-(5, 'Estructuras de Datos', 2),
-(6, 'Bases de Datos', 2),
-(7, 'Circuitos Eléctricos', 5),
-(8, 'Mecánica de Fluidos', 3),
-(9, 'Termodinámica', 5),
-(10, 'Inglés Técnico', 4),
-(11, 'Francés B1', 4),
-(12, 'Diseño UX/UI', 10),
+(1, 'Espacios vectoriales', 1),
+(2, 'Límites y continuidad', 1),
+(3, 'Integración por partes', 1),
+(4, 'Apuntadores en C', 2),
+(5, 'Tablas Hash', 2),
+(6, 'Lenguaje SQL', 2),
+(7, 'Ley de Ohm', 5),
+(8, 'Ecuación de Bernoulli', 3),
+(9, 'Variables termodinámicas', 5),
+(10, 'Verbo \"to be\"', 4),
+(11, 'Presente Simple', 4),
+(12, 'Diseño web y de interfaz (UI)\r\n', 10),
 (13, 'Ética en IA', 11),
 (14, 'Emprendimiento', 9),
-(15, 'Sostenibilidad Urbana', 12);
+(15, 'Sostenibilidad Urbana', 12),
+(16, 'Programación Orientada a Objetos', 2),
+(17, 'Álgebra Lineal', 1),
+(18, 'método de bisección', 1),
+(19, 'método de newton Raphson', 1),
+(20, 'Apuntadores', 2),
+(21, 'Passive voice', 4),
+(22, 'vectores', 5),
+(23, 'sistemas de ecuaciones', 1);
 
 -- --------------------------------------------------------
 
@@ -416,7 +480,7 @@ INSERT INTO `temas` (`id_tema`, `nombre_tema`, `fk_area`) VALUES
 CREATE TABLE `tokens_recuperacion` (
   `id_token` int NOT NULL,
   `fk_usuario` int NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fecha_expiracion` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -428,17 +492,17 @@ CREATE TABLE `tokens_recuperacion` (
 
 CREATE TABLE `usuarios` (
   `id_usuario` int NOT NULL,
-  `nombre_completo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_completo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fk_carrera` int NOT NULL,
   `semestre` int NOT NULL,
-  `correo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ruta_foto` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `correo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ruta_foto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `fecha_registro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `es_activo` tinyint(1) DEFAULT '1',
   `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `fecha_modificacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
@@ -489,7 +553,38 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre_completo`, `fk_carrera`, `semestre
 (42, 'Aline Pérez', 1, 3, 'aline@example.com', '$2a$10$XWYEEpttKUIR5RpC3TTCPuedfGxDcewMBpdA9RnJC0ER2b4omJQ4C', NULL, '2025-11-18 06:23:49', 1, '2025-11-18 06:23:49', '2025-11-18 06:23:49'),
 (44, 'Aline Pérez', 1, 3, 'aline8908@example.com', '$2a$10$gxgwhfE9n5u4e.ojh3KFieoYR/4oR96YTiFvmFVmuL4iCkGrpxaAi', NULL, '2025-11-18 06:47:12', 1, '2025-11-18 06:47:12', '2025-11-18 06:47:12'),
 (45, 'Aline Pérez', 1, 3, 'aline8900000000008@example.com', '$2a$10$.a2Y8jxGlCAf64FgigvFqO/6xU6ysHiAssXWmKfu3BPDHWmrhVlBy', NULL, '2025-11-18 08:20:27', 1, '2025-11-18 08:20:27', '2025-11-18 08:20:27'),
-(46, 'Aline Pérez', 1, 3, 'aloooooooooooooooine@example.com', '$2a$10$qWIxDhyorLojpzLcNFplCu4SvJmboPPT..a4i9ITb6UH4JDcyRicm', NULL, '2025-11-18 16:00:06', 1, '2025-11-18 16:00:06', '2025-11-18 16:00:06');
+(46, 'Aline Pérez', 1, 3, 'aloooooooooooooooine@example.com', '$2a$10$qWIxDhyorLojpzLcNFplCu4SvJmboPPT..a4i9ITb6UH4JDcyRicm', NULL, '2025-11-18 16:00:06', 1, '2025-11-18 16:00:06', '2025-11-18 16:00:06'),
+(47, 'Laura Jocelyn Alvarez Guevara', 3, 5, 'lauraj.alvarezguevara@gmail.com', '$2a$10$sX77BKO.3yk6feO88Us.gemqofXTEFWTh0TjO3Xttw24jXuRu4Py.', '/utmentor-bucket/asesores/47-1764481960126.svg', '2025-11-30 03:09:12', 1, '2025-11-30 03:09:12', '2025-11-30 05:52:40'),
+(48, 'Raul Ruvalcaba', 3, 10, 'corvohyatt@gmail.com', '$2a$10$L/1GT.TXIiA0bOAouBvTPu4u1BCBXGrO53zv.jV5edMb7tHGMYm1W', NULL, '2025-11-30 05:36:59', 1, '2025-11-30 05:36:59', '2025-11-30 05:36:59'),
+(49, 'Alba Ruvalcaba', 3, 1, 'alba.ruvalcaba@gmail.com', '$2a$10$Px/BkUnNlnp/fuJ.MPXv3updb/KtkVR8.IWepyovolqKplZWoJcr6', NULL, '2025-11-30 06:42:47', 1, '2025-11-30 06:42:47', '2025-11-30 06:42:47'),
+(50, 'Aline Baustita', 3, 5, 'peba@gmail.com', '$2a$10$GsKTU/jxaMQhJ2WiTLJktOfUX6N97Xt21lQ3OAn0OPqcEPAF3CBRO', NULL, '2025-11-30 13:19:47', 0, '2025-11-30 13:19:47', '2025-11-30 13:42:54'),
+(53, 'Valeria Sánchez', 4, 5, 'savl050627@gs.utm.mx', '$2a$10$xrm/R7oBBpyAEghS31qhjeBDSJx/I93V67IU.k3nqUZopcj30tzL.', NULL, '2025-11-30 14:12:08', 1, '2025-11-30 14:12:08', '2025-11-30 14:12:08'),
+(54, 'Rubi Santiago Hernández', 12, 5, 'Rubistg78@gmail.com', '$2a$10$U7cq7GPZ0Dc4J3LOcQrU2.jPLSR/tlDinOMX2trjqQn7ydahDDBXG', NULL, '2025-11-30 15:07:27', 1, '2025-11-30 15:07:27', '2025-11-30 15:07:27'),
+(56, 'Isaac Antonio López bravo', 3, 2, 'dragoncity200509@gmail.com', '$2a$10$eY1bw7JrDAoONSO/M/dbtu2nNkyzMhQJG4VKeEAcDCz30LAsPE8ta', NULL, '2025-11-30 16:58:37', 1, '2025-11-30 16:58:37', '2025-11-30 16:58:37'),
+(57, 'Omar Angel López Bravo', 9, 4, 'omarlopez250516@gmail.com', '$2a$10$MMdJu41/AfT5wL06njvYVud7w05N43aII4cxsgXovBI5CSclhLnbG', NULL, '2025-11-30 17:05:29', 1, '2025-11-30 17:05:29', '2025-11-30 17:05:29'),
+(58, 'Javier Eduardo', 9, 3, 'saaj051202@gs.utm.mx', '$2a$10$HcUdespsxh.V8ptuoUaHtOjx8E8Oj8cssxzPDBhbqXBHnXypVtIJq', NULL, '2025-11-30 17:18:00', 1, '2025-11-30 17:18:00', '2025-11-30 17:18:00'),
+(59, 'Gael Matus Blas', 4, 3, 'mabg050801@gs.utm.mx', '$2a$10$wdMZwBxwtpf7O1arB9Qmjucg1fKBDQV9cdWRbc3P3BwsebhLWAlf6', NULL, '2025-11-30 17:21:03', 1, '2025-11-30 17:21:03', '2025-11-30 17:21:03'),
+(60, 'Julio Cesar Atenco Aguilar', 3, 5, 'juliocesaratencoaguilar@gmail.com', '$2a$10$MNZRnPa9j57DsjPIgnCyKuccOtPp0wPPJEXkZzqmmPXHMFula5.dO', '/utmentor-bucket/asesores/60-1764531837544.jpg', '2025-11-30 17:23:33', 1, '2025-11-30 17:23:33', '2025-11-30 19:43:57'),
+(61, 'Ikram Velasco Sánchez', 4, 10, 'ikram20vs@gmail.com', '$2a$10$9qIRQbCHtdcKWnkE1488d.NXbAppFKLxd5PmwjFGNCyp97hFWoW8W', NULL, '2025-11-30 17:28:52', 1, '2025-11-30 17:28:52', '2025-11-30 17:28:52'),
+(62, 'Jerónimo israel Lavariega Velasco', 9, 1, 'jeronimoisrrael516@gmail.com', '$2a$10$JWhi3Qs0mvfBhNi6QActueHrvIMVYvKv.lQGVXiijfmugNen2Xkx.', NULL, '2025-11-30 18:21:56', 1, '2025-11-30 18:21:56', '2025-11-30 18:21:56'),
+(63, 'Uriel Yabhin Santos Victoria', 9, 3, 'yabhinsantos@gmail.com', '$2a$10$97j80Sxs9TzDuFhL/gIaaOvtaoZaOgTPfb4IFS1wHmGXzyoFa85Wa', NULL, '2025-11-30 19:45:47', 1, '2025-11-30 19:45:47', '2025-11-30 19:45:47'),
+(64, 'Gael López Bautista', 3, 5, 'lobg050328@gs.utm.mx', '$2a$10$Ae1dm/E5vdhjp8DOrY.i9.IULnhkoLfcma0Hu96wWFPs4RgdJ2G3G', '../imagenes/adviser1.jpg', '2025-11-30 20:04:26', 1, '2025-11-30 20:04:26', '2025-11-30 20:09:06'),
+(65, 'Brittany Garcia Ventura', 9, 5, 'Gavb050516@gs.utm.mx', '$2a$10$Zgdm7p3iKIKzIk68nO4Apep26bzT1IvkeZWWNNY5RJqNtIEOWfmmG', '/utmentor-bucket/asesores/65-1764541480395.webp', '2025-11-30 22:20:39', 1, '2025-11-30 22:20:39', '2025-11-30 22:24:40'),
+(66, 'Evelyn Bernal Jimenez', 8, 7, 'bernalevelyn567@gmail.com', '$2a$10$TdnUpbIRzatSIN64a82SBO34Qi5CtkMzCLFK1NziUUSvFaeTe3hG.', '/utmentor-bucket/asesores/66-1764545408202.jpg', '2025-11-30 23:29:25', 1, '2025-11-30 23:29:25', '2025-11-30 23:30:08'),
+(67, 'Julian Martínez', 6, 3, 'madj050320@gs.utm.mx', '$2a$10$28bc62J2/MZJI1VXC2bKn.JE9uuUMtWLPQEztp558lsR7HoaCs1oq', NULL, '2025-11-30 23:29:32', 1, '2025-11-30 23:29:32', '2025-11-30 23:29:32'),
+(69, 'Yahir Adrian Valencia Morales', 1, 5, 'adr.vmk@gmail.com', '$2a$10$duno/jUgFOuR9HJPRkTvf.yfhEQZ9r8wHlVmGZHfP.BYisH9e0TdW', '/utmentor-bucket/asesores/69-1764546252956.jpeg', '2025-11-30 23:42:28', 1, '2025-11-30 23:42:28', '2025-11-30 23:44:12'),
+(70, 'pol', 2, 2, 'a@g.c', '$2a$10$T0ztqGpwEISlEMyxcsShsuQ5.YAbyY7SRsCgKw0U7c9sh3KOyrRu.', NULL, '2025-11-30 23:43:27', 1, '2025-11-30 23:43:27', '2025-11-30 23:43:27'),
+(71, 'Luis Emiliano Contreras Pérez', 3, 5, 'luiguibowie@gmail.com', '$2a$10$kZIGfc4MwVc4yzkGqd08EO/wXuZzz95T..SAgQymVCWUH/hew1V5G', NULL, '2025-12-01 01:04:00', 1, '2025-12-01 01:04:00', '2025-12-01 01:04:00'),
+(72, 'Lizbeth Bautista Ortiz', 4, 2, 'lizbethbautista480@gmail.com', '$2a$10$s5KBV77rDsPRSNEMQF5vdeLEhNR2Krb53dxGf6kWflgzobewFC2Wi', NULL, '2025-12-01 02:13:55', 1, '2025-12-01 02:13:55', '2025-12-01 02:13:55'),
+(73, 'Jonathan Narváez Morales', 3, 5, 'jonadataps@gmail.com', '$2a$10$HlZUD5d0BO1GBhIR.CNwvunGNznEYTDbBJTUUXegHCtZWmw8.eVGy', NULL, '2025-12-01 03:37:06', 1, '2025-12-01 03:37:06', '2025-12-01 03:37:06'),
+(74, 'Caballero Gómez Gerardo Andrés', 6, 5, 'gerardo.caballero.gomez@gmail.com', '$2a$10$E8js7dF8wAoDom4rcfOUt.FZIh.5CPF1SCFfXoablvnkkOpgM5/ru', NULL, '2025-12-01 03:44:05', 1, '2025-12-01 03:44:05', '2025-12-01 03:44:05'),
+(75, 'Wendy Rosario Martínez Vásquez', 9, 3, 'mavw050325@gs.utm.mx', '$2a$10$yV4JY28BgvGc5emVKIS7p.sWuhSWSELCLyRFAum3zfrHQwxaV4au2', NULL, '2025-12-01 03:50:30', 1, '2025-12-01 03:50:30', '2025-12-01 03:50:30'),
+(76, 'Bethel Dinairis Luna López', 3, 5, 'bethelluna01@gmail.com', '$2a$10$HhijwYge6zYOpYT1xDsbOuy6Y5kWBPaJIHiTTbV1MK8TgT.hdcaJ.', '/utmentor-bucket/asesores/76-1764562909859.jpeg', '2025-12-01 04:21:03', 1, '2025-12-01 04:21:03', '2025-12-01 04:21:49'),
+(77, 'Joshua Barrón', 10, 10, 'barronvsjoga@gmail.com', '$2a$10$tTwsgAwu3KE3/YcKqhWJHeOptLxQ5huA1Z442Rt3PQjJdQBnITH0W', NULL, '2025-12-01 04:59:06', 1, '2025-12-01 04:59:06', '2025-12-01 04:59:06'),
+(78, 'Natalia de los Ángeles Sánchez Maceda', 3, 5, 'samn051016@gs.utm.mx', '$2a$10$GqL50bnWo6M5wD7YuvwTeerLNP4V1S7VzIk761raELWyoiqQk80rK', NULL, '2025-12-01 05:09:31', 1, '2025-12-01 05:09:31', '2025-12-01 05:09:31'),
+(79, 'Gael Matus Blas', 4, 3, 'matusgael15@gmail.com', '$2a$10$LoTvrUXXEs3na3GoKQVm4uhvJolOIlYv61R9do/euFSh/Bo782epC', NULL, '2025-12-01 22:01:04', 1, '2025-12-01 22:01:04', '2025-12-01 22:01:04'),
+(80, 'dalogo perez', 1, 1, 'dalgo@gmail.com', '$2a$10$1lSTGbLbOvU6pdU633.fB.EGOfJExz8NMKFeDmgRe.vNgRAT1yo.O', NULL, '2025-12-02 02:36:34', 1, '2025-12-02 02:36:34', '2025-12-02 02:36:34'),
+(84, 'Julio Cesar Atenco Aguilar', 3, 5, 'juliocesaratencoaguilar2@gmail.com', '$2a$10$JgWnAUZo2BAaG0D63qmahugZvlZArRDoN6oX4N7XDPuAKj18v1Jg6', NULL, '2025-12-02 03:26:45', 1, '2025-12-02 03:26:45', '2025-12-02 03:26:45');
 
 -- --------------------------------------------------------
 
@@ -519,6 +614,25 @@ INSERT INTO `usuario_rol` (`fk_usuario`, `fk_rol`) VALUES
 (20, 1),
 (44, 1),
 (45, 1),
+(47, 1),
+(48, 1),
+(49, 1),
+(50, 1),
+(58, 1),
+(60, 1),
+(61, 1),
+(64, 1),
+(65, 1),
+(66, 1),
+(67, 1),
+(71, 1),
+(74, 1),
+(76, 1),
+(77, 1),
+(78, 1),
+(79, 1),
+(80, 1),
+(84, 1),
 (1, 2),
 (2, 2),
 (3, 2),
@@ -552,7 +666,29 @@ INSERT INTO `usuario_rol` (`fk_usuario`, `fk_rol`) VALUES
 (42, 2),
 (44, 2),
 (45, 2),
-(46, 2);
+(46, 2),
+(47, 2),
+(49, 2),
+(50, 2),
+(53, 2),
+(54, 2),
+(56, 2),
+(57, 2),
+(59, 2),
+(62, 2),
+(63, 2),
+(65, 2),
+(67, 2),
+(69, 2),
+(70, 2),
+(71, 2),
+(72, 2),
+(73, 2),
+(75, 2),
+(76, 2),
+(79, 2),
+(80, 2),
+(84, 2);
 
 --
 -- Índices para tablas volcadas
@@ -686,7 +822,7 @@ ALTER TABLE `areas_conocimiento`
 -- AUTO_INCREMENT de la tabla `calificaciones`
 --
 ALTER TABLE `calificaciones`
-  MODIFY `id_calificacion` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_calificacion` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT de la tabla `carreras`
@@ -698,25 +834,25 @@ ALTER TABLE `carreras`
 -- AUTO_INCREMENT de la tabla `disponibilidades`
 --
 ALTER TABLE `disponibilidades`
-  MODIFY `id_disponibilidad` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_disponibilidad` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT de la tabla `favoritos`
 --
 ALTER TABLE `favoritos`
-  MODIFY `id_favorito` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_favorito` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_cancelaciones`
 --
 ALTER TABLE `historial_cancelaciones`
-  MODIFY `id_cancelacion` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_cancelacion` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `inscripciones_sesion`
 --
 ALTER TABLE `inscripciones_sesion`
-  MODIFY `id_inscripcion` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id_inscripcion` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -728,7 +864,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `temas`
 --
 ALTER TABLE `temas`
-  MODIFY `id_tema` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_tema` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `tokens_recuperacion`
@@ -740,7 +876,7 @@ ALTER TABLE `tokens_recuperacion`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_usuario` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
 
 --
 -- Restricciones para tablas volcadas
@@ -817,6 +953,17 @@ ALTER TABLE `usuarios`
 ALTER TABLE `usuario_rol`
   ADD CONSTRAINT `fk_usuario_rol_roles` FOREIGN KEY (`fk_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_usuario_rol_usuarios` FOREIGN KEY (`fk_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+DELIMITER $$
+--
+-- Eventos
+--
+CREATE DEFINER=`root`@`%` EVENT `ev_actualizar_disponibilidades` ON SCHEDULE EVERY 1 HOUR STARTS '2025-11-30 14:15:37' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE disponibilidades
+    SET es_disponible = 0
+    WHERE fecha_inicio < NOW()
+      AND es_disponible = 1$$
+
+DELIMITER ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
