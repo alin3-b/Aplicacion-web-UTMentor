@@ -894,42 +894,47 @@ function renderTopics() {
 /* ========== PERFIL ========= */
 async function loadProfile() {
   try {
-    // Recargar datos frescos desde la API cada vez que se abre la vista de perfil
-    const response = await authFetch(`${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}?t=${Date.now()}`);
-    if (response.ok) {
-      const result = await response.json();
-      
-      // Actualizar estado del perfil con datos frescos
-      state.profile.name = result.nombre_completo;
-      state.profile.career = result.nombre_carrera || "Carrera no especificada";
-      state.profile.fk_carrera = result.fk_carrera;
-      state.profile.semester = result.semestre;
-      state.profile.email = result.correo_contacto;
-      state.profile.advisoriesGiven = result.numero_sesiones;
-      state.profile.avatar = result.ruta_foto || "../imagenes/profilepicture.jpg";
+    // Consumir endpoint genérico para usuario (igual que panel asesorado)
+    const res = await authFetch(`${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}`);
+    if (res.ok) {
+      const user = await res.json();
+      state.profile.name = user.nombre_completo;
+      state.profile.email = user.correo;
+      state.profile.semester = user.semestre;
+      state.profile.career = user.nombre_carrera || "";
+      state.profile.fk_carrera = user.fk_carrera;
+      state.profile.advisoriesGiven = user.numero_sesiones || 0;
       
       // Actualizar chip del header
       $("#chipName").textContent = state.profile.name;
       $("#chipCareer").textContent = `${state.profile.career} · ${state.profile.semester}º`;
-      const chipAvatar = $("#chipAvatar");
-      chipAvatar.src = state.profile.avatar;
-      chipAvatar.onerror = () => { chipAvatar.onerror = null; chipAvatar.src = "../imagenes/profilepicture.jpg"; };
       
+      // Actualizar avatar desde la respuesta del backend
+      if (user.ruta_foto) {
+        state.profile.avatar = user.ruta_foto;
+      } else {
+        state.profile.avatar = "../imagenes/profilepicture.jpg";
+      }
+
       // Sincronizar localStorage
-      const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-      usuario.ruta_foto = state.profile.avatar;
-      usuario.nombre_completo = state.profile.name;
-      localStorage.setItem("usuario", JSON.stringify(usuario));
+      const localUser = JSON.parse(localStorage.getItem("usuario") || "{}");
+      localUser.ruta_foto = state.profile.avatar;
+      localUser.nombre_completo = state.profile.name;
+      localStorage.setItem("usuario", JSON.stringify(localUser));
     }
   } catch (error) {
     console.error("Error cargando perfil:", error);
     toast("Error al cargar datos del perfil", "danger");
   }
-  
-  // Asignar valores a los campos del formulario
+
   const profileAvatar = $("#profileAvatar");
   profileAvatar.src = state.profile.avatar;
   profileAvatar.onerror = () => { profileAvatar.onerror = null; profileAvatar.src = "../imagenes/profilepicture.jpg"; };
+  
+  const chipAvatar = $("#chipAvatar");
+  chipAvatar.src = state.profile.avatar;
+  chipAvatar.onerror = () => { chipAvatar.onerror = null; chipAvatar.src = "../imagenes/profilepicture.jpg"; };
+  
   $("#pName").value = state.profile.name;
   $("#pCareer").value = state.profile.fk_carrera || "";
   $("#pSemester").value = state.profile.semester;
@@ -967,7 +972,7 @@ async function loadProfile() {
       };
 
       const response = await authFetch(
-        `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}`,
+        `${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}`,
         {
           method: "PUT",
           body: JSON.stringify(updateData),

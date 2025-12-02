@@ -157,6 +157,7 @@ export async function getAsesorInfo(id_asesor) {
       u.correo AS correo_contacto,
       u.ruta_foto,
       u.semestre,
+      u.fk_carrera,
       c.nombre_carrera,
       COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones,
       COALESCE(pa.calificacion_promedio, 0.0) AS puntuacion_promedio
@@ -377,9 +378,11 @@ export async function getUsuarioById(id) {
       u.semestre,
       u.fk_carrera,
       u.ruta_foto,
-      c.nombre_carrera
+      c.nombre_carrera,
+      COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones
     FROM usuarios u
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
+    LEFT JOIN perfiles_asesores pa ON u.id_usuario = pa.id_asesor
     WHERE u.id_usuario = ? AND u.es_activo = TRUE
     `,
     [id]
