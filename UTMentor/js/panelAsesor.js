@@ -455,37 +455,66 @@ function withinWeek(dateObj) {
 }
 
 async function cargarEstudiantesInscritos(idDisponibilidad, sessionElement) {
+  console.log("🔍 Cargando estudiantes para disponibilidad:", idDisponibilidad);
+  
   const estudiantesContainer = sessionElement.querySelector('[data-slot="estudiantes"]');
   const estudiantesList = estudiantesContainer?.querySelector('ul');
   
-  if (!estudiantesContainer || !estudiantesList) return;
+  console.log("  - Container encontrado:", !!estudiantesContainer);
+  console.log("  - Lista encontrada:", !!estudiantesList);
+  
+  if (!estudiantesContainer || !estudiantesList) {
+    console.warn("⚠️ No se encontró el contenedor de estudiantes");
+    return;
+  }
 
   try {
-    const response = await authFetch(
-      `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades/${idDisponibilidad}/estudiantes`
-    );
+    const url = `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades/${idDisponibilidad}/estudiantes`;
+    console.log("  - Fetch a:", url);
     
+    const response = await authFetch(url);
     const result = await response.json();
 
-    if (response.ok && result.success && result.data.length > 0) {
-      estudiantesContainer.hidden = false;
-      estudiantesList.innerHTML = "";
-      
-      result.data.forEach((estudiante) => {
-        const li = document.createElement("li");
-        li.style.cssText = "padding: 0.5rem; border-bottom: 1px solid var(--bg-dim); display: flex; flex-direction: column; gap: 0.25rem;";
-        li.innerHTML = `
-          <strong style="font-size: 0.9rem;">${escapeHTML(estudiante.nombre_completo)}</strong>
-          <span style="font-size: 0.85rem; color: var(--text-dim);">${escapeHTML(estudiante.correo_contacto)}</span>
-          <small style="font-size: 0.75rem; color: var(--text-dim);">Inscrito: ${new Date(estudiante.fecha_inscripcion).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</small>
-        `;
-        estudiantesList.appendChild(li);
-      });
+    console.log("  - Respuesta:", result);
+
+    if (response.ok && result.success) {
+      if (result.data.length > 0) {
+        console.log(`  - ✅ ${result.data.length} estudiante(s) encontrado(s)`);
+        estudiantesContainer.hidden = false;
+        estudiantesList.innerHTML = "";
+        
+        result.data.forEach((estudiante, index) => {
+          const li = document.createElement("li");
+          li.style.cssText = `
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #4285f4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          `;
+          li.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #4285f4; color: white; border-radius: 50%; font-size: 0.75rem; font-weight: bold;">${index + 1}</span>
+              <strong style="font-size: 0.95rem; color: #333;">${escapeHTML(estudiante.nombre_completo)}</strong>
+            </div>
+            <div style="padding-left: 2rem;">
+              <span style="font-size: 0.85rem; color: #666;">📧 ${escapeHTML(estudiante.correo_contacto)}</span><br>
+              <small style="font-size: 0.75rem; color: #999;">📅 Inscrito: ${new Date(estudiante.fecha_inscripcion).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</small>
+            </div>
+          `;
+          estudiantesList.appendChild(li);
+        });
+      } else {
+        console.log("  - ℹ️ No hay estudiantes inscritos");
+        estudiantesContainer.hidden = true;
+      }
     } else {
+      console.warn("  - ⚠️ Error en respuesta:", result);
       estudiantesContainer.hidden = true;
     }
   } catch (error) {
-    console.error("Error al cargar estudiantes inscritos:", error);
+    console.error("❌ Error al cargar estudiantes inscritos:", error);
     estudiantesContainer.hidden = true;
   }
 }
