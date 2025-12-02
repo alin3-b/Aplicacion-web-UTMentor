@@ -944,69 +944,6 @@ async function loadProfile() {
   // Click en foto para cambiar
   $("#profileAvatar").onclick = () => $("#photoInput").click();
 
-  // Manejador del formulario de perfil (solo guarda datos del perfil)
-  $("#profileForm").onsubmit = async (e) => {
-    e.preventDefault();
-    const name = $("#pName").value.trim();
-    const careerId = Number($("#pCareer").value);
-    const semester = Number($("#pSemester").value);
-
-    if (!name || !careerId || !semester) {
-      return toast("Completa los campos obligatorios del perfil", "danger");
-    }
-
-    // Obtener nombre de carrera del select para actualizar UI
-    const careerName = $("#pCareer").options[$("#pCareer").selectedIndex].text;
-
-    try {
-      const submitBtn = $("#profileForm button[type='submit']");
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Guardando...";
-      }
-
-      const updateData = {
-        nombre_completo: name,
-        semestre: semester,
-        fk_carrera: careerId
-      };
-
-      const response = await authFetch(
-        `${API_BASE_URL}/usuarios/${CURRENT_ASESOR_ID}`,
-        {
-          method: "PUT",
-          body: JSON.stringify(updateData),
-        }
-      );
-
-      if (response.ok) {
-        // Actualizar estado local
-        state.profile.name = name;
-        state.profile.career = careerName;
-        state.profile.fk_carrera = careerId;
-        state.profile.semester = semester;
-
-        // Actualizar UI del header
-        $("#chipName").textContent = name;
-        $("#chipCareer").textContent = `${careerName} · ${semester}º`;
-
-        toast("Perfil actualizado correctamente", "success");
-      } else {
-        const result = await response.json();
-        toast(result.error || "Error al actualizar perfil", "danger");
-      }
-    } catch (error) {
-      console.error("Error al guardar perfil:", error);
-      toast("Error de conexión", "danger");
-    } finally {
-      const submitBtn = $("#profileForm button[type='submit']");
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Guardar perfil";
-      }
-    }
-  };
-
   // foto
   $("#photoInput").onchange = async (e) => {
     const file = e.target.files?.[0];
@@ -1097,13 +1034,25 @@ async function loadProfile() {
     };
   }
 
-  // Manejo del formulario de temas (solo guarda temas)
+  // Manejo del formulario de temas (guarda perfil Y temas)
   const topicsForm = $("#topicsForm");
   if (topicsForm) {
     topicsForm.onsubmit = async (e) => {
       e.preventDefault();
       
-      // Recolectar temas
+      // 1. Recolectar datos del perfil
+      const name = $("#pName").value.trim();
+      const careerId = Number($("#pCareer").value);
+      const semester = Number($("#pSemester").value);
+
+      if (!name || !careerId || !semester) {
+        return toast("Completa los campos obligatorios del perfil", "danger");
+      }
+
+      // Obtener nombre de carrera del select para actualizar UI
+      const careerName = $("#pCareer").options[$("#pCareer").selectedIndex].text;
+      
+      // 2. Recolectar temas
       const rows = $$(".topic-row", $("#topicsList"));
       const list = [];
       for (const r of rows) {
@@ -1118,7 +1067,11 @@ async function loadProfile() {
       try {
         toggleLoading("saveAllBtn", true, "Guardando...");
         
+        // Preparar datos completos: perfil + temas
         const updateData = {
+          nombre_completo: name,
+          semestre: semester,
+          fk_carrera: careerId,
           temas: list
         };
 
@@ -1132,18 +1085,26 @@ async function loadProfile() {
 
         if (response.ok) {
           // Actualizar estado local
+          state.profile.name = name;
+          state.profile.career = careerName;
+          state.profile.fk_carrera = careerId;
+          state.profile.semester = semester;
           state.topics = list;
+
+          // Actualizar UI del header
+          $("#chipName").textContent = name;
+          $("#chipCareer").textContent = `${careerName} · ${semester}º`;
           
           // Refrescar dropdown de publicación
           preparePublishForm();
           
-          toast("Temas guardados exitosamente", "success");
+          toast("Cambios guardados exitosamente", "success");
         } else {
           const result = await response.json();
-          toast(result.error || "Error al guardar temas", "danger");
+          toast(result.error || "Error al guardar cambios", "danger");
         }
       } catch (error) {
-        console.error("Error al guardar temas:", error);
+        console.error("Error al guardar cambios:", error);
         toast("Error de conexión", "danger");
       } finally {
         toggleLoading("saveAllBtn", false);
