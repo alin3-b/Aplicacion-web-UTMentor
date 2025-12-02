@@ -13,22 +13,35 @@ export async function generarDescripcion(req, res) {
             return res.status(400).json({ error: "El campo 'nombre' es obligatorio" });
         }
 
-        const prompt = `Eres un redactor experto en plataformas de mentorías académicas. 
-Tu tarea es generar un texto corto (1-2 oraciones máximo) que explique por qué este asesor es una excelente opción para los estudiantes, destacando sus fortalezas de forma natural y convincente:
-{
-  "descripcion": "Aquí va el texto persuasivo"
-}
+        const prompt = `Eres un redactor experto en plataformas de mentorías académicas.
+        Tu tarea es generar un texto corto (1–2 oraciones máximo) que explique por qué este asesor es una excelente opción para los estudiantes, destacando sus fortalezas de forma natural y convincente.
+        
+        Debes generar SOLO este JSON:
+        {
+        "descripcion": "Aquí va el texto persuasivo"
+        }
+        
+        Reglas importantes:
+        - Usa "este asesor", "él/ella" o el nombre del asesor.
+        - NO uses primera persona ("yo").
+        - NO inventes información.
+        - Si el asesor tiene 0 calificaciones o 0 sesiones, NO menciones experiencia previa ni calificaciones.
+        - Si no existe área o temas definidos, NO los menciones; en su lugar destaca su formación, habilidades generales o disposición para guiar al estudiante.
+        - Si sí existen, puedes mencionarlos de forma natural.
+        - Si no hay datos suficientes en general, crea una descripción profesional basada en lo que sí se conoce (nombre, carrera, semestre).
+        
+        Datos del asesor:
+        Nombre: ${nombre}
+        Carrera: ${carrera || ''}
+        Semestre: ${semestre ? `${semestre}° semestre` : ''}
+        Área: ${area || ''}
+        Temas que domina: ${Array.isArray(temas) && temas.length > 0 ? temas.join(', ') : ''}
+        Calificación promedio: ${typeof rating === 'number' ? rating : ''}
+        Total de sesiones impartidas: ${typeof totalClases === 'number' ? totalClases : ''}
+        
+        El texto debe ser profesional, cercano y motivar al estudiante a reservar.
+        NO agregues texto fuera del JSON.`;
 
-Datos del asesor:
-Nombre: ${nombre}
-Carrera: ${carrera || 'Ingeniería'}
-Semestre: ${semestre ? `${semestre}° semestre` : 'avanzado'}
-Área: ${area || 'Ciencias/Tecnología'}
-Temas que domina: ${Array.isArray(temas) ? temas.join(', ') : 'varios temas'}
-Calificación promedio: ${rating || '4.9'}/5.0
-Total de sesiones impartidas: ${totalClases || 'más de 40'}
-
-El texto debe ser profesional, cercano y motivar al estudiante a reservar. Usa "este asesor", "él/ella", o el nombre directamente. NO uses primera persona ("yo"). NO agregues texto fuera del JSON.`;
 
         const response = await fetch(url, {
             method: "POST",
@@ -72,9 +85,9 @@ El texto debe ser profesional, cercano y motivar al estudiante a reservar. Usa "
 
     } catch (error) {
         console.error('Error con Gemini:', error.message);
-        res.status(500).json({ 
-            error: 'No se pudo generar la descripción', 
-            detalles: error.message 
+        res.status(500).json({
+            error: 'No se pudo generar la descripción',
+            detalles: error.message
         });
     }
 }
