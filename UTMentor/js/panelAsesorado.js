@@ -715,13 +715,16 @@ function initExplorarView() {
     
     try {
       const resp = await obtenerAsesores(filtros);
+      let asesores = [];
       if (Array.isArray(resp)) {
-        exploreState.asesores = resp;
+        asesores = resp;
       } else if (Array.isArray(resp.asesores)) {
-        exploreState.asesores = resp.asesores;
-      } else {
-        exploreState.asesores = [];
+        asesores = resp.asesores;
       }
+      
+      // Filtrar el perfil del usuario actual para evitar que se agende consigo mismo
+      exploreState.asesores = asesores.filter(a => a.id_usuario !== USER_ID);
+      
       exploreState.currentPage = 1;
       renderExplorePage();
       if(limpiarBtn) limpiarBtn.style.display = "inline-flex";
@@ -755,7 +758,9 @@ function initExplorarView() {
 
   async function cargarAsesores() {
     try {
-      exploreState.asesores = await obtenerAsesores();
+      const asesores = await obtenerAsesores();
+      // Filtrar el perfil del usuario actual para evitar que se agende consigo mismo
+      exploreState.asesores = asesores.filter(a => a.id_usuario !== USER_ID);
       exploreState.currentPage = 1;
       renderExplorePage();
     } catch (error) {
