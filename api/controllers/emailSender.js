@@ -66,12 +66,12 @@ async function enviarCorreo(config) {
 /**
  * Envía un correo de recuperación de contraseña
  * @param {string} emailDestino - Correo del usuario que recupera la contraseña
- * @param {string} frontendUrl - URL base del frontend (opcional, por defecto: http://localhost:3000)
+ * @param {string} frontendUrl - URL base del frontend (opcional, por defecto: http://18.144.41.81:8180)
  * @returns {Promise<Object>} Resultado del envío
  */
 async function enviarCorreoRecuperacion(
   emailDestino,
-  frontendUrl = "http://localhost:8180"
+  frontendUrl = "http://18.144.41.81:8180"
 ) {
   // Construir la URL de recuperación con el email como query param
   const urlRecuperacion = `${frontendUrl}/cambio-contrasena?email=${encodeURIComponent(
