@@ -111,6 +111,7 @@ async function cargarPerfilCompletoDesdeAPI() {
       // Actualizar estado del perfil
       state.profile.name = result.nombre_completo;
       state.profile.career = result.nombre_carrera || "Carrera no especificada";
+      state.profile.fk_carrera = result.fk_carrera;
       state.profile.semester = result.semestre;
       state.profile.email = result.correo_contacto;
       state.profile.advisoriesGiven = result.numero_sesiones;
@@ -896,7 +897,7 @@ function loadProfile() {
   profileAvatar.src = state.profile.avatar;
   profileAvatar.onerror = () => { profileAvatar.onerror = null; profileAvatar.src = "../imagenes/profilepicture.jpg"; };
   $("#pName").value = state.profile.name;
-  $("#pCareer").value = state.profile.career;
+  $("#pCareer").value = state.profile.fk_carrera || "";
   $("#pSemester").value = state.profile.semester;
   $("#pEmail").value = state.profile.email;
   $("#pAdvisories").value = state.profile.advisoriesGiven;
@@ -1002,12 +1003,15 @@ function loadProfile() {
       
       // 1. Recolectar datos del perfil
       const name = $("#pName").value.trim();
-      const career = $("#pCareer").value.trim();
+      const careerId = Number($("#pCareer").value);
       const semester = Number($("#pSemester").value);
 
-      if (!name || !career || !semester) {
+      if (!name || !careerId || !semester) {
         return toast("Completa los campos obligatorios del perfil", "danger");
       }
+
+      // Obtener nombre de carrera del select para actualizar UI
+      const careerName = $("#pCareer").options[$("#pCareer").selectedIndex].text;
 
       // 2. Recolectar temas
       const rows = $$(".topic-row", $("#topicsList"));
@@ -1027,7 +1031,7 @@ function loadProfile() {
         const updateData = {
           nombre_completo: name,
           semestre: semester,
-          // fk_carrera: ... (si tuviéramos select)
+          fk_carrera: careerId,
           temas: list
         };
 
@@ -1042,13 +1046,14 @@ function loadProfile() {
         if (response.ok) {
           // Actualizar estado local
           state.profile.name = name;
-          state.profile.career = career;
+          state.profile.career = careerName;
+          state.profile.fk_carrera = careerId;
           state.profile.semester = semester;
           state.topics = list;
 
           // Actualizar UI
           $("#chipName").textContent = name;
-          $("#chipCareer").textContent = `${career} · ${semester}º`;
+          $("#chipCareer").textContent = `${careerName} · ${semester}º`;
           
           // Refrescar dropdown de publicación
           preparePublishForm();
