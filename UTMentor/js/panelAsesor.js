@@ -159,7 +159,8 @@ async function cargarPerfilCompletoDesdeAPI() {
             window.location.href = `panelAsesorado.html?id=${CURRENT_ASESOR_ID}`;
           };
         } else {
-          switchBtn.hidden = true;
+          // Eliminar el botón completamente del DOM
+          switchBtn.remove();
         }
       }
 

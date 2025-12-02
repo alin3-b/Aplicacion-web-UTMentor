@@ -246,7 +246,8 @@ window.addEventListener("DOMContentLoaded", ()=>{
           setTimeout(() => location.href = "panelAsesor.html", 800);
         });
       } else {
-        btnSwitch.hidden = true;
+        // Eliminar el botón completamente del DOM
+        btnSwitch.remove();
       }
   }
 
