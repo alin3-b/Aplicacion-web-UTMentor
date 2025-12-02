@@ -617,7 +617,7 @@ export async function getEstudiantesInscritos(id_disponibilidad) {
     SELECT 
       u.id_usuario,
       u.nombre_completo,
-      u.correo_contacto,
+      u.correo,
       i.fecha_inscripcion,
       i.estado
     FROM inscripciones_sesion i

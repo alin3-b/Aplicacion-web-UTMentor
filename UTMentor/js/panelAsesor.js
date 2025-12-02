@@ -499,7 +499,7 @@ async function cargarEstudiantesInscritos(idDisponibilidad, sessionElement) {
               <strong style="font-size: 0.95rem; color: #333;">${escapeHTML(estudiante.nombre_completo)}</strong>
             </div>
             <div style="padding-left: 2rem;">
-              <span style="font-size: 0.85rem; color: #666;">📧 ${escapeHTML(estudiante.correo_contacto)}</span><br>
+              <span style="font-size: 0.85rem; color: #666;">📧 ${escapeHTML(estudiante.correo)}</span><br>
               <small style="font-size: 0.75rem; color: #999;">📅 Inscrito: ${new Date(estudiante.fecha_inscripcion).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</small>
             </div>
           `;
