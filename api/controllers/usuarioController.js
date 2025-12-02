@@ -15,6 +15,7 @@ import {
   updateAsesorProfile,
   createDisponibilidad,
   getDisponibilidades,
+  getEstudiantesInscritos,
   deleteDisponibilidad,
   deleteUsuario,
   getAsesoriasPorAsesorado,
@@ -768,6 +769,24 @@ export async function listarDisponibilidadesController(req, res) {
   } catch (error) {
     console.error("Error al listar disponibilidades:", error);
     res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+export async function obtenerEstudiantesInscritosController(req, res) {
+  const { id_disponibilidad } = req.params;
+
+  try {
+    console.log("📋 Obteniendo estudiantes inscritos para disponibilidad:", id_disponibilidad);
+    const estudiantes = await getEstudiantesInscritos(id_disponibilidad);
+    console.log("  - Estudiantes encontrados:", estudiantes.length);
+
+    res.status(200).json({
+      success: true,
+      data: estudiantes,
+    });
+  } catch (error) {
+    console.error("❌ Error al obtener estudiantes inscritos:", error);
+    res.status(500).json({ error: "Error interno del servidor", message: error.message });
   }
 }
 
