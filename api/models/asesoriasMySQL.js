@@ -23,6 +23,14 @@ export async function getAsesoriasByAsesor(id_asesor) {
         WHERE d.es_disponible = TRUE
           AND d.fecha_fin > NOW()
           AND d.fk_asesor = ?
+          AND (
+            d.tipo_sesion = 'grupal' 
+            OR (d.tipo_sesion = 'individual' AND NOT EXISTS (
+              SELECT 1 FROM inscripciones_sesion i 
+              WHERE i.fk_disponibilidad = d.id_disponibilidad 
+              AND i.estado != 'cancelada'
+            ))
+          )
         ORDER BY d.fecha_inicio ASC`,
         [id_asesor]
     );
@@ -49,10 +57,11 @@ export async function existeInscripcion(fk_disponibilidad, fk_asesorado) {
  * Crea una inscripción
  */
 export async function crearInscripcion(fk_disponibilidad, fk_asesorado) {
-    // 1. Verificar cupo
+    // 1. Verificar cupo y tipo de sesión
     const [cupoInfo] = await mysqlPool.query(
         `SELECT 
             d.capacidad,
+            d.tipo_sesion,
             (SELECT COUNT(*) FROM inscripciones_sesion WHERE fk_disponibilidad = d.id_disponibilidad AND estado != 'cancelada') as inscritos
          FROM disponibilidades d
          WHERE d.id_disponibilidad = ?`,
@@ -63,7 +72,7 @@ export async function crearInscripcion(fk_disponibilidad, fk_asesorado) {
         throw new Error("La disponibilidad no existe");
     }
 
-    const { capacidad, inscritos } = cupoInfo[0];
+    const { capacidad, inscritos, tipo_sesion } = cupoInfo[0];
 
     if (inscritos >= capacidad) {
         throw new Error("No hay cupo disponible para esta sesión");
@@ -75,6 +84,14 @@ export async function crearInscripcion(fk_disponibilidad, fk_asesorado) {
          VALUES (?, ?)`,
         [fk_disponibilidad, fk_asesorado]
     );
+
+    // 3. Si es sesión individual, marcar como no disponible
+    if (tipo_sesion === 'individual') {
+        await mysqlPool.query(
+            `UPDATE disponibilidades SET es_disponible = FALSE WHERE id_disponibilidad = ?`,
+            [fk_disponibilidad]
+        );
+    }
 
     return result.insertId;
 }

@@ -757,7 +757,7 @@ export async function cancelarInscripcion(id_inscripcion, id_asesorado, motivo =
 
     // 1. Verificar que la inscripción existe, pertenece al usuario y no está cancelada
     const [rows] = await conn.query(
-      "SELECT id_inscripcion FROM inscripciones_sesion WHERE id_inscripcion = ? AND fk_asesorado = ? AND estado != 'cancelada'",
+      "SELECT i.id_inscripcion, i.fk_disponibilidad, d.tipo_sesion FROM inscripciones_sesion i JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad WHERE i.id_inscripcion = ? AND i.fk_asesorado = ? AND i.estado != 'cancelada'",
       [id_inscripcion, id_asesorado]
     );
 
@@ -766,13 +766,23 @@ export async function cancelarInscripcion(id_inscripcion, id_asesorado, motivo =
       return false;
     }
 
+    const { fk_disponibilidad, tipo_sesion } = rows[0];
+
     // 2. Actualizar estado a 'cancelada'
     await conn.query(
       "UPDATE inscripciones_sesion SET estado = 'cancelada' WHERE id_inscripcion = ?",
       [id_inscripcion]
     );
 
-    // 3. Registrar en historial
+    // 3. Si es sesión individual, restaurar disponibilidad
+    if (tipo_sesion === 'individual') {
+      await conn.query(
+        "UPDATE disponibilidades SET es_disponible = TRUE WHERE id_disponibilidad = ?",
+        [fk_disponibilidad]
+      );
+    }
+
+    // 4. Registrar en historial
     await conn.query(
       "INSERT INTO historial_cancelaciones (fk_inscripcion, fk_usuario_cancelo, motivo) VALUES (?, ?, ?)",
       [id_inscripcion, id_asesorado, motivo]
