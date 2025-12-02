@@ -534,7 +534,34 @@ function renderSessions() {
   weekSessions.forEach((s) => {
     const li = tpl.content.firstElementChild.cloneNode(true);
     li.dataset.id = s.id;
-    li.querySelector('[data-slot="title"]').textContent = s.title;
+    
+    // Extraer número de inscritos del string "X inscrito(s)" o "—"
+    const studentText = s.student || "—";
+    const numInscritos = studentText.match(/(\d+)\s*inscrito/i) ? parseInt(studentText.match(/(\d+)/)[0]) : 0;
+    
+    // Mostrar título con badge de inscritos si hay alguno
+    const titleElement = li.querySelector('[data-slot="title"]');
+    titleElement.textContent = s.title;
+    
+    if (numInscritos > 0) {
+      const badge = document.createElement("span");
+      badge.style.cssText = `
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 0.5rem;
+        padding: 0.2rem 0.5rem;
+        background: #4CAF50;
+        color: white;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      `;
+      badge.textContent = `+${numInscritos}`;
+      badge.title = `${numInscritos} estudiante${numInscritos > 1 ? 's' : ''} inscrito${numInscritos > 1 ? 's' : ''}`;
+      titleElement.appendChild(badge);
+    }
+    
     li.querySelector('[data-slot="mode"]').textContent =
       s.mode === "virtual" ? "Virtual" : "Presencial";
     li.querySelector('[data-slot="area"]').textContent = s.area;
@@ -542,7 +569,7 @@ function renderSessions() {
       s.type === "grupal" ? "Grupal" : "Individual";
     li.querySelector('[data-slot="price"]').textContent = `$${s.price}`;
     li.querySelector('[data-slot="notes"]').textContent = s.notes || "—";
-    li.querySelector('[data-slot="student"]').textContent = s.student || "—";
+    li.querySelector('[data-slot="student"]').textContent = studentText;
     li.querySelector('[data-slot="date"]').textContent = formatRange(
       s.date.start,
       s.date.end
