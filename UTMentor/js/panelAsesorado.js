@@ -334,7 +334,7 @@ function renderSessions(){
     });
 
     li.querySelector('[data-action="cancel"]').addEventListener("click", async ()=>{
-      const ok = await confirmDialog("¿Estas seguro de cancelar esta asesoría?");
+      const ok = await confirmDialog("¿Estás seguro de cancelar esta asesoría?");
       if (!ok) return;
 
       try {
