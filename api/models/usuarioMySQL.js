@@ -618,13 +618,13 @@ export async function getEstudiantesInscritos(id_disponibilidad) {
       u.id_usuario,
       u.nombre_completo,
       u.correo,
-      i.fecha_inscripcion,
+      i.fecha_reserva,
       i.estado
     FROM inscripciones_sesion i
-    INNER JOIN usuarios u ON i.fk_estudiante = u.id_usuario
+    INNER JOIN usuarios u ON i.fk_asesorado = u.id_usuario
     WHERE i.fk_disponibilidad = ?
       AND i.estado != 'cancelada'
-    ORDER BY i.fecha_inscripcion ASC
+    ORDER BY i.fecha_reserva ASC
     `,
     [id_disponibilidad]
   );
