@@ -232,10 +232,22 @@ window.addEventListener("DOMContentLoaded", ()=>{
   // Cambio de rol
   const btnSwitch = $("#btnSwitchRole");
   if(btnSwitch) {
-      btnSwitch.addEventListener("click", ()=>{
-        toast("Cambiando a vista de Asesor...");
-        setTimeout(() => location.href = "panelAsesor.html", 800);
-      });
+      // Obtener roles desde localStorage (mismo formato que login)
+      const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+      const roles = usuario.roles || [];
+      
+      // Solo mostrar si tiene ambos roles: Asesor Y Asesorado
+      const tieneAmbosRoles = roles.includes("Asesor") && roles.includes("Asesorado");
+      
+      if (tieneAmbosRoles) {
+        btnSwitch.hidden = false;
+        btnSwitch.addEventListener("click", ()=>{
+          toast("Cambiando a vista de Asesor...");
+          setTimeout(() => location.href = "panelAsesor.html", 800);
+        });
+      } else {
+        btnSwitch.hidden = true;
+      }
   }
 
   $('[data-action="logout"]').addEventListener("click", async ()=>{

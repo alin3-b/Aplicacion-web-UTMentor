@@ -145,11 +145,17 @@ async function cargarPerfilCompletoDesdeAPI() {
       // Lógica del botón de cambio de rol
       const switchBtn = $('[data-action="switch-role"]');
       if (switchBtn) {
-        // Solo mostrar si tiene más de un rol (ej. Asesor y Estudiante)
-        if (state.profile.roles.length > 1) {
+        // Obtener roles desde localStorage (mismo formato que login)
+        const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+        const roles = usuario.roles || [];
+        
+        // Solo mostrar si tiene ambos roles: Asesor Y Asesorado
+        const tieneAmbosRoles = roles.includes("Asesor") && roles.includes("Asesorado");
+        
+        if (tieneAmbosRoles) {
           switchBtn.hidden = false;
           switchBtn.onclick = () => {
-            // Redirigir preservando el ID
+            // Redirigir al panel de asesorado
             window.location.href = `panelAsesorado.html?id=${CURRENT_ASESOR_ID}`;
           };
         } else {
