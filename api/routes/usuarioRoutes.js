@@ -63,6 +63,18 @@ router.post("/asesores/:id/disponibilidades", crearDisponibilidadController);
 // === LISTAR DISPONIBILIDADES ===
 router.get("/asesores/:id/disponibilidades", listarDisponibilidadesController);
 
+// === OBTENER ESTUDIANTES INSCRITOS EN UNA DISPONIBILIDAD ===
+router.get("/asesores/:id/disponibilidades/:id_disponibilidad/estudiantes", async (req, res) => {
+  try {
+    const { getEstudiantesInscritos } = await import("../models/usuarioMySQL.js");
+    const estudiantes = await getEstudiantesInscritos(req.params.id_disponibilidad);
+    res.status(200).json({ success: true, data: estudiantes });
+  } catch (error) {
+    console.error("Error al obtener estudiantes inscritos:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
 // === ELIMINAR DISPONIBILIDAD ===
 router.delete("/asesores/:id/disponibilidades/:id_disponibilidad", eliminarDisponibilidadController);
 

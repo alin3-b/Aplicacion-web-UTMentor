@@ -611,6 +611,26 @@ export async function getDisponibilidades(id_asesor, filtros = {}) {
   return rows;
 }
 
+export async function getEstudiantesInscritos(id_disponibilidad) {
+  const [rows] = await mysqlPool.query(
+    `
+    SELECT 
+      u.id_usuario,
+      u.nombre_completo,
+      u.correo_contacto,
+      i.fecha_inscripcion,
+      i.estado
+    FROM inscripciones_sesion i
+    INNER JOIN usuarios u ON i.fk_estudiante = u.id_usuario
+    WHERE i.fk_disponibilidad = ?
+      AND i.estado != 'cancelada'
+    ORDER BY i.fecha_inscripcion ASC
+    `,
+    [id_disponibilidad]
+  );
+  return rows;
+}
+
 export async function deleteDisponibilidad(id_disponibilidad, id_asesor) {
   const [result] = await mysqlPool.query(
     "DELETE FROM disponibilidades WHERE id_disponibilidad = ? AND fk_asesor = ?",

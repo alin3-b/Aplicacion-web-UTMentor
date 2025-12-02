@@ -454,6 +454,42 @@ function withinWeek(dateObj) {
   return t >= start && t < end;
 }
 
+async function cargarEstudiantesInscritos(idDisponibilidad, sessionElement) {
+  const estudiantesContainer = sessionElement.querySelector('[data-slot="estudiantes"]');
+  const estudiantesList = estudiantesContainer?.querySelector('ul');
+  
+  if (!estudiantesContainer || !estudiantesList) return;
+
+  try {
+    const response = await authFetch(
+      `${API_BASE_URL}/usuarios/asesores/${CURRENT_ASESOR_ID}/disponibilidades/${idDisponibilidad}/estudiantes`
+    );
+    
+    const result = await response.json();
+
+    if (response.ok && result.success && result.data.length > 0) {
+      estudiantesContainer.hidden = false;
+      estudiantesList.innerHTML = "";
+      
+      result.data.forEach((estudiante) => {
+        const li = document.createElement("li");
+        li.style.cssText = "padding: 0.5rem; border-bottom: 1px solid var(--bg-dim); display: flex; flex-direction: column; gap: 0.25rem;";
+        li.innerHTML = `
+          <strong style="font-size: 0.9rem;">${escapeHTML(estudiante.nombre_completo)}</strong>
+          <span style="font-size: 0.85rem; color: var(--text-dim);">${escapeHTML(estudiante.correo_contacto)}</span>
+          <small style="font-size: 0.75rem; color: var(--text-dim);">Inscrito: ${new Date(estudiante.fecha_inscripcion).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</small>
+        `;
+        estudiantesList.appendChild(li);
+      });
+    } else {
+      estudiantesContainer.hidden = true;
+    }
+  } catch (error) {
+    console.error("Error al cargar estudiantes inscritos:", error);
+    estudiantesContainer.hidden = true;
+  }
+}
+
 function renderSessions() {
   const ul = $("#sessionsList");
   ul.innerHTML = "";
@@ -483,11 +519,16 @@ function renderSessions() {
       s.date.end
     );
 
-    li.querySelector('[data-action="toggle"]').addEventListener("click", () => {
+    li.querySelector('[data-action="toggle"]').addEventListener("click", async () => {
       const detail = li.querySelector(".session-detail");
       const hidden = detail.hasAttribute("hidden");
-      if (hidden) detail.removeAttribute("hidden");
-      else detail.setAttribute("hidden", "");
+      if (hidden) {
+        detail.removeAttribute("hidden");
+        // Cargar estudiantes inscritos si hay alguno
+        await cargarEstudiantesInscritos(s.id, li);
+      } else {
+        detail.setAttribute("hidden", "");
+      }
     });
 
     li.querySelector('[data-action="cancel"]').addEventListener(
@@ -590,6 +631,10 @@ function preparePublishForm() {
     const topic = $("#topicCustom").hidden
       ? $("#topicSel").value
       : $("#topicCustom").value.trim();
+    
+    console.log("🔍 DEBUG Publicar Disponibilidad:");
+    console.log("  - topic seleccionado:", topic);
+    console.log("  - state.topics:", state.topics);
     const dayIdx = Number($("#daySel").value);
     const start = $("#startTime").value;
     const end = $("#endTime").value;
@@ -612,18 +657,28 @@ function preparePublishForm() {
     const fechaInicio = addDayTime(currentMonday, dayIdx, start, end).start;
     const fechaFin = addDayTime(currentMonday, dayIdx, start, end).end;
 
+    // Determinar fk_tema con logging
+    let fk_tema = null;
+    if (topic === "Tema Libre") {
+      console.log("  - Tema Libre detectado, fk_tema = null");
+      fk_tema = null;
+    } else {
+      const foundTopic = state.topics.find((t) => t.topic === topic);
+      console.log("  - Búsqueda de tema:", foundTopic);
+      fk_tema = foundTopic?.id_tema || null;
+      console.log("  - fk_tema final:", fk_tema);
+    }
+
     const disponibilidadData = {
       fecha_inicio: fechaInicio.toISOString().slice(0, 19),
       fecha_fin: fechaFin.toISOString().slice(0, 19),
       modalidad: mode,
       tipo_sesion: type,
-      fk_tema:
-        topic === "Tema Libre"
-          ? null
-          : state.topics.find((t) => t.topic === topic)?.id_tema || null,
+      fk_tema: fk_tema,
       precio: price,
       capacidad: type === "individual" ? 1 : 2,
     };
+    console.log("  - disponibilidadData completo:", disponibilidadData);
     try {
       // Mostrar indicador de carga
       const submitBtn = document.querySelector(

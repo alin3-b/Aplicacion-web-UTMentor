@@ -95,12 +95,16 @@
             </div>
             <div class="session-detail" hidden>
               <dl class="dl">
-                <div><dt>Alumno:</dt><dd data-slot="student">—</dd></div>
+                <div><dt>Inscritos:</dt><dd data-slot="student">—</dd></div>
                 <div><dt>Tipo:</dt><dd data-slot="type">Individual</dd></div>
                 <div><dt>Área:</dt><dd data-slot="area">Matemáticas</dd></div>
                 <div><dt>Precio:</dt><dd data-slot="price">$0</dd></div>
                 <div><dt>Notas:</dt><dd data-slot="notes">—</dd></div>
               </dl>
+              <div class="estudiantes-list" data-slot="estudiantes" style="margin-top: 1rem;" hidden>
+                <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-dim);">Estudiantes inscritos:</h4>
+                <ul style="list-style: none; padding: 0; margin: 0;"></ul>
+              </div>
             </div>
           </li>
         </template>

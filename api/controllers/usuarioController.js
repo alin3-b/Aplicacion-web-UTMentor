@@ -677,9 +677,28 @@ export async function subirFotoPerfil(req, res) {
  *       500:
  *         description: Error interno del servidor
  */
+export async function getEstudiantesInscritosController(req, res) {
+  const { id, idDisponibilidad } = req.params;
+
+  try {
+    const estudiantes = await getEstudiantesInscritos(idDisponibilidad);
+
+    res.status(200).json({
+      success: true,
+      data: estudiantes
+    });
+  } catch (error) {
+    console.error("Error al obtener estudiantes inscritos:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
 export async function crearDisponibilidadController(req, res) {
   const { id } = req.params;
   const { fecha_inicio, fecha_fin, modalidad, tipo_sesion, fk_tema, precio, capacidad } = req.body;
+
+  console.log("🔍 DEBUG crear disponibilidad - req.body:", req.body);
+  console.log("  - fk_tema recibido:", fk_tema, "tipo:", typeof fk_tema);
 
   try {
     const id_disponibilidad = await createDisponibilidad({
