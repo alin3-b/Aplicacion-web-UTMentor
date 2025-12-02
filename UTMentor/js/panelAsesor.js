@@ -713,6 +713,23 @@ function preparePublishForm() {
     const fechaInicio = addDayTime(currentMonday, dayIdx, start, end).start;
     const fechaFin = addDayTime(currentMonday, dayIdx, start, end).end;
 
+    // Validar que la sesión no sea en el pasado
+    const ahora = new Date();
+    if (fechaInicio <= ahora) {
+      const fechaLegible = fechaInicio.toLocaleDateString('es-MX', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      const horaActual = ahora.toLocaleTimeString('es-MX', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      return toast(`No puedes publicar sesiones en el pasado. La sesión que intentas programar (${fechaLegible}) ya pasó. Hora actual: ${horaActual}`, "warning");
+    }
+
     // Determinar fk_tema con logging
     let fk_tema = null;
     if (topic === "Tema Libre") {
