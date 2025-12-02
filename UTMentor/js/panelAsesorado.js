@@ -879,7 +879,7 @@ function initExplorarView() {
                 <span>${safe(disponibilidad)}</span>
               </div>
             </div>
-            <a class="btn-perfil" href="panelPublicoAsesor.html?id=${asesor.id_usuario}">Ver perfil</a>
+            <a class="btn-perfil" href="panelPublicoAsesor.html?id=${asesor.id_usuario}&from=explorar">Ver perfil</a>
           </div>
         </div>
       </li>
