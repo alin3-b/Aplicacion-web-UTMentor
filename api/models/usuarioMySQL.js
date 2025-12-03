@@ -72,7 +72,14 @@ export async function getAllAsesores(filtros = {}) {
       u.ruta_foto,
       u.semestre,
       c.nombre_carrera,
-      COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones,
+      (
+        SELECT COUNT(DISTINCT d2.id_disponibilidad)
+        FROM disponibilidades d2
+        INNER JOIN inscripciones_sesion i2 ON d2.id_disponibilidad = i2.fk_disponibilidad
+        WHERE d2.fk_asesor = u.id_usuario
+          AND d2.fecha_fin < NOW()
+          AND i2.estado != 'cancelada'
+      ) AS numero_sesiones,
       COALESCE(pa.calificacion_promedio, 0.0) AS puntuacion_promedio,
       u.correo AS correo_contacto,
       d.id_disponibilidad,
@@ -97,7 +104,7 @@ export async function getAllAsesores(filtros = {}) {
     LEFT JOIN temas t ON d.fk_tema = t.id_tema
     LEFT JOIN areas_conocimiento a ON t.fk_area = a.id_area
     WHERE ${conditions.join(" AND ")}
-    ORDER BY pa.conteo_asesorias DESC, 
+    ORDER BY numero_sesiones DESC, 
         CASE WHEN d.fecha_inicio IS NULL THEN 1 ELSE 0 END ASC,
         d.fecha_inicio ASC
   `;
@@ -159,7 +166,14 @@ export async function getAsesorInfo(id_asesor) {
       u.semestre,
       u.fk_carrera,
       c.nombre_carrera,
-      COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones,
+      (
+        SELECT COUNT(DISTINCT d2.id_disponibilidad)
+        FROM disponibilidades d2
+        INNER JOIN inscripciones_sesion i2 ON d2.id_disponibilidad = i2.fk_disponibilidad
+        WHERE d2.fk_asesor = u.id_usuario
+          AND d2.fecha_fin < NOW()
+          AND i2.estado != 'cancelada'
+      ) AS numero_sesiones,
       COALESCE(pa.calificacion_promedio, 0.0) AS puntuacion_promedio
     FROM usuarios u
     INNER JOIN perfiles_asesores pa ON u.id_usuario = pa.id_asesor
@@ -379,7 +393,14 @@ export async function getUsuarioById(id) {
       u.fk_carrera,
       u.ruta_foto,
       c.nombre_carrera,
-      COALESCE(pa.conteo_asesorias, 0) AS numero_sesiones
+      (
+        SELECT COUNT(DISTINCT d2.id_disponibilidad)
+        FROM disponibilidades d2
+        INNER JOIN inscripciones_sesion i2 ON d2.id_disponibilidad = i2.fk_disponibilidad
+        WHERE d2.fk_asesor = u.id_usuario
+          AND d2.fecha_fin < NOW()
+          AND i2.estado != 'cancelada'
+      ) AS numero_sesiones
     FROM usuarios u
     LEFT JOIN carreras c ON u.fk_carrera = c.id_carrera
     LEFT JOIN perfiles_asesores pa ON u.id_usuario = pa.id_asesor
