@@ -412,4 +412,39 @@ async function cargarAsesores() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => cargarAsesores());
+function aplicarFiltroPorTemaURL() {
+  const params = new URLSearchParams(window.location.search);
+  const temaURL = params.get("tema");
+
+  if (!temaURL) {
+    console.log("No viene tema desde la URL");
+    return;
+  }
+
+  console.log("Tema recibido desde URL:", temaURL);
+
+  const temaInput = document.getElementById("filtro-tema");
+  const buscarBtn = document.getElementById("btn-buscar");
+
+  if (!temaInput || !buscarBtn) {
+    console.warn("Campos de filtro no encontrados en el DOM");
+    return;
+  }
+
+  // Insertar el tema en el input
+  temaInput.value = decodeURIComponent(temaURL);
+
+  // Forzar actualización visual y del botón limpiar
+  temaInput.dispatchEvent(new Event("input"));
+
+  // Ejecutar el filtro
+  setTimeout(() => {
+    buscarBtn.click();
+    console.log("Filtro ejecutado automáticamente");
+  }, 150);  
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await cargarAsesores();        // Primero carga asesores sin filtros
+  aplicarFiltroPorTemaURL();     // Luego aplica el tema desde la URL
+});

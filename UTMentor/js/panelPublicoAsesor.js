@@ -485,16 +485,35 @@ bookForm.addEventListener('submit', async e => {
 });
 
 // =========================
-// Navegación semanas
+// Navegación semanas (no permitir retroceder antes de la semana actual)
 // =========================
+const today = startOfWeek(new Date()); // Semana actual
+
+function updateWeekNavButtons() {
+// Deshabilitar “prevWeek” solo si estamos en la semana actual
+prevWeek.disabled = start <= today;
+}
+
 prevWeek.addEventListener('click', () => {
-  start.setDate(start.getDate() - 7);
-  renderWeek();
+const newStart = new Date(start);
+newStart.setDate(start.getDate() - 7);
+
+// No permitir retroceder antes de la semana actual
+if (newStart < today) return;
+
+start = newStart;
+renderWeek();
+updateWeekNavButtons();
 });
+
 nextWeek.addEventListener('click', () => {
-  start.setDate(start.getDate() + 7);
-  renderWeek();
+start.setDate(start.getDate() + 7);
+renderWeek();
+updateWeekNavButtons();
 });
+
+// Inicializar
+updateWeekNavButtons();
 
 // =========================
 // Inicio de semana (lunes)

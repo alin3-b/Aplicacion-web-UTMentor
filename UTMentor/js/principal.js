@@ -236,8 +236,12 @@ function inicializarCarruselAsesores() {
 
 // ---------------- TEMAS POPULARES ----------------
 function crearTemaCard(tema) {
+  const temaEncoded = encodeURIComponent(tema.nombre_tema);
+
   return `
-    <li class="subject subject--clickable" data-tema="${encodeURIComponent(tema.nombre_tema)}">
+    <li class="subject subject--clickable"
+        data-tema="${temaEncoded}"
+        onclick="window.location.href='explorar.html?tema=${temaEncoded}'">
       <div class="subject__body">
         <h4>${tema.nombre_tema}</h4>
         <span class="subject__meta">${tema.numero_asesores} asesores</span>
@@ -246,7 +250,6 @@ function crearTemaCard(tema) {
     </li>
   `;
 }
-
 
 async function cargarTemasPopulares() {
   const grid = document.querySelector(".subjects__grid");
