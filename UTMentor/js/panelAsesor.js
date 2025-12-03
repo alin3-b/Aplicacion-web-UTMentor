@@ -671,6 +671,16 @@ function preparePublishForm() {
   topicSel.addEventListener("change", updateArea);
   updateArea(); // Inicializar
 
+  // Lógica para mostrar/ocultar mensaje de modalidad
+  const modeSel = $("#modeSel");
+  const modeHint = $("#modeHint");
+  
+  const updateModeHint = () => {
+    modeHint.hidden = modeSel.value !== "";
+  };
+  modeSel.addEventListener("change", updateModeHint);
+  updateModeHint(); // Inicializar
+
   // Lógica para mostrar/ocultar capacidad según tipo de sesión
   const typeSel = $("#typeSel");
   const capacityField = $("#capacityField");
@@ -784,7 +794,7 @@ function preparePublishForm() {
     const disponibilidadData = {
       fecha_inicio: fechaInicio.toISOString().slice(0, 19),
       fecha_fin: fechaFin.toISOString().slice(0, 19),
-      modalidad: mode,
+      modalidad: mode || null,
       tipo_sesion: type,
       fk_tema: fk_tema,
       precio: price,
@@ -833,7 +843,6 @@ function preparePublishForm() {
         box.innerHTML = `
           <p><strong>Sesión publicada exitosamente</strong></p>
           <ul>
-            <li><strong>ID:</strong> ${result.data.id_disponibilidad}</li>
             <li><strong>Tema:</strong> ${result.data.nombre_tema || topic}</li>
             <li><strong>Área:</strong> ${displayArea}</li>
             <li><strong>Fecha:</strong> ${formatRange(
@@ -841,7 +850,7 @@ function preparePublishForm() {
               fechaFin
             )}</li>
             <li><strong>Modalidad:</strong> ${
-              mode === "virtual" ? "Virtual" : "Presencial"
+              mode === "virtual" ? "Virtual" : (mode === "presencial" ? "Presencial" : "Cualquiera")
             }</li>
             <li><strong>Tipo:</strong> ${
               type === "individual" ? "Individual" : "Grupal"

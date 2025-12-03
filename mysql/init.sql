@@ -166,7 +166,7 @@ CREATE TABLE `disponibilidades` (
   `fk_asesor` int NOT NULL,
   `fecha_inicio` datetime NOT NULL,
   `fecha_fin` datetime NOT NULL,
-  `modalidad` enum('presencial','virtual') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `modalidad` enum('presencial','virtual') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tipo_sesion` enum('grupal','individual') COLLATE utf8mb4_unicode_ci NOT NULL,
   `fk_tema` int DEFAULT NULL,
   `precio` decimal(10,2) NOT NULL,
