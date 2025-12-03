@@ -1,6 +1,33 @@
 // UTMentor/js/explorar.js
 import { obtenerAsesores } from "./services/asesorService.js";
 
+// ==========================================
+// REDIRECCIÓN DE SESIÓN ACTIVA
+// ==========================================
+(function() {
+  try {
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+
+    if (token && usuario) {
+      // Si el usuario ya tiene sesión, redirigir al panel correspondiente
+      const roles = usuario.roles || [];
+      const rol = usuario.rolActivo || roles[0] || 'Asesorado';
+      
+      if (rol === 'Asesor') {
+        window.location.replace('panelAsesor.html');
+      } else {
+        // Si es asesorado, redirigir a la sección de explorar dentro del panel
+        window.location.replace('panelAsesorado.html#explorar');
+      }
+    }
+  } catch (e) {
+    console.error("Error verificando sesión:", e);
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+  }
+})();
+
 // =====================
 // UTILIDADES DE SEGURIDAD
 // =====================

@@ -3,6 +3,34 @@ import { obtenerAsesores } from "./services/asesorService.js";
 import { obtenerTemasPopulares } from "./services/topicService.js";
 import { obtenerMetricas } from "./services/metricasService.js";
 
+// ==========================================
+// REDIRECCIÓN DE SESIÓN ACTIVA
+// ==========================================
+(function() {
+  try {
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+
+    if (token && usuario) {
+      // Si el usuario ya tiene sesión, redirigir al panel correspondiente
+      const roles = usuario.roles || [];
+      // Priorizar rol activo si existe, sino el primer rol disponible
+      const rol = usuario.rolActivo || roles[0] || 'Asesorado';
+      
+      if (rol === 'Asesor') {
+        window.location.replace('panelAsesor.html');
+      } else {
+        window.location.replace('panelAsesorado.html');
+      }
+    }
+  } catch (e) {
+    console.error("Error verificando sesión:", e);
+    // En caso de error (JSON corrupto, etc), limpiar para evitar bucles
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+  }
+})();
+
 document.documentElement.classList.remove("no-js");
 
 // ---------------- MENÚ MÓVIL ----------------
