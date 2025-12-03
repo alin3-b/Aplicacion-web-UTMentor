@@ -780,7 +780,10 @@ export async function cancelarInscripcion(id_inscripcion, id_asesorado, motivo =
 
     // 1. Verificar que la inscripción existe, pertenece al usuario y no está cancelada
     const [rows] = await conn.query(
-      "SELECT i.id_inscripcion, i.fk_disponibilidad, d.tipo_sesion FROM inscripciones_sesion i JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad WHERE i.id_inscripcion = ? AND i.fk_asesorado = ? AND i.estado != 'cancelada'",
+      `SELECT i.id_inscripcion, i.fk_disponibilidad, d.tipo_sesion 
+       FROM inscripciones_sesion i
+       JOIN disponibilidades d ON i.fk_disponibilidad = d.id_disponibilidad
+       WHERE i.id_inscripcion = ? AND i.fk_asesorado = ? AND i.estado != 'cancelada'`,
       [id_inscripcion, id_asesorado]
     );
 

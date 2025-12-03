@@ -45,7 +45,7 @@ export async function existeInscripcion(fk_disponibilidad, fk_asesorado) {
     const [rows] = await mysqlPool.query(
         `SELECT id_inscripcion 
          FROM inscripciones_sesion
-         WHERE fk_disponibilidad = ? AND fk_asesorado = ?
+         WHERE fk_disponibilidad = ? AND fk_asesorado = ? AND estado != 'cancelada'
          LIMIT 1`,
         [fk_disponibilidad, fk_asesorado]
     );
