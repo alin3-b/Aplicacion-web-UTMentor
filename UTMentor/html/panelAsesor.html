@@ -124,7 +124,7 @@
               <select id="modeSel" required>
                 <option value="virtual">Virtual</option>
                 <option value="presencial">Presencial</option>
-                <option value="">Cualquiera</option>
+                <option value="any">Cualquiera</option>
               </select>
               <small class="hint" id="modeHint" hidden>Si seleccionas “Cualquiera”, el asesorado podrá elegir la modalidad al agendar.</small>
             </label>
@@ -174,9 +174,10 @@
             </label>
 
             <!-- 5.5 Capacidad (Solo para grupal) -->
-            <label class="field" id="capacityField" hidden>
+            <label class="field" id="capacityField">
               <span class="label">Capacidad</span>
               <select id="capacitySel">
+                <option value="1">1 persona</option>
                 <option value="2">2 personas</option>
                 <option value="3">3 personas</option>
                 <option value="4">4 personas</option>

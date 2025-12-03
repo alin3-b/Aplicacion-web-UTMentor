@@ -676,7 +676,7 @@ function preparePublishForm() {
   const modeHint = $("#modeHint");
   
   const updateModeHint = () => {
-    modeHint.hidden = modeSel.value !== "";
+    modeHint.hidden = modeSel.value !== "any";
   };
   modeSel.addEventListener("change", updateModeHint);
   updateModeHint(); // Inicializar
@@ -688,11 +688,20 @@ function preparePublishForm() {
 
   const updateCapacityVisibility = () => {
     if (typeSel.value === "grupal") {
-      capacityField.hidden = false;
-      capacitySel.required = true;
+      capacitySel.disabled = false;
+      // Si estaba en 1, cambiar a 2 por defecto para grupal
+      if (capacitySel.value === "1") capacitySel.value = "2";
+      
+      // Ocultar la opción de 1 persona en el dropdown visualmente si es posible, 
+      // o simplemente dejarla. Para mejor UX, podríamos deshabilitar la opción 1.
+      const opt1 = capacitySel.querySelector('option[value="1"]');
+      if (opt1) opt1.hidden = true;
     } else {
-      capacityField.hidden = true;
-      capacitySel.required = false;
+      capacitySel.value = "1";
+      capacitySel.disabled = true;
+      
+      const opt1 = capacitySel.querySelector('option[value="1"]');
+      if (opt1) opt1.hidden = false;
     }
   };
   typeSel.addEventListener("change", updateCapacityVisibility);
@@ -732,7 +741,8 @@ function preparePublishForm() {
     const mode = $("#modeSel").value;
     const type = $("#typeSel").value;
     const price = Number($("#price").value || 0);
-    const capacity = type === "grupal" ? Number($("#capacitySel").value) : 1;
+    // Si está deshabilitado, tomamos el valor 1, si no, el valor seleccionado
+    const capacity = $("#capacitySel").disabled ? 1 : Number($("#capacitySel").value);
     
     // Validaciones mínimas
     if (!topic) {
@@ -794,7 +804,7 @@ function preparePublishForm() {
     const disponibilidadData = {
       fecha_inicio: fechaInicio.toISOString().slice(0, 19),
       fecha_fin: fechaFin.toISOString().slice(0, 19),
-      modalidad: mode || null,
+      modalidad: (mode === "any") ? null : mode,
       tipo_sesion: type,
       fk_tema: fk_tema,
       precio: price,
