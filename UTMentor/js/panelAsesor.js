@@ -738,6 +738,19 @@ function preparePublishForm() {
       return toast(`No puedes publicar sesiones en el pasado. La sesión que intentas programar (${fechaLegible}) ya pasó. Hora actual: ${horaActual}`, "warning");
     }
 
+    // Validar solapamiento con sesiones existentes
+    const tieneSolapamiento = state.sessions.some(sesion => {
+      const sesionInicio = sesion.date.start;
+      const sesionFin = sesion.date.end;
+      
+      // Verificar solapamiento de intervalos: (StartA < EndB) && (EndA > StartB)
+      return (fechaInicio < sesionFin && fechaFin > sesionInicio);
+    });
+
+    if (tieneSolapamiento) {
+      return toast("Ya tienes una sesión programada que se empalma con este horario. Por favor, ajusta la hora para evitar conflictos.", "warning");
+    }
+
     // Determinar fk_tema con logging
     let fk_tema = null;
     if (topic === "Tema Libre") {
@@ -785,6 +798,17 @@ function preparePublishForm() {
         // Recargar sesiones desde la API para tener datos actualizados
         await cargarSesionesDesdeAPI();
 
+        // Calcular el nombre del área para mostrar (si la API no lo devuelve)
+        let displayArea = result.data.nombre_area;
+        if (!displayArea) {
+          if (topic === "Tema Libre") {
+            displayArea = "Cualquier área";
+          } else {
+            const found = state.topics.find(t => t.topic === topic);
+            displayArea = found ? found.area : "Cualquier área";
+          }
+        }
+
         // Mostrar resumen con datos reales de la API
         const box = $("#publishResult");
         box.hidden = false;
@@ -793,9 +817,7 @@ function preparePublishForm() {
           <ul>
             <li><strong>ID:</strong> ${result.data.id_disponibilidad}</li>
             <li><strong>Tema:</strong> ${result.data.nombre_tema || topic}</li>
-            <li><strong>Área:</strong> ${
-              result.data.nombre_area || "Cualquier área"
-            }</li>
+            <li><strong>Área:</strong> ${displayArea}</li>
             <li><strong>Fecha:</strong> ${formatRange(
               fechaInicio,
               fechaFin
