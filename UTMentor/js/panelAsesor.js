@@ -671,6 +671,23 @@ function preparePublishForm() {
   topicSel.addEventListener("change", updateArea);
   updateArea(); // Inicializar
 
+  // Lógica para mostrar/ocultar capacidad según tipo de sesión
+  const typeSel = $("#typeSel");
+  const capacityField = $("#capacityField");
+  const capacitySel = $("#capacitySel");
+
+  const updateCapacityVisibility = () => {
+    if (typeSel.value === "grupal") {
+      capacityField.hidden = false;
+      capacitySel.required = true;
+    } else {
+      capacityField.hidden = true;
+      capacitySel.required = false;
+    }
+  };
+  typeSel.addEventListener("change", updateCapacityVisibility);
+  updateCapacityVisibility(); // Inicializar
+
   // Días de la semana actual
   const daySel = $("#daySel");
   daySel.innerHTML = "";
@@ -705,6 +722,7 @@ function preparePublishForm() {
     const mode = $("#modeSel").value;
     const type = $("#typeSel").value;
     const price = Number($("#price").value || 0);
+    const capacity = type === "grupal" ? Number($("#capacitySel").value) : 1;
     
     // Validaciones mínimas
     if (!topic) {
@@ -770,7 +788,7 @@ function preparePublishForm() {
       tipo_sesion: type,
       fk_tema: fk_tema,
       precio: price,
-      capacidad: type === "individual" ? 1 : 2,
+      capacidad: capacity,
     };
     console.log("  - disponibilidadData completo:", disponibilidadData);
     try {

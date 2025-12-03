@@ -701,6 +701,17 @@ export async function crearDisponibilidadController(req, res) {
   console.log("🔍 DEBUG crear disponibilidad - req.body:", req.body);
   console.log("  - fk_tema recibido:", fk_tema, "tipo:", typeof fk_tema);
 
+  // Validación de capacidad
+  let capacidadFinal = 1;
+  if (tipo_sesion === 'grupal') {
+    capacidadFinal = parseInt(capacidad);
+    if (isNaN(capacidadFinal) || capacidadFinal < 2 || capacidadFinal > 10) {
+      return res.status(400).json({ error: "La capacidad para sesiones grupales debe ser entre 2 y 10 personas." });
+    }
+  } else {
+    capacidadFinal = 1;
+  }
+
   try {
     const id_disponibilidad = await createDisponibilidad({
       fk_asesor: id,
@@ -710,7 +721,7 @@ export async function crearDisponibilidadController(req, res) {
       tipo_sesion,
       fk_tema,
       precio,
-      capacidad
+      capacidad: capacidadFinal
     });
 
     res.status(201).json({
@@ -725,7 +736,7 @@ export async function crearDisponibilidadController(req, res) {
         tipo_sesion,
         fk_tema,
         precio,
-        capacidad
+        capacidad: capacidadFinal
       }
     });
   } catch (error) {
