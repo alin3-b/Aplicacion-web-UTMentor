@@ -64,9 +64,9 @@ router.post("/recuperar-password", async (req, res) => {
       });
     }
 
-    // URL del frontend (ajustar según tu configuración)
+    // URL del frontend 
     const frontendUrl =
-      process.env.FRONTEND_URL || "http://18.144.41.81:8180";
+      process.env.FRONTEND_URL || "http://localhost:8180";
 
     // Enviar correo de recuperación
     const resultado = await enviarCorreoRecuperacion(email, frontendUrl);
