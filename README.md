@@ -1,6 +1,10 @@
 # UTMentor
 
-UTMentor es una aplicación web que expone funcionalidades de búsqueda, publicación y reserva de asesorías.
+<p align="center">
+  <img src="demo.gif" width="90%">
+</p>
+
+Plataforma web para la gestión y reserva de asesorías académicas, desarrollada bajo una arquitectura cliente-servidor utilizando Node.js, MySQL, Docker y servicios externos como Stripe, MinIO y Gemini API.
 
 ## Descripción
 
