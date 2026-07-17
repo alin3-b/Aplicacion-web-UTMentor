@@ -1,9 +1,5 @@
 # UTMentor
 
-<p align="center">
-  <img src="demo.gif" width="90%">
-</p>
-
 Plataforma web para la gestión y reserva de asesorías académicas, desarrollada bajo una arquitectura cliente-servidor utilizando Node.js, MySQL, Docker y servicios externos como Stripe, MinIO y Gemini API.
 
 ## Descripción
@@ -16,6 +12,56 @@ UTMentor es una plataforma web que permite:
 - Recuperación de contraseña por email
 - Almacenamiento de archivos con MinIO
 - Asistente con IA integrado
+
+## Capturas de Pantalla
+
+### Página Principal
+
+<p align="center">
+  <img src="imagenes/home.png" width="85%">
+</p>
+
+La página principal permite acceder a las funcionalidades principales de la plataforma y explorar las asesorías disponibles.
+
+<p align="center">
+  <img src="imagenes/home1.png" width="85%">
+</p>
+
+Tambien muestra la información de presentación para el entendimiento de la aplicación web.
+
+<p align="center">
+  <img src="imagenes/home2.png" width="85%">
+</p>
+
+---
+
+### Exploración de Asesores
+
+<p align="center">
+  <img src="imagenes/explorar.png" width="85%">
+</p>
+
+Los estudiantes pueden buscar asesores por área de conocimiento, tema o perfil, facilitando la localización de especialistas en distintas materias.
+
+---
+
+### Perfil de Asesor
+
+<p align="center">
+  <img src="imagenes/perfilasesor.png" width="85%">
+</p>
+
+Cada asesor cuenta con un perfil que incluye información académica, áreas de experiencia, disponibilidad y valoraciones de otros usuarios.
+
+---
+
+### Vista del Asesor
+
+<p align="center">
+  <img src="imagenes/vistasesor.png" width="85%">
+</p>
+
+Los asesores pueden administrar sus sesiones, horarios disponibles y solicitudes recibidas desde una interfaz dedicada.
 
 ## Arquitectura
 
