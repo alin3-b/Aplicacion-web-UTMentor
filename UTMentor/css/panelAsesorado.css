@@ -1,0 +1,198 @@
+:root {
+    --brand: #5b68ff;
+    --brand-2: #19c0ff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --danger: #ef4444;
+    --success: #10b981;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    --ring: rgba(91, 104, 255, 0.25);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Reset body padding from explorar.css - handled by class scoping now */
+
+/* === HEADER & CONTROLS === */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.section-info {
+    flex: 1;
+    min-width: 280px;
+}
+
+/* Removed .week-controls and #btnSwitchRole to inherit from panelAsesor.css */
+
+/* === RATING CARDS === */
+.rating-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.rating-avatar {
+    flex-shrink: 0;
+}
+
+.rating-avatar img {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: var(--shadow-sm);
+    display: block;
+}
+
+.rating-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.rating-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.rating-info strong {
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.rating-info span {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+/* === FAVORITE CARDS === */
+.favorite-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.fav-avatar {
+    flex-shrink: 0;
+}
+
+.fav-avatar img {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: var(--shadow-sm);
+    display: block; /* Ensure it behaves as a block */
+}
+
+.fav-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+}
+
+.fav-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.fav-info strong {
+    color: var(--text);
+    font-size: 1.1rem;
+}
+
+.fav-info span {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* === PROFILE PHOTO ACTIONS === */
+.photo-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.photo-actions .btn {
+    font-size: 0.9rem;
+}
+
+/* === STAR RATING MODAL === */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 2.5rem;
+    margin: 1.5rem 0;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #fbbf24;
+}
+
+.modal-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .week-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .rating-card, .favorite-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .rating-actions, .fav-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

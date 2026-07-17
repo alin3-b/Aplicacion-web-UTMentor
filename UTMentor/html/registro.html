@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro de Usuario · UTMentor</title>
+  <!-- Favicon -->
+  <link rel="icon" href="../imagenes/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/registro.css">
+</head>
+
+<body class="auth-body">
+
+  <!-- NAV -->
+  <header class="nav-wrap" role="banner">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo-hero.png" alt="UTMentor" />
+      </a>
+    </nav>
+  </header>
+
+  <!-- CONTENEDOR LOGIN -->
+  <main class="login-main" role="main">
+    <div class="login-panel" style="max-width: 520px">
+      <h2 class="login-title">Crear usuario</h2>
+      <p class="login-sub">Registra una nueva cuenta en UTMentor</p>
+
+      <div class="card" style="box-shadow:none; background:transparent; padding:0;">
+        <div class="card-body">
+
+          <form id="formRegistro">
+
+            <!-- 1️⃣ Rol -->
+            <div class="mb-3">
+              <label class="form-label" for="roles">Rol</label>
+              <select id="roles">
+                <option value="">Selecciona...</option>
+                <option value="1">Asesor</option>
+                <option value="2">Asesorado</option>
+                <option value="1,2">Ambos</option>
+              </select>
+            </div>
+          
+            <!-- 2️⃣ Nombre completo -->
+            <div class="mb-3">
+              <label class="form-label" for="nombre_completo">Nombre completo</label>
+              <input type="text" id="nombre_completo">
+              <div id="errorNombre" class="error-msg"></div>
+            </div>
+          
+            <!-- 3️⃣ Carrera -->
+            <div class="mb-3">
+              <label class="form-label" for="fk_carrera">Carrera</label>
+              <select id="fk_carrera">
+                <option value="">Selecciona...</option>
+                <option value="1">Ingeniería Civil</option>
+                <option value="2">Ingeniería en Alimentos</option>
+                <option value="3">Ingeniería en Computación</option>
+                <option value="4">Ingeniería en Diseño</option>
+                <option value="5">Ingeniería en Electrónica</option>
+                <option value="6">Ingeniería en Física Aplicada</option>
+                <option value="7">Ingeniería Industrial</option>
+                <option value="8">Ingeniería en Mecánica Automotriz</option>
+                <option value="9">Ingeniería en Mecatrónica</option>
+                <option value="10">Ingeniería Química en Procesos Sostenibles</option>
+                <option value="11">Licenciatura en Ciencias Empresariales</option>
+                <option value="12">Licenciatura en Matemáticas Aplicadas</option>
+                <option value="13">Licenciatura en Estudios Mexicanos</option>
+              </select>
+            </div>
+          
+            <!-- 4️⃣ Semestre -->
+            <div class="mb-3">
+              <label class="form-label" for="semestre">Semestre</label>
+              <select id="semestre">
+                <option value="">Selecciona...</option>
+              </select>
+            </div>
+          
+            <!-- 5️⃣ Correo -->
+            <div class="mb-3">
+              <label class="form-label" for="correo">Correo</label>
+              <input type="text" id="correo"> <!-- CAMBIO: era type="email" -->
+              <div id="errorCorreo" class="error-msg"></div>
+            </div>
+          
+            <!-- 6️⃣ Contraseña -->
+            <div class="mb-3 password-wrapper">
+              <label class="form-label" for="password">Contraseña</label>
+              <div class="password-field">
+                <input type="password" id="password"> <!-- CAMBIO: sin required ni minlength -->
+                <img id="togglePass" class="toggle-pass" src="../imagenes/vista.png" alt="ver">
+              </div>
+              <div id="errorContras" class="error-msg"></div>
+            </div>
+          
+            <div class="mb-3 password-wrapper">
+              <label class="form-label" for="confirmPassword">Confirmar contraseña</label>
+              <div class="password-field">
+                <input type="password" id="confirmPassword"> <!-- CAMBIO: sin required ni minlength -->
+                <img id="toggleConfirmPass" class="toggle-pass" src="../imagenes/vista.png" alt="ver">
+              </div>
+              <div id="errorConfirm" class="error-msg"></div>
+            </div>
+          
+            <!-- 7️⃣ Términos y condiciones -->
+            <div class="mb-3">
+              <label>
+                <input type="checkbox" id="policy"> <!-- CAMBIO: sin required -->
+                Acepto los <a href="politicasYPrivacidad.html" target="_blank" class="link-blanco">términos y condiciones</a>
+              </label>
+              <div id="policyError" class="error-msg"></div>
+            </div>
+          
+            <!-- Botones -->
+            <div class="btn-row" style="margin-top: 20px;">
+              <a href="principal.html" class="btn btn-secondary">Cancelar</a>
+              <button type="submit" class="btn btn-primary">Iniciar</button> <!-- NO TOQUÉ EL TEXTO -->
+            </div>
+          
+          </form>
+          
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL DE ROLES (ya existente) -->
+  <div id="roleModal" class="role-modal" aria-hidden="true" role="dialog" aria-labelledby="roleTitle" aria-modal="true">
+    <div class="role-modal__backdrop" data-role-dismiss></div>
+    <div class="role-modal__card" role="document">
+      <h2 id="roleTitle" class="role-modal__title">Elige cómo deseas
+        iniciar</h2>
+      <p class="role-modal__sub">Tu cuenta tiene ambos roles
+        disponibles.</p>
+      <div class="role-modal__actions">
+        <button type="button" class="btn" data-role="Asesor">Entrar como asesor</button>
+        <button type="button" class="btn outline" data-role="Asesorado">Entrar como asesorado</button>
+      </div>
+      <button type="button" class="role-modal__close" aria-label="Cerrar" data-role-dismiss>✕</button>
+    </div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+      <nav class="site-footer__links" aria-label="Legal">
+        <a href="politicasYPrivacidad.html" class="site-footer__link">Políticas y privacidad</a>
+        <a href="donar.html" class="site-footer__link">Donar a la comunidad UTMentor</a>
+      </nav>
+    </div>
+  </footer>
+  <!-- TOAST -->
+  <div id="toastMensaje" class="toast-custom"></div>
+  <script type="module" src="../js/registro.js"></script>
+</body>
+
+</html>

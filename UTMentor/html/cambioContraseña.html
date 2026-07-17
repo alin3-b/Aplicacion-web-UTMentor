@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Restablecer contraseña · UTMentor</title>
+  <link rel="icon" href="../imagenes/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/iniciarSesion.css">
+</head>
+<body class="auth-body">
+  <!-- NAV FIJO -->
+  <header class="nav-wrap" role="banner">
+    <nav class="nav" aria-label="Principal">
+      <a href="principal.html" class="brand" aria-label="Ir al inicio">
+        <img src="../imagenes/logo-hero.png" alt="UTMentor" />
+      </a>
+    </nav>
+  </header>
+
+  <main class="login-main" role="main">
+    <div class="login-panel">
+      <h1 class="login-title">Restablecer contraseña</h1>
+      <p class="login-sub">Crea una nueva contraseña para tu cuenta.</p>
+
+      <!-- Alerta de token -->
+      <div id="tokenAlert" class="auth-error" role="alert" aria-live="assertive"></div>
+
+      <form id="resetForm" class="login-form" novalidate>
+        <!-- Nueva contraseña -->
+        <label class="input-group password-group">
+          <input id="password" name="password" type="password" 
+                 placeholder="Nueva contraseña" autocomplete="new-password" required
+                 aria-describedby="pwError pwHelp">
+          <button type="button" class="toggle-pw" data-toggle="password" aria-label="Mostrar u ocultar contraseña">
+            <span class="pw-eye" aria-hidden="true"></span>
+          </button>
+          <p id="pwError" class="input-error" role="alert" aria-live="polite"></p>
+        </label>
+        
+        <!-- Requisitos -->
+        <ul id="pwHelp" class="checks" aria-live="polite">
+          <li id="cLen" class="bad"><span class="dot">•</span> Mínimo 8 caracteres</li>
+          <li id="cUp"  class="bad"><span class="dot">•</span> Al menos 1 mayúscula</li>
+          <li id="cLow" class="bad"><span class="dot">•</span> Al menos 1 minúscula</li>
+          <li id="cNum" class="bad"><span class="dot">•</span> Al menos 1 número</li>
+          <li id="cSpec" class="bad"><span class="dot">•</span> Al menos 1 carácter especial (!@#$...)</li>
+        </ul>
+
+        <!-- Confirmar contraseña -->
+        <label class="input-group password-group">
+          <input id="confirm" name="confirm" type="password" 
+                 placeholder="Confirmar contraseña" autocomplete="new-password" required
+                 aria-describedby="cfError">
+          <button type="button" class="toggle-pw" data-toggle="confirm" aria-label="Mostrar u ocultar confirmación">
+            <span class="pw-eye" aria-hidden="true"></span>
+          </button>
+          <p id="cfError" class="input-error" role="alert" aria-live="polite"></p>
+        </label>
+
+        <button id="submitBtn" class="btn-login" type="submit">Restablecer contraseña</button>
+
+        <!-- Mensajes globales -->
+        <div id="globalOk" class="alert ok" role="status" aria-live="polite"></div>
+        <div id="globalErr" class="alert err" role="alert" aria-live="assertive"></div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">© 2025 UTMentor. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="../js/cambioContraseña.js"></script>
+</body>
+</html>
