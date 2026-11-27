@@ -9,6 +9,7 @@ services:
     volumes:
       - ./mysql_data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/seed-dev.sql:/docker-entrypoint-initdb.d/zz-seed-dev.sql:ro
     ports:
       - "3316:3306"
     healthcheck:

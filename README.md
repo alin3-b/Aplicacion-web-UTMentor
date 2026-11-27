@@ -89,6 +89,32 @@ Sigue estos pasos para levantar el proyecto en tu máquina local:
     | **phpMyAdmin** | `http://localhost:8080` | Gestión visual de la base de datos |
     | **MinIO Console** | `http://localhost:9001` | Gestión de archivos (Buckets) |
 
+## Datos ficticios para pruebas
+
+En una base de datos nueva, Docker ejecuta automáticamente
+`mysql/seed-dev.sql` después del esquema inicial. El seed agrega usuarios,
+asesores, temas, disponibilidades futuras e históricas, inscripciones,
+calificaciones, cancelaciones y favoritos.
+
+Para volver a cargar los datos demo sin borrar el resto de la base:
+
+```bash
+npm run seed:dev
+```
+
+El comando es repetible: elimina únicamente las cuentas con dominio
+`@utmentor.local` creadas por el propio seed y vuelve a generar sus relaciones.
+
+| Tipo de cuenta | Correo de ejemplo | Contraseña |
+|----------------|-------------------|------------|
+| Asesor y asesorado | `demo.asesor.01@utmentor.local` | `UTMentor2026!` |
+| Asesor | `demo.asesor.06@utmentor.local` | `UTMentor2026!` |
+| Asesorado | `demo.asesorado.01@utmentor.local` | `UTMentor2026!` |
+
+Los asesores `01` a `05` tienen ambos roles para probar el cambio entre
+paneles. Las fechas futuras se calculan al ejecutar el seed, por lo que las
+sesiones no caducan cuando cambia el semestre.
+
 ## 📂 Estructura del Proyecto
 
 ```
