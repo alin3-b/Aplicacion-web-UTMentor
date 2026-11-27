@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "seed:dev": "sh scripts/seed-dev.sh"
+  },
   "dependencies": {
     "minio": "^8.0.6",
     "multer": "^2.0.2",
